@@ -22,8 +22,9 @@ app.use(morgan('dev', {
 }));
 
 // ── Body parsing ──────────────────────────────────────────────────────────────
-app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: true }));
+// Increased to 15mb to handle base64-encoded KYC documents (2 x 5MB files ≈ 14MB base64)
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
 // ── Global rate limiter ───────────────────────────────────────────────────────
 app.use(globalLimiter);
