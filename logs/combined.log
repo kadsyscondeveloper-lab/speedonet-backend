@@ -1,0 +1,91 @@
+2026-02-19 11:15:31 [[32minfo[39m]: SQL Server pool connected
+2026-02-19 11:15:31 [[32minfo[39m]: Database connection established ✓
+2026-02-19 11:15:31 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-19 11:15:31 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-19 11:18:58 [[32mhttp[39m]: [0mGET /api/v1/health [32m200[0m 3.896 ms - 99[0m
+2026-02-19 11:18:58 [[32mhttp[39m]: [0mPOST /api/v1/auth/signup [33m400[0m 12.683 ms - 118[0m
+2026-02-19 11:18:59 [[32mhttp[39m]: [0mPOST /api/v1/auth/login [33m401[0m 32.913 ms - 64[0m
+2026-02-19 11:18:59 [[32mhttp[39m]: [0mPOST /api/v1/auth/otp/send [33m404[0m 6.174 ms - 87[0m
+2026-02-19 11:18:59 [[32mhttp[39m]: [0mPOST /api/v1/auth/otp/verify [33m401[0m 16.372 ms - 73[0m
+2026-02-19 11:18:59 [[32mhttp[39m]: [0mPOST /api/v1/auth/forgot-password [32m200[0m 5.410 ms - 92[0m
+2026-02-19 11:18:59 [[32mhttp[39m]: [0mPOST /api/v1/auth/reset-password [33m401[0m 5.420 ms - 53[0m
+2026-02-19 11:18:59 [[32mhttp[39m]: [0mPOST /api/v1/auth/refresh [33m400[0m 0.727 ms - 53[0m
+2026-02-19 11:18:59 [[32mhttp[39m]: [0mGET /api/v1/auth/me [33m401[0m 0.692 ms - 47[0m
+2026-02-19 11:18:59 [[32mhttp[39m]: [0mPOST /api/v1/auth/logout [33m401[0m 0.524 ms - 47[0m
+2026-02-19 11:18:59 [[32mhttp[39m]: [0mPOST /api/v1/auth/logout-all [33m401[0m 0.332 ms - 47[0m
+2026-02-19 11:18:59 [[32mhttp[39m]: [0mGET /api/v1/user/profile [33m401[0m 0.362 ms - 47[0m
+2026-02-19 11:18:59 [[32mhttp[39m]: [0mPUT /api/v1/user/profile [33m401[0m 0.438 ms - 47[0m
+2026-02-19 11:19:00 [[32mhttp[39m]: [0mPUT /api/v1/user/profile/image [33m401[0m 0.447 ms - 47[0m
+2026-02-19 11:19:00 [[32mhttp[39m]: [0mGET /api/v1/user/addresses [33m401[0m 0.383 ms - 47[0m
+2026-02-19 11:19:00 [[32mhttp[39m]: [0mPUT /api/v1/user/addresses/primary [33m401[0m 0.521 ms - 47[0m
+2026-02-19 11:19:00 [[32mhttp[39m]: [0mPOST /api/v1/user/addresses [33m401[0m 0.725 ms - 47[0m
+2026-02-19 11:19:00 [[32mhttp[39m]: [0mDELETE /api/v1/user/addresses/2 [33m401[0m 0.247 ms - 47[0m
+2026-02-19 11:19:00 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [33m401[0m 0.241 ms - 47[0m
+2026-02-19 11:19:00 [[32mhttp[39m]: [0mPOST /api/v1/user/kyc [33m401[0m 0.564 ms - 47[0m
+2026-02-19 11:19:21 [[32mhttp[39m]: [0mGET /api/v1/health [32m200[0m 0.333 ms - 99[0m
+2026-02-19 11:19:36 [[32mhttp[39m]: [0mPOST /api/v1/auth/signup [33m400[0m 1.156 ms - 118[0m
+2026-02-19 11:19:46 [[32minfo[39m]: New user registered: 999****999 (id=1)
+2026-02-19 11:19:46 [[32mhttp[39m]: [0mPOST /api/v1/auth/signup [32m201[0m 278.531 ms - 712[0m
+2026-02-19 11:20:05 [[32minfo[39m]: Login (password): 999****999 (id=1)
+2026-02-19 11:20:05 [[32mhttp[39m]: [0mPOST /api/v1/auth/login [32m200[0m 201.059 ms - 673[0m
+2026-02-19 11:20:13 [[34mdebug[39m]: OTP for 999****999 → 111116  [login]
+2026-02-19 11:20:13 [[32mhttp[39m]: [0mPOST /api/v1/auth/otp/send [32m200[0m 17.554 ms - 127[0m
+2026-02-19 11:20:22 [[32mhttp[39m]: [0mPOST /api/v1/auth/otp/verify [33m401[0m 16.199 ms - 73[0m
+2026-02-19 11:20:43 [[32minfo[39m]: Login (OTP): 999****999 (id=1)
+2026-02-19 11:20:43 [[32mhttp[39m]: [0mPOST /api/v1/auth/otp/verify [32m200[0m 23.212 ms - 673[0m
+2026-02-19 11:20:49 [[32mhttp[39m]: [0mPOST /api/v1/auth/forgot-password [33m429[0m 0.503 ms - 91[0m
+2026-02-19 11:20:57 [[32mhttp[39m]: [0mPOST /api/v1/auth/reset-password [33m401[0m 10.194 ms - 53[0m
+2026-02-19 11:21:04 [[32mhttp[39m]: [0mPOST /api/v1/auth/refresh [32m200[0m 19.629 ms - 559[0m
+2026-02-19 11:21:14 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 9.243 ms - 196[0m
+2026-02-19 11:21:27 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 10.414 ms - 438[0m
+2026-02-19 11:21:33 [[32mhttp[39m]: [0mPUT /api/v1/user/profile [32m200[0m 24.475 ms - 462[0m
+2026-02-19 11:21:43 [[32mhttp[39m]: [0mPUT /api/v1/user/profile/image [32m200[0m 12.855 ms - 118[0m
+2026-02-19 11:22:34 [[32mhttp[39m]: [0mGET /api/v1/user/addresses [32m200[0m 9.389 ms - 60[0m
+2026-02-19 11:22:43 [[32mhttp[39m]: [0mPUT /api/v1/user/addresses/primary [32m200[0m 22.847 ms - 53[0m
+2026-02-19 11:22:48 [[32mhttp[39m]: [0mGET /api/v1/user/addresses [32m200[0m 12.247 ms - 260[0m
+2026-02-19 11:22:51 [[32mhttp[39m]: [0mPOST /api/v1/user/addresses [32m201[0m 9.686 ms - 61[0m
+2026-02-19 11:22:54 [[32mhttp[39m]: [0mDELETE /api/v1/user/addresses/2 [32m200[0m 11.612 ms - 45[0m
+2026-02-19 11:23:02 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 9.253 ms - 78[0m
+2026-02-19 11:23:12 [[32mhttp[39m]: [0mPOST /api/v1/user/kyc [32m201[0m 19.924 ms - 116[0m
+2026-02-19 11:23:16 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 13.851 ms - 234[0m
+2026-02-19 11:24:19 [[32mhttp[39m]: [0mGET /api/v1?page=1&limit=20 [33m404[0m 0.260 ms - 57[0m
+2026-02-19 11:24:27 [[32mhttp[39m]: [0mGET /api/v1/?page=1&limit=20 [33m404[0m 0.130 ms - 58[0m
+2026-02-19 11:24:31 [[32mhttp[39m]: [0mPATCH /api/v1/user/notifications/read [32m200[0m 15.210 ms - 58[0m
+2026-02-19 11:24:43 [[32mhttp[39m]: [0mPATCH /api/v1/user/notifications/read [32m200[0m 13.309 ms - 58[0m
+2026-02-19 11:24:49 [[32mhttp[39m]: [0mGET /api/v1/user/referrals [32m200[0m 12.412 ms - 217[0m
+2026-02-19 11:28:57 [[32mhttp[39m]: [0mPOST /api/v1/auth/signup [33m429[0m 0.252 ms - 85[0m
+2026-02-19 11:56:44 [[32minfo[39m]: SQL Server pool connected
+2026-02-19 11:56:44 [[32minfo[39m]: Database connection established ✓
+2026-02-19 11:56:44 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-19 11:56:44 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-19 11:57:28 [[32mhttp[39m]: [0mPOST /api/v1/auth/signup [33m400[0m 19.383 ms - 197[0m
+2026-02-19 11:57:39 [[32minfo[39m]: New user registered: 865****811 (id=2)
+2026-02-19 11:57:39 [[32mhttp[39m]: [0mPOST /api/v1/auth/signup [32m201[0m 290.656 ms - 700[0m
+2026-02-19 12:04:18 [[32minfo[39m]: Login (password): 865****811 (id=2)
+2026-02-19 12:04:18 [[32mhttp[39m]: [0mPOST /api/v1/auth/login [32m200[0m 219.027 ms - 661[0m
+2026-02-19 12:06:06 [[32minfo[39m]: Login (password): 865****811 (id=2)
+2026-02-19 12:06:06 [[32mhttp[39m]: [0mPOST /api/v1/auth/login [32m200[0m 209.174 ms - 661[0m
+2026-02-19 12:19:55 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 24.525 ms - 184[0m
+2026-02-19 12:19:56 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 23.969 ms - 426[0m
+2026-02-19 12:20:03 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 7.659 ms - 426[0m
+2026-02-19 12:20:30 [[32mhttp[39m]: [0mPUT /api/v1/user/profile [33m400[0m 12.685 ms - 177[0m
+2026-02-19 12:20:30 [[32mhttp[39m]: [0mPUT /api/v1/user/addresses/primary [32m200[0m 31.634 ms - 53[0m
+2026-02-19 12:20:37 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 23.951 ms - 445[0m
+2026-02-19 12:20:52 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 18.386 ms - 445[0m
+2026-02-19 12:21:41 [[32minfo[39m]: Login (password): 999****999 (id=1)
+2026-02-19 12:21:41 [[32mhttp[39m]: [0mPOST /api/v1/auth/login [32m200[0m 221.480 ms - 675[0m
+2026-02-19 12:21:42 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 34.910 ms - 550[0m
+2026-02-19 12:21:43 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 17.727 ms - 550[0m
+2026-02-19 12:30:31 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 23.227 ms - 550[0m
+2026-02-19 12:31:22 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 18.181 ms - 239[0m
+2026-02-19 12:31:23 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 13.486 ms - 550[0m
+2026-02-19 12:31:28 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 9.091 ms - 550[0m
+2026-02-19 12:34:11 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 22.768 ms - 550[0m
+2026-02-19 12:34:19 [[32mhttp[39m]: [0mPUT /api/v1/user/addresses/primary [32m200[0m 23.217 ms - 53[0m
+2026-02-19 12:34:19 [[32mhttp[39m]: [0mPUT /api/v1/user/profile [32m200[0m 30.347 ms - 571[0m
+2026-02-19 12:34:22 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 8.593 ms - 549[0m
+2026-02-19 12:35:44 [[32mhttp[39m]: [0mPUT /api/v1/user/addresses/primary [32m200[0m 22.619 ms - 53[0m
+2026-02-19 12:35:44 [[32mhttp[39m]: [0mPUT /api/v1/user/profile [32m200[0m 32.248 ms - 572[0m
+2026-02-19 12:35:54 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 12.513 ms - 550[0m
+2026-02-19 12:37:18 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 9.666 ms - 78[0m
+2026-02-19 12:39:16 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 13.470 ms - 550[0m
