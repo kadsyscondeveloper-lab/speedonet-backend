@@ -39,21 +39,51 @@ const addAddressRules = [
   ...addressRules,
 ];
 
+// ── KYC validation — accepts base64 document data ─────────────────────────────
+const ALLOWED_PROOF_TYPES_ADDRESS = ['Rent Agreement', 'Utility Bill', 'Bank Statement', 'Passport', 'Voter ID'];
+const ALLOWED_PROOF_TYPES_ID      = ['Passport', 'Aadhar Card', 'Voter ID', 'Driving License', 'PAN Card'];
+const ALLOWED_MIME_TYPES          = ['image/jpeg', 'image/png', 'application/pdf'];
+
+// Rough size check: a 5MB file ≈ 6.8MB base64 string ≈ 7,143,936 chars
+const MAX_BASE64_CHARS = 7_500_000;
+
 const kycRules = [
   body('address_proof_type')
-    .trim().notEmpty().withMessage('Address proof type is required')
-    .isIn(['Rent Agreement', 'Utility Bill', 'Bank Statement', 'Passport', 'Voter ID'])
-    .withMessage('Invalid address proof type'),
-  body('address_proof_url')
-    .trim().notEmpty().withMessage('Address proof URL is required')
-    .isURL().withMessage('Must be a valid URL'),
+    .trim()
+    .notEmpty().withMessage('Address proof type is required')
+    .isIn(ALLOWED_PROOF_TYPES_ADDRESS).withMessage('Invalid address proof type'),
+
+  body('address_proof_data')
+    .notEmpty().withMessage('Address proof document is required')
+    .isString().withMessage('Document data must be a base64 string')
+    .custom((val) => {
+      if (val.length > MAX_BASE64_CHARS) throw new Error('Address proof file is too large (max 5 MB)');
+      return true;
+    }),
+
+  body('address_proof_mime')
+    .trim()
+    .notEmpty().withMessage('Address proof MIME type is required')
+    .isIn(ALLOWED_MIME_TYPES).withMessage('Only JPG, PNG and PDF are accepted for address proof'),
+
   body('id_proof_type')
-    .trim().notEmpty().withMessage('ID proof type is required')
-    .isIn(['Passport', 'Aadhar Card', 'Voter ID', 'Driving License', 'PAN Card'])
-    .withMessage('Invalid ID proof type'),
-  body('id_proof_url')
-    .trim().notEmpty().withMessage('ID proof URL is required')
-    .isURL().withMessage('Must be a valid URL'),
+    .trim()
+    .notEmpty().withMessage('ID proof type is required')
+    .isIn(ALLOWED_PROOF_TYPES_ID).withMessage('Invalid ID proof type'),
+
+  body('id_proof_data')
+    .notEmpty().withMessage('ID proof document is required')
+    .isString().withMessage('Document data must be a base64 string')
+    .custom((val) => {
+      if (val.length > MAX_BASE64_CHARS) throw new Error('ID proof file is too large (max 5 MB)');
+      return true;
+    }),
+
+  body('id_proof_mime')
+    .trim()
+    .notEmpty().withMessage('ID proof MIME type is required')
+    .isIn(ALLOWED_MIME_TYPES).withMessage('Only JPG, PNG and PDF are accepted for ID proof'),
+
   validate,
 ];
 
@@ -79,14 +109,8 @@ const addressParamRule = [
 // =============================================================================
 // PROFILE
 // =============================================================================
-
-// GET  /api/v1/user/profile          — full profile + address + KYC + referral
-router.get('/profile', ctrl.getProfile);
-
-// PUT  /api/v1/user/profile          — update name / email
-router.put('/profile', profileUpdateRules, ctrl.updateProfile);
-
-// PUT  /api/v1/user/profile/image    — update profile picture URL
+router.get('/profile',        ctrl.getProfile);
+router.put('/profile',        profileUpdateRules, ctrl.updateProfile);
 router.put('/profile/image', [
   body('image_url').trim().notEmpty().isURL().withMessage('A valid image URL is required'),
   validate,
@@ -95,44 +119,26 @@ router.put('/profile/image', [
 // =============================================================================
 // ADDRESSES
 // =============================================================================
-
-// GET    /api/v1/user/addresses           — list all addresses
-router.get('/addresses', ctrl.getAddresses);
-
-// PUT    /api/v1/user/addresses/primary   — upsert primary address
-router.put('/addresses/primary', addressRules, ctrl.updatePrimaryAddress);
-
-// POST   /api/v1/user/addresses           — add a secondary address
-router.post('/addresses', addAddressRules, ctrl.addAddress);
-
-// DELETE /api/v1/user/addresses/:id       — delete a non-primary address
-router.delete('/addresses/:id', addressParamRule, ctrl.deleteAddress);
+router.get   ('/addresses',          ctrl.getAddresses);
+router.put   ('/addresses/primary',  addressRules,    ctrl.updatePrimaryAddress);
+router.post  ('/addresses',          addAddressRules, ctrl.addAddress);
+router.delete('/addresses/:id',      addressParamRule, ctrl.deleteAddress);
 
 // =============================================================================
 // KYC
 // =============================================================================
-
-// GET  /api/v1/user/kyc   — current KYC status
-router.get('/kyc', ctrl.getKycStatus);
-
-// POST /api/v1/user/kyc   — submit / re-submit KYC documents
+router.get ('/kyc', ctrl.getKycStatus);
 router.post('/kyc', kycRules, ctrl.submitKyc);
 
 // =============================================================================
 // NOTIFICATIONS
 // =============================================================================
-
-// GET   /api/v1/user/notifications?page=1&limit=20
-router.get('/notifications', notifQueryRules, ctrl.getNotifications);
-
-// PATCH /api/v1/user/notifications/read   — body: { ids: [1,2] } or { ids: null }
-router.patch('/notifications/read', markReadRules, ctrl.markRead);
+router.get  ('/notifications',      notifQueryRules, ctrl.getNotifications);
+router.patch('/notifications/read', markReadRules,   ctrl.markRead);
 
 // =============================================================================
 // REFERRALS
 // =============================================================================
-
-// GET /api/v1/user/referrals   — referral code + stats
 router.get('/referrals', ctrl.getReferralStats);
 
 module.exports = router;

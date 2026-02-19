@@ -14,7 +14,6 @@ async function getProfile(req, res, next) {
 
 // =============================================================================
 // PUT /api/v1/user/profile
-// Updates name, email only — address is separate endpoint
 // =============================================================================
 async function updateProfile(req, res, next) {
   try {
@@ -49,7 +48,6 @@ async function getAddresses(req, res, next) {
 
 // =============================================================================
 // PUT /api/v1/user/addresses/primary
-// Upserts the primary address (the one shown on the profile screen)
 // =============================================================================
 async function updatePrimaryAddress(req, res, next) {
   try {
@@ -61,7 +59,6 @@ async function updatePrimaryAddress(req, res, next) {
 
 // =============================================================================
 // POST /api/v1/user/addresses
-// Adds a new non-primary address (Work, etc.)
 // =============================================================================
 async function addAddress(req, res, next) {
   try {
@@ -73,17 +70,13 @@ async function addAddress(req, res, next) {
 
 // =============================================================================
 // DELETE /api/v1/user/addresses/:id
-// Only non-primary addresses can be deleted
 // =============================================================================
 async function deleteAddress(req, res, next) {
   try {
     const addressId = parseInt(req.params.id);
     if (isNaN(addressId)) return R.badRequest(res, 'Invalid address ID.');
-
     const deleted = await userService.deleteAddress(req.user.id, addressId);
-    if (!deleted) {
-      return R.badRequest(res, 'Address not found or cannot delete the primary address.');
-    }
+    if (!deleted) return R.badRequest(res, 'Address not found or cannot delete the primary address.');
     return R.ok(res, null, 'Address deleted.');
   } catch (err) { next(err); }
 }
@@ -100,12 +93,19 @@ async function getKycStatus(req, res, next) {
 
 // =============================================================================
 // POST /api/v1/user/kyc
-// Submit or re-submit KYC documents
-// In production you'd handle file uploads (S3/Azure Blob) and pass the URLs here
+// Accepts base64-encoded document data directly in the request body.
+// The Flutter app converts picked files to base64 before sending.
 // =============================================================================
 async function submitKyc(req, res, next) {
   try {
-    const { address_proof_type, address_proof_url, id_proof_type, id_proof_url } = req.body;
+    const {
+      address_proof_type,
+      address_proof_data,   // base64 string
+      address_proof_mime,   // e.g. "image/jpeg", "application/pdf"
+      id_proof_type,
+      id_proof_data,        // base64 string
+      id_proof_mime,
+    } = req.body;
 
     // Don't allow resubmission if already approved
     const existing = await userService.getKycStatus(req.user.id);
@@ -115,12 +115,21 @@ async function submitKyc(req, res, next) {
 
     const id = await userService.submitKyc(req.user.id, {
       address_proof_type,
-      address_proof_url,
+      address_proof_data,
+      address_proof_mime,
       id_proof_type,
-      id_proof_url,
+      id_proof_data,
+      id_proof_mime,
     });
 
-    return R.created(res, { submission_id: id }, 'KYC documents submitted. We will notify you once reviewed.');
+    return R.created(
+      res,
+      {
+        submission_id: id,
+        kyc: { status: 'pending', address_proof_type, id_proof_type },
+      },
+      'KYC documents submitted. We will notify you once reviewed.'
+    );
   } catch (err) { next(err); }
 }
 
@@ -131,17 +140,11 @@ async function getNotifications(req, res, next) {
   try {
     const page  = parseInt(req.query.page  || '1');
     const limit = parseInt(req.query.limit || '20');
-
     const { notifications, total, unread } = await userService.getNotifications(
-      req.user.id,
-      { page, limit }
+      req.user.id, { page, limit }
     );
-
     return R.ok(res, { notifications }, 'OK', 200, {
-      page,
-      limit,
-      total,
-      unread,
+      page, limit, total, unread,
       total_pages: Math.ceil(total / limit),
     });
   } catch (err) { next(err); }
@@ -149,11 +152,10 @@ async function getNotifications(req, res, next) {
 
 // =============================================================================
 // PATCH /api/v1/user/notifications/read
-// Mark specific notification IDs as read, or all if no ids provided
 // =============================================================================
 async function markRead(req, res, next) {
   try {
-    const ids = req.body.ids || null; // array of notification IDs, or null = all
+    const ids = req.body.ids || null;
     await userService.markNotificationsRead(req.user.id, ids);
     return R.ok(res, null, 'Notifications marked as read.');
   } catch (err) { next(err); }

@@ -89,3 +89,24 @@
 2026-02-19 12:35:54 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 12.513 ms - 550[0m
 2026-02-19 12:37:18 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 9.666 ms - 78[0m
 2026-02-19 12:39:16 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 13.470 ms - 550[0m
+2026-02-19 13:06:19 [[32minfo[39m]: SQL Server pool connected
+2026-02-19 13:06:19 [[32minfo[39m]: Database connection established ✓
+2026-02-19 13:06:19 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-19 13:06:19 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-19 13:11:38 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 44.992 ms - 239[0m
+2026-02-19 13:11:39 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 20.337 ms - 550[0m
+2026-02-19 13:34:12 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 22.687 ms - 239[0m
+2026-02-19 13:34:13 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 19.156 ms - 550[0m
+2026-02-19 13:44:25 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 18.054 ms - 234[0m
+2026-02-19 13:44:32 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 18.822 ms - 234[0m
+2026-02-19 13:46:31 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 16.250 ms - 234[0m
+2026-02-19 13:50:25 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 17.809 ms - 239[0m
+2026-02-19 13:50:25 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 10.680 ms - 550[0m
+2026-02-19 13:50:30 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 7.713 ms - 234[0m
+2026-02-19 13:50:42 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 8.681 ms - 550[0m
+2026-02-19 13:50:44 [[32mhttp[39m]: [0mPUT /api/v1/user/profile [32m200[0m 46.962 ms - 572[0m
+2026-02-19 13:50:44 [[32mhttp[39m]: [0mPUT /api/v1/user/addresses/primary [32m200[0m 18.508 ms - 53[0m
+2026-02-19 13:51:20 [[32minfo[39m]: Login (password): 865****811 (id=2)
+2026-02-19 13:51:20 [[32mhttp[39m]: [0mPOST /api/v1/auth/login [32m200[0m 226.817 ms - 661[0m
+2026-02-19 13:51:20 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 18.586 ms - 445[0m
+2026-02-19 13:51:24 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 13.936 ms - 78[0m

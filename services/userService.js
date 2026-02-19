@@ -125,9 +125,10 @@ async function deleteAddress(userId, addressId) {
 
 async function getKycStatus(userId) {
   const result = await query(
-    `SELECT TOP 1 id, status, rejection_reason,
-            address_proof_type, id_proof_type,
-            submitted_at, reviewed_at
+    `SELECT TOP 1
+       id, status, rejection_reason,
+       address_proof_type, id_proof_type,
+       submitted_at, reviewed_at
      FROM dbo.kyc_submissions
      WHERE user_id = @userId
      ORDER BY submitted_at DESC`,
@@ -137,10 +138,14 @@ async function getKycStatus(userId) {
 }
 
 async function submitKyc(userId, {
-  address_proof_type, address_proof_url,
-  id_proof_type,      id_proof_url,
+  address_proof_type,
+  address_proof_data,
+  address_proof_mime,
+  id_proof_type,
+  id_proof_data,
+  id_proof_mime,
 }) {
-  // If there's already a pending/under_review submission, update it
+  // Check for existing submission
   const existing = await query(
     `SELECT TOP 1 id, status FROM dbo.kyc_submissions
      WHERE user_id = @userId ORDER BY submitted_at DESC`,
@@ -150,20 +155,27 @@ async function submitKyc(userId, {
   const row = existing.recordset[0];
 
   if (row && ['pending', 'under_review'].includes(row.status)) {
+    // Update existing pending submission
     await query(
-      `UPDATE dbo.kyc_submissions
-       SET address_proof_type = @apt, address_proof_url = @apu,
-           id_proof_type      = @ipt, id_proof_url      = @ipu,
-           status             = 'pending',
-           submitted_at       = SYSUTCDATETIME(),
-           updated_at         = SYSUTCDATETIME()
+      `UPDATE dbo.kyc_submissions SET
+         address_proof_type = @apt,
+         address_proof_data = @apd,
+         address_proof_mime = @apm,
+         id_proof_type      = @ipt,
+         id_proof_data      = @ipd,
+         id_proof_mime      = @ipm,
+         status             = 'pending',
+         submitted_at       = SYSUTCDATETIME(),
+         updated_at         = SYSUTCDATETIME()
        WHERE id = @id`,
       {
         apt: { type: sql.NVarChar(100), value: address_proof_type },
-        apu: { type: sql.NVarChar(500), value: address_proof_url  },
+        apd: { type: sql.NVarChar(sql.MAX), value: address_proof_data },
+        apm: { type: sql.NVarChar(50),  value: address_proof_mime },
         ipt: { type: sql.NVarChar(100), value: id_proof_type      },
-        ipu: { type: sql.NVarChar(500), value: id_proof_url       },
-        id:  { type: sql.BigInt,        value: row.id              },
+        ipd: { type: sql.NVarChar(sql.MAX), value: id_proof_data  },
+        ipm: { type: sql.NVarChar(50),  value: id_proof_mime      },
+        id:  { type: sql.BigInt,        value: row.id             },
       }
     );
     return row.id;
@@ -172,15 +184,18 @@ async function submitKyc(userId, {
   // Fresh submission
   const result = await query(
     `INSERT INTO dbo.kyc_submissions
-       (user_id, address_proof_type, address_proof_url, id_proof_type, id_proof_url, status)
+       (user_id, address_proof_type, address_proof_data, address_proof_mime,
+        id_proof_type, id_proof_data, id_proof_mime, status)
      OUTPUT INSERTED.id
-     VALUES (@userId, @apt, @apu, @ipt, @ipu, 'pending')`,
+     VALUES (@userId, @apt, @apd, @apm, @ipt, @ipd, @ipm, 'pending')`,
     {
       userId: { type: sql.BigInt,        value: userId             },
       apt:    { type: sql.NVarChar(100), value: address_proof_type },
-      apu:    { type: sql.NVarChar(500), value: address_proof_url  },
+      apd:    { type: sql.NVarChar(sql.MAX), value: address_proof_data },
+      apm:    { type: sql.NVarChar(50),  value: address_proof_mime },
       ipt:    { type: sql.NVarChar(100), value: id_proof_type      },
-      ipu:    { type: sql.NVarChar(500), value: id_proof_url       },
+      ipd:    { type: sql.NVarChar(sql.MAX), value: id_proof_data  },
+      ipm:    { type: sql.NVarChar(50),  value: id_proof_mime      },
     }
   );
   return result.recordset[0].id;
@@ -219,7 +234,6 @@ async function getNotifications(userId, { page = 1, limit = 20 } = {}) {
 }
 
 async function markNotificationsRead(userId, ids = null) {
-  // ids = null means mark ALL as read
   if (ids && ids.length) {
     const placeholders = ids.map((_, i) => `@id${i}`).join(',');
     const params = { userId: { type: sql.BigInt, value: userId } };
