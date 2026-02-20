@@ -32,15 +32,15 @@ const paginationRules = [
 // List all active plans (no auth needed — shown on plan selection screen)
 router.get('/', ctrl.getPlans);
 
-// Get single plan details
-router.get('/:id', planIdRule, ctrl.getPlan);
-
 // ── Authenticated routes ──────────────────────────────────────────────────────
 
 router.use(authenticate);
 
-// Purchase a plan
-router.post('/:id/purchase', purchaseRules, ctrl.purchasePlan);
+// IMPORTANT: Specific routes MUST come BEFORE generic :id routes
+// Otherwise /transactions gets matched as /:id with id='transactions'
+
+// Full transaction history (used by payments screen)
+router.get('/transactions', paginationRules, ctrl.getTransactions);
 
 // Current active subscription
 router.get('/subscription/active', ctrl.getActiveSubscription);
@@ -48,7 +48,10 @@ router.get('/subscription/active', ctrl.getActiveSubscription);
 // Subscription history
 router.get('/subscription/history', paginationRules, ctrl.getSubscriptionHistory);
 
-// Full transaction history (used by payments screen)
-router.get('/transactions', paginationRules, ctrl.getTransactions);
+// Purchase a plan (must be before /:id route)
+router.post('/:id/purchase', purchaseRules, ctrl.purchasePlan);
+
+// Get single plan details (generic route — MUST be last)
+router.get('/:id', planIdRule, ctrl.getPlan);
 
 module.exports = router;

@@ -307,3 +307,520 @@
     at Readable.push (node:internal/streams/readable:391:5)
     at nextAsync (node:internal/streams/from:194:22)
 2026-02-20 14:04:08 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 11.104 ms - 65[0m
+2026-02-20 14:24:11 [[32minfo[39m]: SQL Server pool connected
+2026-02-20 14:24:11 [[32minfo[39m]: Database connection established ✓
+2026-02-20 14:24:11 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-20 14:24:11 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-20 14:24:14 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 25.479 ms - 1564[0m
+2026-02-20 14:24:14 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 29.963 ms - 65[0m
+2026-02-20 14:24:32 [[32mhttp[39m]: [0mPOST /api/v1/plans/2/purchase [33m400[0m 46.478 ms - 97[0m
+2026-02-20 14:25:22 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 7.909 ms - 1564[0m
+2026-02-20 14:25:22 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 49.999 ms - 65[0m
+2026-02-20 14:39:32 [[32minfo[39m]: SQL Server pool connected
+2026-02-20 14:39:32 [[32minfo[39m]: Database connection established ✓
+2026-02-20 14:39:32 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-20 14:39:32 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-20 14:39:42 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 36.994 ms - 231[0m
+2026-02-20 14:39:42 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 23.525 ms - 543[0m
+2026-02-20 14:39:42 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 8.837 ms - 257[0m
+2026-02-20 14:39:50 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 14.694 ms - 57[0m
+2026-02-20 14:39:50 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 19.064 ms - 123[0m
+2026-02-20 14:39:57 [[31merror[39m]: RequestError: The INSERT statement conflicted with the CHECK constraint "CK_order_type". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'type'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:39:57 [[32mhttp[39m]: [0mPOST /api/v1/wallet/recharge [33m400[0m 36.504 ms - 63[0m
+2026-02-20 14:43:00 [[31merror[39m]: RequestError: The INSERT statement conflicted with the CHECK constraint "CK_order_status". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_status'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:43:00 [[32mhttp[39m]: [0mPOST /api/v1/wallet/recharge [33m400[0m 22.159 ms - 63[0m
+2026-02-20 14:53:37 [[32minfo[39m]: SQL Server pool connected
+2026-02-20 14:53:37 [[32minfo[39m]: Database connection established ✓
+2026-02-20 14:53:37 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-20 14:53:37 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-20 14:53:40 [[32mhttp[39m]: [0mPOST /api/v1/wallet/recharge [32m201[0m 61.614 ms - 215[0m
+2026-02-20 14:53:40 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 20.656 ms - 546[0m
+2026-02-20 14:53:40 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 18.270 ms - 257[0m
+2026-02-20 14:53:44 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 27.585 ms - 408[0m
+2026-02-20 14:53:48 [[31merror[39m]: RequestError: Invalid column name 'description'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:53:48 [[32mhttp[39m]: [0mGET /api/v1/plans [31m500[0m 12.768 ms - 64[0m
+2026-02-20 14:53:48 [[31merror[39m]: RequestError: Invalid column name 'data_limit_gb'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:53:48 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 16.831 ms - 66[0m
+2026-02-20 14:53:49 [[31merror[39m]: RequestError: Invalid column name 'description'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:53:49 [[32mhttp[39m]: [0mGET /api/v1/plans [31m500[0m 12.795 ms - 64[0m
+2026-02-20 14:53:49 [[31merror[39m]: RequestError: Invalid column name 'data_limit_gb'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:53:49 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 19.323 ms - 66[0m
+2026-02-20 14:56:20 [[32minfo[39m]: SQL Server pool connected
+2026-02-20 14:56:20 [[32minfo[39m]: Database connection established ✓
+2026-02-20 14:56:20 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-20 14:56:20 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-20 14:58:45 [[31merror[39m]: RequestError: Invalid column name 'description'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:58:45 [[32mhttp[39m]: [0mGET /api/v1/plans [31m500[0m 26.623 ms - 64[0m
+2026-02-20 14:58:45 [[31merror[39m]: RequestError: Invalid column name 'data_limit_gb'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:58:45 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 41.614 ms - 66[0m
+2026-02-20 14:59:01 [[31merror[39m]: RequestError: Invalid column name 'description'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:59:01 [[32mhttp[39m]: [0mGET /api/v1/plans [31m500[0m 5.961 ms - 64[0m
+2026-02-20 14:59:01 [[31merror[39m]: RequestError: Invalid column name 'data_limit_gb'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:59:01 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 11.803 ms - 66[0m
+2026-02-20 14:59:06 [[31merror[39m]: RequestError: Invalid column name 'description'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:59:06 [[32mhttp[39m]: [0mGET /api/v1/plans [31m500[0m 8.768 ms - 64[0m
+2026-02-20 14:59:06 [[31merror[39m]: RequestError: Invalid column name 'data_limit_gb'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:59:06 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 14.408 ms - 66[0m
+2026-02-20 14:59:19 [[31merror[39m]: RequestError: Invalid column name 'description'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:59:29 [[32mhttp[39m]: [0mGET /api/v1/plans [31m500[0m 10380.184 ms - 64[0m
+2026-02-20 14:59:29 [[31merror[39m]: RequestError: Invalid column name 'description'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:59:29 [[32mhttp[39m]: [0mGET /api/v1/plans [31m500[0m 6.269 ms - 64[0m
+2026-02-20 14:59:29 [[31merror[39m]: RequestError: Invalid column name 'data_limit_gb'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:59:29 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 10393.300 ms - 66[0m
+2026-02-20 14:59:29 [[31merror[39m]: RequestError: Invalid column name 'data_limit_gb'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:59:29 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 13.474 ms - 66[0m
+2026-02-20 14:59:32 [[32minfo[39m]: SQL Server pool connected
+2026-02-20 14:59:32 [[32minfo[39m]: Database connection established ✓
+2026-02-20 14:59:32 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-20 14:59:32 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-20 14:59:34 [[31merror[39m]: RequestError: Invalid column name 'description'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:59:34 [[32mhttp[39m]: [0mGET /api/v1/plans [31m500[0m 23.378 ms - 64[0m
+2026-02-20 14:59:34 [[31merror[39m]: RequestError: Invalid column name 'data_limit_gb'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:59:34 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 35.503 ms - 66[0m
+2026-02-20 15:03:49 [[32minfo[39m]: SQL Server pool connected
+2026-02-20 15:03:49 [[32minfo[39m]: Database connection established ✓
+2026-02-20 15:03:49 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-20 15:03:49 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-20 15:03:55 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 29.694 ms - 1054[0m
+2026-02-20 15:03:55 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 34.128 ms - 65[0m
+2026-02-20 15:04:02 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.785 ms - 1054[0m
+2026-02-20 15:04:02 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.588 ms - 65[0m
+2026-02-20 15:04:05 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.629 ms - 1054[0m
+2026-02-20 15:04:05 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.048 ms - 65[0m
+2026-02-20 15:04:25 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.509 ms - 1054[0m
+2026-02-20 15:04:25 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 12.422 ms - 65[0m
+2026-02-20 15:04:55 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 21.785 ms - 234[0m
+2026-02-20 15:04:56 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 11.537 ms - 546[0m
+2026-02-20 15:04:56 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 11.615 ms - 257[0m
+2026-02-20 15:04:58 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 7.721 ms - 1054[0m
+2026-02-20 15:04:58 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 13.377 ms - 65[0m
+2026-02-20 15:05:04 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 4.665 ms - 1054[0m
+2026-02-20 15:05:04 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 9.732 ms - 65[0m
+2026-02-20 15:14:23 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 16.991 ms - 1054[0m
+2026-02-20 15:14:23 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 32.339 ms - 65[0m
+2026-02-20 15:14:24 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 7.801 ms - 1054[0m
+2026-02-20 15:14:24 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 7.088 ms - 65[0m
+2026-02-20 15:14:44 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 9.962 ms - 234[0m
+2026-02-20 15:14:45 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 15.046 ms - 546[0m
+2026-02-20 15:14:45 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 14.025 ms - 257[0m
+2026-02-20 15:14:49 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 6.739 ms - 1054[0m
+2026-02-20 15:14:49 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 10.477 ms - 65[0m
+2026-02-20 15:14:57 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 4.501 ms - 1054[0m
+2026-02-20 15:14:57 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 8.068 ms - 65[0m
+2026-02-20 15:16:04 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 18.804 ms - 408[0m
+2026-02-20 15:16:04 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 24.535 ms - 60[0m
+2026-02-20 15:16:06 [[32mhttp[39m]: [0mPOST /api/v1/wallet/recharge [32m201[0m 53.091 ms - 213[0m
+2026-02-20 15:16:06 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 14.880 ms - 257[0m
+2026-02-20 15:16:06 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 18.421 ms - 546[0m
+2026-02-20 15:16:07 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 11.467 ms - 693[0m
+2026-02-20 15:16:10 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 11.471 ms - 1054[0m
+2026-02-20 15:16:10 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 20.994 ms - 65[0m
+2026-02-20 15:16:12 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.402 ms - 1054[0m
+2026-02-20 15:16:12 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 7.027 ms - 65[0m
+2026-02-20 15:16:14 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 8.286 ms - 60[0m
+2026-02-20 15:16:14 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 7.672 ms - 693[0m
+2026-02-20 15:18:42 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 9.245 ms - 1054[0m
+2026-02-20 15:18:42 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 15.501 ms - 65[0m
+2026-02-20 15:19:36 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 9.204 ms - 1054[0m
+2026-02-20 15:19:36 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 16.691 ms - 65[0m
+2026-02-20 15:20:47 [[32mhttp[39m]: [0mGET /api/v1/api/v1/plans/subscription/active [33m404[0m 0.418 ms - 90[0m
+2026-02-20 15:21:04 [[32mhttp[39m]: [0mGET /api/v1plans/subscription/active [33m404[0m 0.122 ms - 82[0m
+2026-02-20 15:21:23 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [33m401[0m 0.252 ms - 47[0m
+2026-02-20 15:22:01 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 13.536 ms - 65[0m
+2026-02-20 15:28:32 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 13.209 ms - 234[0m
+2026-02-20 15:28:33 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 8.801 ms - 257[0m
+2026-02-20 15:28:33 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 15.447 ms - 546[0m
+2026-02-20 15:28:34 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 6.017 ms - 1054[0m
+2026-02-20 15:28:34 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 13.649 ms - 65[0m
+2026-02-20 15:28:40 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.019 ms - 1054[0m
+2026-02-20 15:28:40 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.361 ms - 65[0m
+2026-02-20 15:28:41 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 7.225 ms - 1054[0m
+2026-02-20 15:28:41 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 5.898 ms - 65[0m
+2026-02-20 15:28:41 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.617 ms - 1054[0m
+2026-02-20 15:28:41 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 9.292 ms - 65[0m
+2026-02-20 15:28:41 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 3.166 ms - 1054[0m
+2026-02-20 15:28:41 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 5.888 ms - 65[0m
+2026-02-20 15:29:03 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 9.790 ms - 234[0m
+2026-02-20 15:29:04 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 10.535 ms - 257[0m
+2026-02-20 15:29:04 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 22.243 ms - 546[0m
+2026-02-20 15:29:05 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.173 ms - 1054[0m
+2026-02-20 15:29:05 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 6.891 ms - 65[0m
+2026-02-20 15:29:25 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 6.569 ms - 1054[0m
+2026-02-20 15:29:25 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.359 ms - 65[0m
+2026-02-20 15:29:30 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.388 ms - 1054[0m
+2026-02-20 15:29:30 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 7.289 ms - 65[0m
+2026-02-20 15:29:30 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.249 ms - 1054[0m
+2026-02-20 15:29:30 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 8.198 ms - 65[0m
+2026-02-20 15:29:31 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.603 ms - 1054[0m
+2026-02-20 15:29:31 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 10.353 ms - 65[0m
+2026-02-20 15:29:31 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.523 ms - 1054[0m
+2026-02-20 15:29:31 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 8.149 ms - 65[0m
+2026-02-20 15:29:31 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.479 ms - 1054[0m
+2026-02-20 15:29:31 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 7.739 ms - 65[0m
+2026-02-20 15:29:31 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 3.771 ms - 1054[0m
+2026-02-20 15:29:31 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 6.254 ms - 65[0m
+2026-02-20 15:29:31 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 7.309 ms - 1054[0m
+2026-02-20 15:29:31 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 8.326 ms - 65[0m
+2026-02-20 15:29:32 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 7.579 ms - 1054[0m
+2026-02-20 15:29:32 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.697 ms - 65[0m
+2026-02-20 15:34:25 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 12.731 ms - 65[0m
+2026-02-20 15:34:50 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 9.111 ms - 1054[0m
+2026-02-20 15:37:44 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.358 ms - 1054[0m
+2026-02-20 15:37:44 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 10.568 ms - 65[0m
+2026-02-20 15:37:54 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 11.221 ms - 234[0m
+2026-02-20 15:37:56 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 1626.571 ms - 257[0m
+2026-02-20 15:37:56 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 1632.367 ms - 546[0m
+2026-02-20 15:37:56 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.151 ms - 1054[0m
+2026-02-20 15:37:56 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 8.458 ms - 65[0m
+2026-02-20 15:38:15 [[32mhttp[39m]: [0mPOST /api/v1/plans/3/purchase [32m201[0m 74.042 ms - 422[0m
+2026-02-20 15:38:15 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 23.831 ms - 418[0m
+2026-02-20 15:38:25 [[32mhttp[39m]: [0mPOST /api/v1/plans/4/purchase [33m400[0m 22.363 ms - 99[0m
+2026-02-20 15:38:31 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 32.654 ms - 548[0m
+2026-02-20 15:38:43 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 1.589 ms - 120[0m
+2026-02-20 15:38:45 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 0.869 ms - 120[0m
+2026-02-20 15:38:46 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 0.844 ms - 120[0m
+2026-02-20 15:38:46 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 1.054 ms - 120[0m
+2026-02-20 15:38:47 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 0.987 ms - 120[0m
+2026-02-20 15:38:47 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 0.846 ms - 120[0m
+2026-02-20 15:39:05 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 11.467 ms - 1054[0m
+2026-02-20 15:39:05 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 19.203 ms - 418[0m
+2026-02-20 15:39:07 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 6.480 ms - 1054[0m
+2026-02-20 15:39:07 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 8.871 ms - 418[0m
+2026-02-20 15:39:08 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 6.089 ms - 1054[0m
+2026-02-20 15:39:08 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.964 ms - 418[0m
+2026-02-20 15:39:08 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.268 ms - 1054[0m
+2026-02-20 15:39:08 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 12.582 ms - 418[0m
+2026-02-20 15:39:08 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 6.911 ms - 1054[0m
+2026-02-20 15:39:08 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 8.279 ms - 418[0m
+2026-02-20 15:39:15 [[32minfo[39m]: SQL Server pool connected
+2026-02-20 15:39:15 [[32minfo[39m]: Database connection established ✓
+2026-02-20 15:39:15 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-20 15:39:15 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-20 15:39:17 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 26.737 ms - 1054[0m
+2026-02-20 15:39:17 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 27.664 ms - 418[0m
+2026-02-20 15:39:23 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.264 ms - 1054[0m
+2026-02-20 15:39:23 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 10.160 ms - 418[0m
+2026-02-20 15:39:26 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 3.962 ms - 120[0m
+2026-02-20 15:39:28 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 9.382 ms - 1054[0m
+2026-02-20 15:39:28 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 13.509 ms - 418[0m
+2026-02-20 15:39:29 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.143 ms - 1054[0m
+2026-02-20 15:39:29 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 8.178 ms - 418[0m
+2026-02-20 15:41:43 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 10.232 ms - 1054[0m
+2026-02-20 15:41:43 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 14.539 ms - 418[0m
+2026-02-20 15:41:45 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 12.407 ms - 1054[0m
+2026-02-20 15:41:45 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 23.255 ms - 418[0m
+2026-02-20 15:41:45 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 4.956 ms - 1054[0m
+2026-02-20 15:41:45 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 8.554 ms - 418[0m
+2026-02-20 15:41:45 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 6.095 ms - 1054[0m
+2026-02-20 15:41:45 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 12.061 ms - 418[0m
+2026-02-20 15:41:45 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.563 ms - 1054[0m
+2026-02-20 15:41:45 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 15.637 ms - 418[0m
+2026-02-20 15:41:45 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 13.540 ms - 1054[0m
+2026-02-20 15:41:45 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 26.274 ms - 418[0m
+2026-02-20 15:41:53 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 10.104 ms - 1054[0m
+2026-02-20 15:41:53 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 17.324 ms - 418[0m
+2026-02-20 15:41:53 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 7.231 ms - 1054[0m
+2026-02-20 15:41:53 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.009 ms - 418[0m
+2026-02-20 15:41:55 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 6.059 ms - 1054[0m
+2026-02-20 15:41:55 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.878 ms - 418[0m
+2026-02-20 15:41:56 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.226 ms - 1054[0m
+2026-02-20 15:41:56 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 7.878 ms - 418[0m
+2026-02-20 15:41:59 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.213 ms - 1054[0m
+2026-02-20 15:41:59 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.446 ms - 418[0m
+2026-02-20 15:43:49 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 14.936 ms - 65[0m
+2026-02-20 15:44:44 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 7.361 ms - 1054[0m
+2026-02-20 15:44:44 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.567 ms - 418[0m
+2026-02-20 15:44:52 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 2.141 ms - 120[0m
+2026-02-20 15:46:41 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 0.383 ms - 120[0m
+2026-02-20 15:49:15 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?id=1&page=1&limit=20 [33m400[0m 0.367 ms - 120[0m
+2026-02-20 15:49:30 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?plan_id=1&page=1&limit=20 [33m400[0m 0.382 ms - 120[0m
+2026-02-20 15:50:54 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 0.358 ms - 120[0m
+2026-02-20 15:51:05 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 0.391 ms - 120[0m
+2026-02-20 15:52:00 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 13.799 ms - 1054[0m
+2026-02-20 15:52:07 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [33m401[0m 0.412 ms - 54[0m
+2026-02-20 15:52:40 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 12.794 ms - 65[0m
+2026-02-20 15:52:51 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 0.379 ms - 120[0m
+2026-02-20 15:52:58 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/history?page=1&limit=10 [32m200[0m 18.757 ms - 124[0m
+2026-02-20 15:53:20 [[32mhttp[39m]: [0mPOST /api/v1/plans/1/purchase [33m400[0m 24.320 ms - 97[0m
+2026-02-20 15:53:31 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/history?page=1&limit=10 [32m200[0m 7.489 ms - 124[0m
+2026-02-20 15:53:34 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [33m400[0m 0.376 ms - 120[0m
+2026-02-20 15:54:15 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?id=1&page=1&limit=20 [33m400[0m 0.370 ms - 120[0m
+2026-02-20 15:54:33 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?id=1&page=1&limit=2 [33m400[0m 0.317 ms - 120[0m
+2026-02-20 15:56:17 [[32minfo[39m]: SQL Server pool connected
+2026-02-20 15:56:17 [[32minfo[39m]: Database connection established ✓
+2026-02-20 15:56:17 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-20 15:56:17 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-20 15:56:21 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 52.042 ms - 988[0m
+2026-02-20 15:56:24 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 13.998 ms - 1054[0m
+2026-02-20 15:56:24 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 13.186 ms - 418[0m
+2026-02-20 15:56:27 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 19.906 ms - 988[0m
+2026-02-20 15:56:39 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 7.493 ms - 1054[0m
+2026-02-20 15:56:39 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.226 ms - 418[0m
+2026-02-20 15:56:45 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.214 ms - 1054[0m
+2026-02-20 15:56:45 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 12.471 ms - 418[0m
+2026-02-20 15:56:50 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 7.731 ms - 1054[0m
+2026-02-20 15:56:50 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 12.573 ms - 418[0m
+2026-02-20 15:56:55 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 17.518 ms - 988[0m
+2026-02-20 15:58:45 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 18.566 ms - 236[0m
+2026-02-20 15:58:46 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 15.911 ms - 548[0m
+2026-02-20 15:58:46 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 12.175 ms - 257[0m
+2026-02-20 15:58:50 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 14.694 ms - 1054[0m
+2026-02-20 15:58:50 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 28.523 ms - 418[0m
+2026-02-20 15:58:52 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 31.928 ms - 988[0m
+2026-02-20 15:59:11 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 12.067 ms - 62[0m
+2026-02-20 15:59:11 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 14.985 ms - 999[0m
+2026-02-20 15:59:14 [[32mhttp[39m]: [0mPOST /api/v1/wallet/recharge [32m201[0m 47.951 ms - 215[0m
+2026-02-20 15:59:14 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 13.960 ms - 548[0m
+2026-02-20 15:59:14 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 10.713 ms - 257[0m
+2026-02-20 15:59:15 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 10.036 ms - 1286[0m
+2026-02-20 15:59:18 [[32mhttp[39m]: [0mPOST /api/v1/wallet/recharge [32m201[0m 33.737 ms - 216[0m
+2026-02-20 15:59:18 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 10.716 ms - 549[0m
+2026-02-20 15:59:18 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 7.880 ms - 257[0m
+2026-02-20 15:59:19 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 11.574 ms - 1574[0m
+2026-02-20 15:59:22 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 11.341 ms - 1054[0m
+2026-02-20 15:59:22 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 22.317 ms - 418[0m
+2026-02-20 15:59:33 [[32mhttp[39m]: [0mPOST /api/v1/plans/5/purchase [33m400[0m 38.500 ms - 101[0m
+2026-02-20 15:59:39 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 12.343 ms - 1054[0m
+2026-02-20 15:59:39 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 30.563 ms - 418[0m
+2026-02-20 15:59:41 [[32mhttp[39m]: [0mPOST /api/v1/plans/5/purchase [33m400[0m 19.206 ms - 101[0m
+2026-02-20 15:59:44 [[32mhttp[39m]: [0mPOST /api/v1/plans/4/purchase [32m201[0m 54.591 ms - 417[0m
+2026-02-20 15:59:44 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 6.876 ms - 413[0m
+2026-02-20 15:59:55 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 19.607 ms - 1850[0m
+2026-02-20 16:00:05 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 17.985 ms - 548[0m
+2026-02-20 16:00:06 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 17.002 ms - 1850[0m
+2026-02-20 16:00:08 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 14.002 ms - 62[0m
+2026-02-20 16:00:08 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 14.697 ms - 1876[0m
+2026-02-20 16:00:11 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 14.395 ms - 1850[0m
+2026-02-20 16:00:13 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 9.259 ms - 1850[0m
+2026-02-20 16:00:17 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 8.786 ms - 1876[0m
+2026-02-20 16:00:17 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 13.178 ms - 62[0m
+2026-02-20 16:00:30 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 17.064 ms - 236[0m
+2026-02-20 16:00:30 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 16.339 ms - 548[0m
+2026-02-20 16:00:30 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 9.257 ms - 257[0m
+2026-02-20 16:16:54 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 16.196 ms - 236[0m
+2026-02-20 16:16:55 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 9.672 ms - 257[0m
+2026-02-20 16:16:55 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 15.461 ms - 548[0m
+2026-02-20 16:16:57 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 35.865 ms - 1850[0m
+2026-02-20 16:16:58 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 32.430 ms - 548[0m
+2026-02-20 16:17:00 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 15.359 ms - 62[0m
+2026-02-20 16:17:01 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 23.079 ms - 1876[0m
+2026-02-20 16:17:03 [[32mhttp[39m]: [0mPOST /api/v1/wallet/recharge [32m201[0m 41.361 ms - 219[0m
+2026-02-20 16:17:03 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 17.852 ms - 549[0m
+2026-02-20 16:17:03 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 20.438 ms - 257[0m
+2026-02-20 16:17:03 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 13.005 ms - 2166[0m
+2026-02-20 16:17:06 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 14.460 ms - 1054[0m
+2026-02-20 16:17:10 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.705 ms - 1054[0m
+2026-02-20 16:17:36 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 19.552 ms - 2134[0m
+2026-02-20 16:17:39 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 7.468 ms - 1054[0m
+2026-02-20 16:18:49 [[32mhttp[39m]: [0mPOST /api/v1/plans/1/purchase [32m201[0m 54.615 ms - 421[0m
+2026-02-20 16:18:50 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 21.259 ms - 549[0m
+2026-02-20 16:18:54 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 23.333 ms - 2436[0m
+2026-02-20 16:18:56 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 10.960 ms - 1054[0m
+2026-02-20 16:19:02 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 8.169 ms - 549[0m
+2026-02-20 16:19:29 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 15.508 ms - 1054[0m
+2026-02-20 16:21:29 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 8.338 ms - 1054[0m
+2026-02-20 16:21:53 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 17.197 ms - 237[0m
+2026-02-20 16:21:54 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 12.901 ms - 549[0m
+2026-02-20 16:21:54 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 6.817 ms - 257[0m
+2026-02-20 16:21:56 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 6.867 ms - 1054[0m
+2026-02-20 16:24:52 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 15.145 ms - 1054[0m
+2026-02-20 16:30:14 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 13.599 ms - 1054[0m
+2026-02-20 16:30:14 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 21.589 ms - 413[0m
+2026-02-20 16:30:37 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 31.276 ms - 2436[0m
+2026-02-20 16:30:41 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 6.847 ms - 1054[0m
+2026-02-20 16:30:41 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.710 ms - 413[0m
+2026-02-20 16:30:47 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.824 ms - 1054[0m
+2026-02-20 16:30:47 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.137 ms - 413[0m
+2026-02-20 16:30:49 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 3.211 ms - 1054[0m
+2026-02-20 16:30:49 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 7.193 ms - 413[0m
+2026-02-20 16:30:51 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 6.349 ms - 1054[0m
+2026-02-20 16:30:51 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 8.014 ms - 413[0m
+2026-02-20 16:31:54 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 10.632 ms - 1054[0m
+2026-02-20 16:31:54 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 25.726 ms - 413[0m
+2026-02-20 16:33:42 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 28.096 ms - 2436[0m
+2026-02-20 16:33:44 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 10.522 ms - 1054[0m
+2026-02-20 16:33:44 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 16.451 ms - 413[0m
+2026-02-20 16:38:38 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 23.671 ms - 2436[0m
+2026-02-20 16:38:41 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 17.052 ms - 549[0m
+2026-02-20 16:38:42 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 14.889 ms - 63[0m
+2026-02-20 16:38:42 [[32mhttp[39m]: [0mGET /api/v1/wallet/transactions?page=1&limit=20 [32m200[0m 17.368 ms - 2469[0m

@@ -38,7 +38,8 @@ async function purchasePlan(req, res, next) {
 
     const result = await planService.purchasePlan(req.user.id, planId, paymentMode);
 
-    return R.created(res, result, `Plan activated successfully! Valid until ${result.expires_at.toDateString()}.`);
+    const expiryDisplay = new Date(result.expires_at).toDateString();
+    return R.created(res, result, `Plan activated successfully! Valid until ${expiryDisplay}.`);
   } catch (err) {
     // Forward our custom statusCode errors cleanly
     if (err.statusCode) {
