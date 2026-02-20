@@ -238,3 +238,72 @@
 2026-02-20 13:59:18 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 16.337 ms - 231[0m
 2026-02-20 13:59:18 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 12.639 ms - 543[0m
 2026-02-20 13:59:18 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 11.431 ms - 257[0m
+2026-02-20 13:59:58 [[32minfo[39m]: SQL Server pool connected
+2026-02-20 13:59:58 [[32minfo[39m]: Database connection established ✓
+2026-02-20 13:59:58 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-20 13:59:58 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-20 14:01:19 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 36.084 ms - 1564[0m
+2026-02-20 14:01:19 [[31merror[39m]: RequestError: Invalid column name 'expires_at'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:01:19 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 48.244 ms - 63[0m
+2026-02-20 14:01:21 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.408 ms - 1564[0m
+2026-02-20 14:01:21 [[31merror[39m]: RequestError: Invalid column name 'expires_at'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:01:21 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 9.462 ms - 63[0m
+2026-02-20 14:01:21 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 9.262 ms - 1564[0m
+2026-02-20 14:01:21 [[31merror[39m]: RequestError: Invalid column name 'expires_at'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:01:21 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 10.909 ms - 63[0m
+2026-02-20 14:04:07 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 5.329 ms - 1564[0m
+2026-02-20 14:04:07 [[31merror[39m]: RequestError: Invalid column name 'activated_at'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:04:07 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 10.530 ms - 65[0m
+2026-02-20 14:04:08 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 7.916 ms - 1564[0m
+2026-02-20 14:04:08 [[31merror[39m]: RequestError: Invalid column name 'activated_at'.
+    at handleError (C:\Users\Developer\app\speedonet-backend\node_modules\mssql\lib\tedious\request.js:384:15)
+    at Connection.emit (node:events:508:28)
+    at Connection.emit (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:970:18)
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:284:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+2026-02-20 14:04:08 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [31m500[0m 11.104 ms - 65[0m
