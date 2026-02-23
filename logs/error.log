@@ -506,3 +506,13 @@
     at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
     at async initiateWalletRecharge (C:\Users\Developer\app\speedonet-backend\controllers\paymentController.js:32:5)
 2026-02-23 15:04:57 [[31merror[39m]: [Atom] Unexpected auth response:
+2026-02-23 15:07:50 [[31merror[39m]: [Atom] Unexpected auth response body: ""
+2026-02-23 15:12:21 [[31merror[39m]: [Atom] Unexpected auth response (no encData): ""
+2026-02-23 15:15:33 [[31merror[39m]: [Atom] No encData in response. Full body: ""
+2026-02-23 15:18:45 [[31merror[39m]: [Atom] No encData in response body: ""
+2026-02-23 15:20:05 [[31merror[39m]: [Atom] No encData in response body: ""
+2026-02-23 15:35:20 [[31merror[39m]: [Atom] Failed to get token | code=null msg=Payment gateway error. Please try again.
+2026-02-23 15:41:12 [[31merror[39m]: [Atom] Failed to get token | code=null msg=Payment gateway error. Please try again.
+2026-02-23 15:42:37 [[31merror[39m]: [Atom] Failed to get token | code=null msg=Payment gateway error. Please try again.
+2026-02-23 15:49:02 [[31merror[39m]: [Atom] Failed to get token | code=null msg=Payment gateway error. Please try again.
+2026-02-23 15:50:36 [[31merror[39m]: [Atom] Failed to get token | code=null msg=Payment gateway error. Please try again.
