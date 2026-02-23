@@ -30,7 +30,12 @@ router.post('/atom/initiate', authenticate, initiateRules, ctrl.initiateWalletRe
 // Authenticated — poll payment status after WebView closes
 router.get('/atom/status/:orderRef', authenticate, orderRefRule, ctrl.checkPaymentStatus);
 
+
+router.get('/atom/redirect/:orderRef', authenticate, orderRefRule, ctrl.redirectToAtom);
+
 // PUBLIC — Atom calls this after payment (no auth, verified by hash instead)
 router.post('/atom/callback', ctrl.atomCallback);
+
+
 
 module.exports = router;

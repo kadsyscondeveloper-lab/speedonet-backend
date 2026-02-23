@@ -2597,3 +2597,132 @@ mercid=792811&prodid=SYSCON&amt=10.00&txncurr=INR&txnscamt=0&clientcode=1&txnid=
 2026-02-23 17:06:22 [[34mdebug[39m]: [Atom] Generated encData
 2026-02-23 17:06:22 [[32minfo[39m]: [Payment] Legacy initiated | user=1 orderRef=SPD-20260223113622-F3002E
 2026-02-23 17:06:22 [[32mhttp[39m]: [0mPOST /api/v1/payments/atom/initiate [32m200[0m 28.703 ms - 309[0m
+2026-02-23 17:22:04 [[32mhttp[39m]: [0mPOST / [33m404[0m 0.331 ms - 52[0m
+2026-02-23 17:26:02 [[34mdebug[39m]: [SQL] select top(1) "id" from "dbo"."users"
+2026-02-23 17:26:02 [[32minfo[39m]: Kysely — SQL Server connection pool ready ✓
+2026-02-23 17:26:02 [[32minfo[39m]: Database connection established ✓
+2026-02-23 17:26:02 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-23 17:26:02 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-23 17:28:27 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 17:28:27 [[34mdebug[39m]: [SQL] select "id", "name", "phone", "email", "profile_image", "wallet_balance", "is_active" from "dbo"."users" where "id" = @1
+2026-02-23 17:28:27 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 102.026 ms - 47473[0m
+2026-02-23 17:28:28 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 17:28:28 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 17:28:28 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 25.880 ms - 47785[0m
+2026-02-23 17:28:28 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 17:28:28 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 17:28:28 [[34mdebug[39m]: [SQL] select top(1) "id", "status", "rejection_reason", "address_proof_type", "id_proof_type", "submitted_at", "reviewed_at" from "dbo"."kyc_submissions" where "user_id" = @1 order by "submitted_at" desc
+2026-02-23 17:28:28 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 41.876 ms - 257[0m
+2026-02-23 17:28:28 [[34mdebug[39m]: [SQL] select "wallet_balance" from "dbo"."users" where "id" = @1
+2026-02-23 17:28:28 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 43.498 ms - 63[0m
+2026-02-23 17:29:23 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 17:29:23 [[34mdebug[39m]: [SQL] select "phone", "email" from "dbo"."users" where "id" = @1
+2026-02-23 17:29:23 [[34mdebug[39m]: [SQL] insert into "dbo"."payment_orders" ("user_id", "order_ref", "type", "provider_id", "plan_id", "consumer_id", "base_amount", "gst_amount", "discount_amount", "total_amount", "payment_method", "payment_status", "gateway_name", "gateway_order_id", "gateway_txn_id") values (@1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15)
+2026-02-23 17:29:23 [[32minfo[39m]: [Atom] Legacy Initiating | txnid=SPD-20260223115923-55C6C7 amt=100.00
+2026-02-23 17:29:23 [[34mdebug[39m]: [Atom] Plain String: 792811|fb1489ed|SPD-20260223115923-55C6C7|100.00|SYSCON||||||updated@speedonet.in|9999999999
+2026-02-23 17:29:23 [[34mdebug[39m]: [Atom] Generated encData
+2026-02-23 17:29:23 [[32minfo[39m]: [Payment] Legacy initiated | user=1 orderRef=SPD-20260223115923-55C6C7
+2026-02-23 17:29:23 [[32mhttp[39m]: [0mPOST /api/v1/payments/atom/initiate [32m200[0m 48.192 ms - 309[0m
+2026-02-23 17:29:23 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 17:29:23 [[34mdebug[39m]: [SQL] select "order_ref", "total_amount", "payment_status" from "dbo"."payment_orders" where "order_ref" = @1 and "user_id" = @2
+2026-02-23 17:29:23 [[32minfo[39m]: [Atom] Legacy Initiating | txnid=SPD-20260223115923-55C6C7 amt=100.00
+2026-02-23 17:29:23 [[34mdebug[39m]: [Atom] Plain String: 792811|fb1489ed|SPD-20260223115923-55C6C7|100.00|SYSCON|||||||
+2026-02-23 17:29:23 [[34mdebug[39m]: [Atom] Generated encData
+2026-02-23 17:29:23 [[32mhttp[39m]: [0mGET /api/v1/payments/atom/redirect/SPD-20260223115923-55C6C7 [32m200[0m 7.933 ms - 785[0m
+2026-02-23 17:29:24 [[32mhttp[39m]: [0mGET /favicon.ico [33m404[0m 0.582 ms - 62[0m
+2026-02-23 17:47:11 [[34mdebug[39m]: [SQL] select "id", "name", "phone", "email", "password_hash", "profile_image", "wallet_balance", "is_active" from "dbo"."users" where "phone" = @1
+2026-02-23 17:47:12 [[34mdebug[39m]: [SQL] insert into "dbo"."user_sessions" ("user_id", "token", "device_info", "ip_address", "expires_at") values (@1, @2, @3, @4, @5)
+2026-02-23 17:47:12 [[32minfo[39m]: Login (password): 999****999 (id=1)
+2026-02-23 17:47:12 [[32mhttp[39m]: [0mPOST /api/v1/auth/login [32m200[0m 273.463 ms - 673[0m
+2026-02-23 17:47:12 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 17:47:12 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 17:47:12 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 17:47:12 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 17:47:12 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 20.493 ms - 47785[0m
+2026-02-23 17:47:12 [[34mdebug[39m]: [SQL] select top(1) "id", "status", "rejection_reason", "address_proof_type", "id_proof_type", "submitted_at", "reviewed_at" from "dbo"."kyc_submissions" where "user_id" = @1 order by "submitted_at" desc
+2026-02-23 17:47:12 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 20.728 ms - 257[0m
+2026-02-23 17:47:12 [[34mdebug[39m]: [SQL] select "wallet_balance" from "dbo"."users" where "id" = @1
+2026-02-23 17:47:12 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 22.123 ms - 63[0m
+2026-02-23 17:47:17 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 17:47:17 [[34mdebug[39m]: [SQL] select "phone", "email" from "dbo"."users" where "id" = @1
+2026-02-23 17:47:17 [[34mdebug[39m]: [SQL] insert into "dbo"."payment_orders" ("user_id", "order_ref", "type", "provider_id", "plan_id", "consumer_id", "base_amount", "gst_amount", "discount_amount", "total_amount", "payment_method", "payment_status", "gateway_name", "gateway_order_id", "gateway_txn_id") values (@1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15)
+2026-02-23 17:47:17 [[32minfo[39m]: [Atom] Legacy Initiating | txnid=SPD-20260223121717-4F72D9 amt=100.00
+2026-02-23 17:47:17 [[34mdebug[39m]: [Atom] Plain String: 792811|fb1489ed|SPD-20260223121717-4F72D9|100.00|SYSCON||||||updated@speedonet.in|9999999999
+2026-02-23 17:47:17 [[34mdebug[39m]: [Atom] Generated encData
+2026-02-23 17:47:17 [[32minfo[39m]: [Payment] Legacy initiated | user=1 orderRef=SPD-20260223121717-4F72D9
+2026-02-23 17:47:17 [[32mhttp[39m]: [0mPOST /api/v1/payments/atom/initiate [32m200[0m 19.459 ms - 309[0m
+2026-02-23 18:03:31 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 18:03:31 [[34mdebug[39m]: [SQL] select "id", "name", "phone", "email", "profile_image", "wallet_balance", "is_active" from "dbo"."users" where "id" = @1
+2026-02-23 18:03:31 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 31.118 ms - 47473[0m
+2026-02-23 18:03:31 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 18:03:31 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 18:03:31 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 18:03:31 [[34mdebug[39m]: [SQL] select top(1) "id", "status", "rejection_reason", "address_proof_type", "id_proof_type", "submitted_at", "reviewed_at" from "dbo"."kyc_submissions" where "user_id" = @1 order by "submitted_at" desc
+2026-02-23 18:03:31 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 12.798 ms - 257[0m
+2026-02-23 18:03:31 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 18:03:31 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 21.352 ms - 47785[0m
+2026-02-23 18:03:31 [[34mdebug[39m]: [SQL] select "wallet_balance" from "dbo"."users" where "id" = @1
+2026-02-23 18:03:31 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 17.017 ms - 63[0m
+2026-02-23 18:03:36 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 18:03:36 [[34mdebug[39m]: [SQL] select "phone", "email" from "dbo"."users" where "id" = @1
+2026-02-23 18:03:36 [[34mdebug[39m]: [SQL] insert into "dbo"."payment_orders" ("user_id", "order_ref", "type", "provider_id", "plan_id", "consumer_id", "base_amount", "gst_amount", "discount_amount", "total_amount", "payment_method", "payment_status", "gateway_name", "gateway_order_id", "gateway_txn_id") values (@1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15)
+2026-02-23 18:03:36 [[32minfo[39m]: [Atom] Legacy Initiating | txnid=SPD-20260223123336-09F101 amt=100.00
+2026-02-23 18:03:36 [[34mdebug[39m]: [Atom] Plain String: 792811|fb1489ed|SPD-20260223123336-09F101|100.00|SYSCON||||||updated@speedonet.in|9999999999
+2026-02-23 18:03:36 [[34mdebug[39m]: [Atom] Generated encData
+2026-02-23 18:03:36 [[32minfo[39m]: [Payment] Legacy initiated | user=1 orderRef=SPD-20260223123336-09F101
+2026-02-23 18:03:36 [[32mhttp[39m]: [0mPOST /api/v1/payments/atom/initiate [32m200[0m 20.626 ms - 309[0m
+2026-02-23 18:07:36 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 18:07:36 [[34mdebug[39m]: [SQL] select "phone", "email" from "dbo"."users" where "id" = @1
+2026-02-23 18:07:36 [[34mdebug[39m]: [SQL] insert into "dbo"."payment_orders" ("user_id", "order_ref", "type", "provider_id", "plan_id", "consumer_id", "base_amount", "gst_amount", "discount_amount", "total_amount", "payment_method", "payment_status", "gateway_name", "gateway_order_id", "gateway_txn_id") values (@1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15)
+2026-02-23 18:07:36 [[32minfo[39m]: [Atom] Legacy Initiating | txnid=SPD-20260223123736-47BDA8 amt=100.00
+2026-02-23 18:07:36 [[34mdebug[39m]: [Atom] Plain String: 792811|fb1489ed|SPD-20260223123736-47BDA8|100.00|SYSCON||||||updated@speedonet.in|9999999999
+2026-02-23 18:07:36 [[34mdebug[39m]: [Atom] Generated encData
+2026-02-23 18:07:36 [[32minfo[39m]: [Payment] Legacy initiated | user=1 orderRef=SPD-20260223123736-47BDA8
+2026-02-23 18:07:36 [[32mhttp[39m]: [0mPOST /api/v1/payments/atom/initiate [32m200[0m 19.434 ms - 309[0m
+2026-02-23 18:07:37 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 18:07:37 [[34mdebug[39m]: [SQL] select "order_ref", "total_amount", "payment_status" from "dbo"."payment_orders" where "order_ref" = @1 and "user_id" = @2
+2026-02-23 18:07:37 [[32minfo[39m]: [Atom] Legacy Initiating | txnid=SPD-20260223123736-47BDA8 amt=100.00
+2026-02-23 18:07:37 [[34mdebug[39m]: [Atom] Plain String: 792811|fb1489ed|SPD-20260223123736-47BDA8|100.00|SYSCON|||||||
+2026-02-23 18:07:37 [[34mdebug[39m]: [Atom] Generated encData
+2026-02-23 18:07:37 [[32mhttp[39m]: [0mGET /api/v1/payments/atom/redirect/SPD-20260223123736-47BDA8 [32m200[0m 13.316 ms - 785[0m
+2026-02-23 18:07:37 [[32mhttp[39m]: [0mGET /favicon.ico [33m404[0m 0.256 ms - 62[0m
+2026-02-23 18:08:46 [[34mdebug[39m]: [SQL] select top(1) "id" from "dbo"."users"
+2026-02-23 18:08:46 [[32minfo[39m]: Kysely — SQL Server connection pool ready ✓
+2026-02-23 18:08:46 [[32minfo[39m]: Database connection established ✓
+2026-02-23 18:08:46 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-23 18:08:46 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-23 18:08:50 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 18:08:50 [[34mdebug[39m]: [SQL] select "phone", "email" from "dbo"."users" where "id" = @1
+2026-02-23 18:08:50 [[34mdebug[39m]: [SQL] insert into "dbo"."payment_orders" ("user_id", "order_ref", "type", "provider_id", "plan_id", "consumer_id", "base_amount", "gst_amount", "discount_amount", "total_amount", "payment_method", "payment_status", "gateway_name", "gateway_order_id", "gateway_txn_id") values (@1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15)
+2026-02-23 18:08:50 [[32minfo[39m]: [Atom] Legacy Initiating | txnid=SPD-20260223123850-E57279 amt=100.00
+2026-02-23 18:08:50 [[34mdebug[39m]: [Atom] Plain String: 792811|fb1489ed|SPD-20260223123850-E57279|100.00|SYSCON||||||updated@speedonet.in|9999999999
+2026-02-23 18:08:50 [[34mdebug[39m]: [Atom] Generated encData
+2026-02-23 18:08:50 [[32minfo[39m]: [Payment] Legacy initiated | user=1 orderRef=SPD-20260223123850-E57279
+2026-02-23 18:08:50 [[32mhttp[39m]: [0mPOST /api/v1/payments/atom/initiate [32m200[0m 45.073 ms - 309[0m
+2026-02-23 18:08:50 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 18:08:50 [[34mdebug[39m]: [SQL] select "order_ref", "total_amount", "payment_status" from "dbo"."payment_orders" where "order_ref" = @1 and "user_id" = @2
+2026-02-23 18:08:50 [[32minfo[39m]: [Atom] Legacy Initiating | txnid=SPD-20260223123850-E57279 amt=100.00
+2026-02-23 18:08:50 [[34mdebug[39m]: [Atom] Plain String: 792811|fb1489ed|SPD-20260223123850-E57279|100.00|SYSCON|||||||
+2026-02-23 18:08:50 [[34mdebug[39m]: [Atom] Generated encData
+2026-02-23 18:08:50 [[32mhttp[39m]: [0mGET /api/v1/payments/atom/redirect/SPD-20260223123850-E57279 [32m200[0m 19.051 ms - 785[0m
+2026-02-23 18:08:51 [[32mhttp[39m]: [0mGET /favicon.ico [33m404[0m 0.667 ms - 62[0m
+2026-02-23 18:20:32 [[34mdebug[39m]: [SQL] select top(1) "id" from "dbo"."users"
+2026-02-23 18:20:32 [[32minfo[39m]: Kysely — SQL Server connection pool ready ✓
+2026-02-23 18:20:32 [[32minfo[39m]: Database connection established ✓
+2026-02-23 18:20:32 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-23 18:20:32 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-23 18:20:33 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 18:20:33 [[34mdebug[39m]: [SQL] select "phone", "email" from "dbo"."users" where "id" = @1
+2026-02-23 18:20:33 [[34mdebug[39m]: [SQL] insert into "dbo"."payment_orders" ("user_id", "order_ref", "type", "provider_id", "plan_id", "consumer_id", "base_amount", "gst_amount", "discount_amount", "total_amount", "payment_method", "payment_status", "gateway_name", "gateway_order_id", "gateway_txn_id") values (@1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15)
+2026-02-23 18:20:33 [[32minfo[39m]: [Atom] Legacy Initiating | txnid=SPD-20260223125033-BACCD3 amt=100.00
+2026-02-23 18:20:33 [[34mdebug[39m]: [Atom] Plain String: 792811|fb1489ed|SPD-20260223125033-BACCD3|100.00|SYSCON||||||updated@speedonet.in|9999999999
+2026-02-23 18:20:33 [[34mdebug[39m]: [Atom] Generated encData
+2026-02-23 18:20:33 [[32minfo[39m]: [Payment] Legacy initiated | user=1 orderRef=SPD-20260223125033-BACCD3
+2026-02-23 18:20:33 [[32mhttp[39m]: [0mPOST /api/v1/payments/atom/initiate [32m200[0m 47.989 ms - 309[0m
+2026-02-23 18:20:34 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 18:20:34 [[34mdebug[39m]: [SQL] select "order_ref", "total_amount", "payment_status" from "dbo"."payment_orders" where "order_ref" = @1 and "user_id" = @2
+2026-02-23 18:20:34 [[32minfo[39m]: [Atom] Legacy Initiating | txnid=SPD-20260223125033-BACCD3 amt=100.00
+2026-02-23 18:20:34 [[34mdebug[39m]: [Atom] Plain String: 792811|fb1489ed|SPD-20260223125033-BACCD3|100.00|SYSCON|||||||
+2026-02-23 18:20:34 [[34mdebug[39m]: [Atom] Generated encData
+2026-02-23 18:20:34 [[32mhttp[39m]: [0mGET /api/v1/payments/atom/redirect/SPD-20260223125033-BACCD3 [32m200[0m 16.464 ms - 785[0m
+2026-02-23 18:20:34 [[32mhttp[39m]: [0mGET /favicon.ico [33m404[0m 1.417 ms - 62[0m

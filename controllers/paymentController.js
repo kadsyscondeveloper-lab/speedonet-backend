@@ -171,4 +171,67 @@ async function checkPaymentStatus(req, res, next) {
   }
 }
 
-module.exports = { initiateWalletRecharge, atomCallback, checkPaymentStatus };
+
+
+// =============================================================================
+// GET /api/v1/payments/atom/redirect/:orderRef  (Authenticated — WebView loads this)
+// =============================================================================
+async function redirectToAtom(req, res, next) {
+  try {
+    const { orderRef } = req.params;
+
+    const order = await db
+      .selectFrom('dbo.payment_orders')
+      .select(['order_ref', 'total_amount', 'payment_status'])
+      .where('order_ref', '=', orderRef)
+      .where('user_id',   '=', BigInt(req.user.id))
+      .executeTakeFirst();
+
+    if (!order) return R.notFound(res, 'Order not found');
+    if (order.payment_status !== 'pending') {
+      return R.badRequest(res, 'Order already processed');
+    }
+
+    const { atomUrl, encData } = atomService.initiatePayment({
+      txnid:      orderRef,
+      amt:        parseFloat(order.total_amount).toFixed(2),
+      custEmail:  '',
+      custMobile: '',
+    });
+
+    // Return raw HTML — no helmet CSP interference
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('X-Frame-Options', 'ALLOWALL');
+    res.removeHeader('Content-Security-Policy');
+    
+    return res.send(`<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting to Payment...</title>
+    <style>
+      body { font-family: sans-serif; text-align: center; padding: 40px; }
+      p { color: #555; }
+    </style>
+  </head>
+  <body>
+    <p>Redirecting to secure payment gateway...</p>
+    <form id="payForm" method="post" action="${atomUrl}">
+      <input type="hidden" name="encData" value="${encData}" />
+    </form>
+    <script>
+      window.onload = function() {
+        setTimeout(function() {
+          document.getElementById('payForm').submit();
+        }, 100);
+      };
+    </script>
+  </body>
+</html>`);
+
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { initiateWalletRecharge, atomCallback, checkPaymentStatus, redirectToAtom };
