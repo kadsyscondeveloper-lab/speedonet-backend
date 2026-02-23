@@ -8,7 +8,20 @@ const logger  = require('./utils/logger');
 const app = express();
 
 // ── Security headers ──────────────────────────────────────────────────────────
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https:"],
+        styleSrc: ["'self'", "https:", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        formAction: ["'self'", "https://payment1.atomtech.in"],
+        frameAncestors: ["'self'"],
+      },
+    },
+  })
+);
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 app.use(cors({

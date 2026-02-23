@@ -21,17 +21,17 @@ async function initiateWalletRecharge(req, res, next) {
     }
 
     const orderRef   = generateOrderRef();
-    const amtString  = amount.toFixed(2);   // Atom needs "500.00" string format
+    const amtString  = amount.toFixed(2);
     const clientcode = String(req.user.id);
 
-    // ── Insert order — columns match dbo.payment_orders schema exactly ──────
-    // Schema (from SSMS):
-    //   user_id bigint, order_ref nvarchar(64), type nvarchar(30),
-    //   provider_id bigint NULL, plan_id bigint NULL, consumer_id nvarchar(100) NULL,
-    //   base_amount decimal(10,2), gst_amount decimal(10,2), discount_amount decimal(10,2),
-    //   total_amount decimal(10,2), payment_method nvarchar(20), payment_status nvarchar(20),
-    //   gateway_name nvarchar(60) NULL, gateway_order_id nvarchar(200) NULL,
-    //   gateway_txn_id nvarchar(200) NULL, paid_at datetime2(7) NULL
+    // ── Fetch user details to pass email/mobile to Atom ──────────────────────
+    const userRow = await db
+      .selectFrom('dbo.users')
+      .select(['phone', 'email'])
+      .where('id', '=', BigInt(req.user.id))
+      .executeTakeFirst();
+
+    // ── Insert pending order ─────────────────────────────────────────────────
     await db
       .insertInto('dbo.payment_orders')
       .values({
@@ -41,11 +41,11 @@ async function initiateWalletRecharge(req, res, next) {
         provider_id:      null,
         plan_id:          null,
         consumer_id:      clientcode,
-        base_amount:      amount,              // decimal — pass number not string
+        base_amount:      amount,
         gst_amount:       0,
         discount_amount:  0,
         total_amount:     amount,
-        payment_method:   'atom',              // ← run SQL migration first!
+        payment_method:   'atom',
         payment_status:   'pending',
         gateway_name:     'atom',
         gateway_order_id: null,
@@ -53,22 +53,22 @@ async function initiateWalletRecharge(req, res, next) {
       })
       .execute();
 
-    // ── Get atomTokenId from Atom Auth API ───────────────────────────────────
-    const { atomTokenId, mercId, cdnUrl } = await atomService.initiatePayment({
-      txnid:      orderRef,
-      amt:        amtString,
-      clientcode,
-    });
+    // ── Call Atom auth API ───────────────────────────────────────────────────
+    const { atomUrl, encData } = atomService.initiatePayment({
+  txnid: orderRef,
+  amt: amtString,
+  custEmail: userRow?.email || '',
+  custMobile: userRow?.phone || '',
+});
 
-    logger.info(`[Payment] Initiated | user=${req.user.id} orderRef=${orderRef} amt=${amtString}`);
+logger.info(`[Payment] Legacy initiated | user=${req.user.id} orderRef=${orderRef}`);
 
-    return R.ok(res, {
-      atomTokenId,
-      mercId,
-      cdnUrl,
-      orderRef,
-      amount: amtString,
-    }, 'Payment initiated');
+return R.ok(res, {
+  atomUrl,
+  encData,
+  orderRef,
+  amount: amtString,
+}, 'Payment initiated');
 
   } catch (err) {
     if (err.statusCode) return R.error(res, err.message, err.statusCode);
@@ -81,14 +81,14 @@ async function initiateWalletRecharge(req, res, next) {
 // =============================================================================
 async function atomCallback(req, res, next) {
   try {
-    const encData = req.body.encData || req.body.encdata;
-    if (!encData) {
-      logger.warn('[Payment] Atom callback received with no encData');
-      return R.badRequest(res, 'Missing encData');
-    }
-
-    const result = atomService.processCallback(encData);
+    // processCallback now handles both JSON and legacy encData formats
+    const result = atomService.processCallback(req.body);
     const { txnid: orderRef, atomtxnId, bankTxnId, amt, txnStatus, success } = result;
+
+    if (!orderRef) {
+      logger.warn('[Payment] Callback missing orderRef / merchTxnId');
+      return R.badRequest(res, 'Missing transaction reference');
+    }
 
     const order = await db
       .selectFrom('dbo.payment_orders')
@@ -107,6 +107,7 @@ async function atomCallback(req, res, next) {
       return R.ok(res, null, 'Already processed');
     }
 
+    // ── Update order status ──────────────────────────────────────────────────
     await db
       .updateTable('dbo.payment_orders')
       .set({
@@ -119,14 +120,18 @@ async function atomCallback(req, res, next) {
       .where('order_ref', '=', orderRef)
       .execute();
 
+    // ── Credit wallet on success ─────────────────────────────────────────────
     if (success) {
       const userId = Number(order.user_id);
       const amount = parseFloat(amt || String(order.total_amount));
+
+      // Pass existing order ref so walletService doesn't create a second order
       await walletService.rechargeWallet(userId, {
         amount,
         paymentMethod:  'atom',
         gatewayOrderId: atomtxnId,
         gatewayTxnId:   bankTxnId,
+        existingOrderRef: orderRef,   // tells walletService to skip order INSERT
       });
       logger.info(`[Payment] Wallet credited | user=${userId} amt=${amount}`);
     }
