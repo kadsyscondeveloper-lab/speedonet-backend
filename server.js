@@ -1,18 +1,16 @@
 require('dotenv').config();
 const app    = require('./app');
-const { getPool } = require('./config/db');
+const { connectDb } = require('./config/db');   // ← was: const { getPool } = require('./config/db')
 const logger = require('./utils/logger');
 const fs     = require('fs');
 
-// Ensure logs directory exists
 if (!fs.existsSync('logs')) fs.mkdirSync('logs');
 
 const PORT = parseInt(process.env.PORT || '3000');
 
 async function start() {
   try {
-    // Test DB connection before accepting traffic
-    await getPool();
+    await connectDb();                           // ← was: await getPool()
     logger.info('Database connection established ✓');
 
     app.listen(PORT, () => {
@@ -25,7 +23,6 @@ async function start() {
   }
 }
 
-// Graceful shutdown
 process.on('SIGTERM', async () => {
   logger.info('SIGTERM received — shutting down gracefully');
   process.exit(0);

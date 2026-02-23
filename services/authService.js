@@ -1,28 +1,39 @@
+/**
+ * services/authService.js
+ * Kysely rewrite — identical exports to the original so controllers need no changes.
+ */
+
 const bcrypt  = require('bcryptjs');
-const { sql, query, execProc } = require('../config/db');
+const crypto  = require('crypto');
+const { db, sql } = require('../config/db');
 const { generateOtp, otpExpiry, maskPhone } = require('../utils/helpers');
-const logger = require('../utils/logger');
+const logger  = require('../utils/logger');
 
 // ── User lookup ───────────────────────────────────────────────────────────────
 
 async function findUserByPhone(phone) {
-  const result = await query(
-    `SELECT id, name, phone, email, password_hash, profile_image,
-            wallet_balance, is_active
-     FROM dbo.users
-     WHERE phone = @phone`,
-    { phone: { type: sql.NVarChar(15), value: phone } }
-  );
-  return result.recordset[0] || null;
+  const row = await db
+    .selectFrom('dbo.users')
+    .select([
+      'id', 'name', 'phone', 'email',
+      'password_hash', 'profile_image',
+      'wallet_balance', 'is_active',
+    ])
+    .where('phone', '=', phone)
+    .executeTakeFirst();
+  return row ?? null;
 }
 
 async function findUserById(id) {
-  const result = await query(
-    `SELECT id, name, phone, email, profile_image, wallet_balance, is_active
-     FROM dbo.users WHERE id = @id`,
-    { id: { type: sql.BigInt, value: id } }
-  );
-  return result.recordset[0] || null;
+  const row = await db
+    .selectFrom('dbo.users')
+    .select([
+      'id', 'name', 'phone', 'email',
+      'profile_image', 'wallet_balance', 'is_active',
+    ])
+    .where('id', '=', BigInt(id))
+    .executeTakeFirst();
+  return row ?? null;
 }
 
 // ── Registration ──────────────────────────────────────────────────────────────
@@ -31,19 +42,11 @@ async function createUser({ name, phone, email, password }) {
   const rounds = parseInt(process.env.BCRYPT_ROUNDS || '12');
   const hash   = password ? await bcrypt.hash(password, rounds) : null;
 
-  const result = await query(
-    `INSERT INTO dbo.users (name, phone, email, password_hash)
-     OUTPUT INSERTED.id, INSERTED.name, INSERTED.phone, INSERTED.email,
-            INSERTED.wallet_balance, INSERTED.created_at
-     VALUES (@name, @phone, @email, @hash)`,
-    {
-      name:  { type: sql.NVarChar(100), value: name  },
-      phone: { type: sql.NVarChar(15),  value: phone },
-      email: { type: sql.NVarChar(150), value: email || null },
-      hash:  { type: sql.NVarChar(255), value: hash  },
-    }
-  );
-  return result.recordset[0];
+  return db
+    .insertInto('dbo.users')
+    .values({ name, phone, email: email ?? null, password_hash: hash })
+    .returning(['id', 'name', 'phone', 'email', 'wallet_balance', 'created_at'])
+    .executeTakeFirstOrThrow();
 }
 
 // ── Password ──────────────────────────────────────────────────────────────────
@@ -57,15 +60,11 @@ async function updatePassword(userId, newPassword) {
   const rounds = parseInt(process.env.BCRYPT_ROUNDS || '12');
   const hash   = await bcrypt.hash(newPassword, rounds);
 
-  await query(
-    `UPDATE dbo.users
-     SET password_hash = @hash, updated_at = SYSUTCDATETIME()
-     WHERE id = @id`,
-    {
-      hash: { type: sql.NVarChar(255), value: hash },
-      id:   { type: sql.BigInt,        value: userId },
-    }
-  );
+  await db
+    .updateTable('dbo.users')
+    .set({ password_hash: hash, updated_at: sql`SYSUTCDATETIME()` })
+    .where('id', '=', BigInt(userId))
+    .execute();
 }
 
 // ── OTP ───────────────────────────────────────────────────────────────────────
@@ -74,56 +73,44 @@ async function createOtp(phone, purpose = 'login') {
   const code    = generateOtp(parseInt(process.env.OTP_LENGTH || '6'));
   const expires = otpExpiry();
 
-  // Invalidate any previous unused OTPs for this phone + purpose
-  await query(
-    `UPDATE dbo.otp_requests SET is_used = 1
-     WHERE phone = @phone AND purpose = @purpose AND is_used = 0`,
-    {
-      phone:   { type: sql.NVarChar(15), value: phone   },
-      purpose: { type: sql.NVarChar(20), value: purpose },
-    }
-  );
+  // Invalidate previous unused OTPs for this phone + purpose
+  await db
+    .updateTable('dbo.otp_requests')
+    .set({ is_used: true })
+    .where('phone',   '=', phone)
+    .where('purpose', '=', purpose)
+    .where('is_used', '=', false)
+    .execute();
 
-  await query(
-    `INSERT INTO dbo.otp_requests (phone, otp_code, purpose, expires_at)
-     VALUES (@phone, @code, @purpose, @expires)`,
-    {
-      phone:   { type: sql.NVarChar(15),  value: phone   },
-      code:    { type: sql.NVarChar(10),  value: code    },
-      purpose: { type: sql.NVarChar(20),  value: purpose },
-      expires: { type: sql.DateTime2,     value: expires },
-    }
-  );
+  await db
+    .insertInto('dbo.otp_requests')
+    .values({ phone, otp_code: code, purpose, expires_at: expires })
+    .execute();
 
-  // In production, send SMS here via your gateway (Twilio, MSG91, etc.)
   logger.debug(`OTP for ${maskPhone(phone)} → ${code}  [${purpose}]`);
-
-  return code; // return for dev/test; never expose in prod response
+  return code;
 }
 
 async function verifyOtp(phone, code, purpose = 'login') {
-  const result = await query(
-    `SELECT TOP 1 id FROM dbo.otp_requests
-     WHERE phone   = @phone
-       AND otp_code = @code
-       AND purpose  = @purpose
-       AND is_used  = 0
-       AND expires_at > SYSUTCDATETIME()
-     ORDER BY created_at DESC`,
-    {
-      phone:   { type: sql.NVarChar(15), value: phone   },
-      code:    { type: sql.NVarChar(10), value: code    },
-      purpose: { type: sql.NVarChar(20), value: purpose },
-    }
-  );
+  const row = await db
+    .selectFrom('dbo.otp_requests')
+    .select('id')
+    .where('phone',      '=', phone)
+    .where('otp_code',   '=', code)
+    .where('purpose',    '=', purpose)
+    .where('is_used',    '=', false)
+    .where('expires_at', '>', sql`SYSUTCDATETIME()`)
+    .orderBy('created_at', 'desc')
+    .top(1)
+    .executeTakeFirst();
 
-  if (!result.recordset.length) return false;
+  if (!row) return false;
 
-  // Mark OTP as used
-  await query(
-    `UPDATE dbo.otp_requests SET is_used = 1 WHERE id = @id`,
-    { id: { type: sql.BigInt, value: result.recordset[0].id } }
-  );
+  await db
+    .updateTable('dbo.otp_requests')
+    .set({ is_used: true })
+    .where('id', '=', row.id)
+    .execute();
 
   return true;
 }
@@ -131,81 +118,72 @@ async function verifyOtp(phone, code, purpose = 'login') {
 // ── Sessions ──────────────────────────────────────────────────────────────────
 
 async function saveSession(userId, token, expiresAt, deviceInfo = null, ipAddress = null) {
-  await query(
-    `INSERT INTO dbo.user_sessions (user_id, token, device_info, ip_address, expires_at)
-     VALUES (@userId, @token, @device, @ip, @expires)`,
-    {
-      userId:  { type: sql.BigInt,        value: userId     },
-      token:   { type: sql.NVarChar(512), value: token      },
-      device:  { type: sql.NVarChar(300), value: deviceInfo },
-      ip:      { type: sql.NVarChar(45),  value: ipAddress  },
-      expires: { type: sql.DateTime2,     value: expiresAt  },
-    }
-  );
+  await db
+    .insertInto('dbo.user_sessions')
+    .values({
+      user_id:     BigInt(userId),
+      token,
+      device_info: deviceInfo,
+      ip_address:  ipAddress,
+      expires_at:  expiresAt,
+    })
+    .execute();
 }
 
 async function findSession(token) {
-  const result = await query(
-    `SELECT s.id, s.user_id, s.expires_at, u.is_active
-     FROM dbo.user_sessions s
-     JOIN dbo.users u ON u.id = s.user_id
-     WHERE s.token = @token
-       AND s.expires_at > SYSUTCDATETIME()`,
-    { token: { type: sql.NVarChar(512), value: token } }
-  );
-  return result.recordset[0] || null;
+  const row = await db
+    .selectFrom('dbo.user_sessions as s')
+    .innerJoin('dbo.users as u', 'u.id', 's.user_id')
+    .select(['s.id', 's.user_id', 's.expires_at', 'u.is_active'])
+    .where('s.token',      '=', token)
+    .where('s.expires_at', '>', sql`SYSUTCDATETIME()`)
+    .executeTakeFirst();
+  return row ?? null;
 }
 
 async function revokeSession(token) {
-  await query(
-    `DELETE FROM dbo.user_sessions WHERE token = @token`,
-    { token: { type: sql.NVarChar(512), value: token } }
-  );
+  await db
+    .deleteFrom('dbo.user_sessions')
+    .where('token', '=', token)
+    .execute();
 }
 
 async function revokeAllUserSessions(userId) {
-  await query(
-    `DELETE FROM dbo.user_sessions WHERE user_id = @userId`,
-    { userId: { type: sql.BigInt, value: userId } }
-  );
+  await db
+    .deleteFrom('dbo.user_sessions')
+    .where('user_id', '=', BigInt(userId))
+    .execute();
 }
 
 // ── Referral ──────────────────────────────────────────────────────────────────
 
 async function createReferralCode(userId, code) {
   const url = `https://speedonet.in/refer?code=${code}`;
-  await query(
-    `INSERT INTO dbo.referral_codes (user_id, code, referral_url)
-     VALUES (@userId, @code, @url)`,
-    {
-      userId: { type: sql.BigInt,        value: userId },
-      code:   { type: sql.NVarChar(20),  value: code  },
-      url:    { type: sql.NVarChar(500), value: url   },
-    }
-  );
+  await db
+    .insertInto('dbo.referral_codes')
+    .values({ user_id: BigInt(userId), code, referral_url: url })
+    .execute();
 }
 
 async function applyReferral(referrerId, referredId, code) {
-  await query(
-    `INSERT INTO dbo.referrals (referrer_id, referred_id, referral_code)
-     VALUES (@referrerId, @referredId, @code)`,
-    {
-      referrerId: { type: sql.BigInt,       value: referrerId },
-      referredId: { type: sql.BigInt,       value: referredId },
-      code:       { type: sql.NVarChar(20), value: code       },
-    }
-  );
+  await db
+    .insertInto('dbo.referrals')
+    .values({
+      referrer_id:   BigInt(referrerId),
+      referred_id:   BigInt(referredId),
+      referral_code: code,
+    })
+    .execute();
 }
 
 async function findReferralCode(code) {
-  const result = await query(
-    `SELECT rc.user_id, u.name AS referrer_name
-     FROM dbo.referral_codes rc
-     JOIN dbo.users u ON u.id = rc.user_id
-     WHERE rc.code = @code`,
-    { code: { type: sql.NVarChar(20), value: code } }
-  );
-  return result.recordset[0] || null;
+  const row = await db
+    .selectFrom('dbo.referral_codes as rc')
+    .innerJoin('dbo.users as u', 'u.id', 'rc.user_id')
+    .select(['rc.user_id', 'u.name as referrer_name'])
+    .where('rc.code', '=', code)
+    .executeTakeFirst();
+  return row ?? null;
 }
 
 module.exports = {
