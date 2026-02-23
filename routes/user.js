@@ -1,3 +1,4 @@
+// routes/user.js
 const router = require('express').Router();
 const { body, query, param } = require('express-validator');
 const { authenticate }       = require('../middleware/auth');
@@ -37,6 +38,54 @@ const addressRules = [
 const addAddressRules = [
   body('label').optional().trim().isLength({ max: 50 }).withMessage('Label too long'),
   ...addressRules,
+];
+
+// ── Profile image validation ───────────────────────────────────────────────────
+// Accepts either:
+//   • A regular HTTPS URL  (e.g. https://cdn.example.com/avatar.jpg)
+//   • A base64 data URI    (e.g. data:image/jpeg;base64,/9j/4AAQ...)
+// Max ~7 MB base64 string (≈ 5 MB raw file)
+const MAX_IMAGE_CHARS = 7_500_000;
+const ALLOWED_IMAGE_MIMES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
+const profileImageRules = [
+  body('image_url')
+    .notEmpty().withMessage('image_url is required')
+    .isString().withMessage('image_url must be a string')
+    .custom((value) => {
+      const trimmed = value.trim();
+
+      // ── Case 1: base64 data URI ──────────────────────────────────────────
+      if (trimmed.startsWith('data:')) {
+        // Expected format: data:<mime>;base64,<data>
+        const match = trimmed.match(/^data:([^;]+);base64,(.+)$/s);
+        if (!match) {
+          throw new Error('Invalid base64 data URI format');
+        }
+        const mime    = match[1].toLowerCase();
+        const b64data = match[2];
+
+        if (!ALLOWED_IMAGE_MIMES.includes(mime)) {
+          throw new Error(`Unsupported image type "${mime}". Allowed: JPEG, PNG, WebP`);
+        }
+        if (b64data.length > MAX_IMAGE_CHARS) {
+          throw new Error('Image is too large (max 5 MB)');
+        }
+        return true;
+      }
+
+      // ── Case 2: regular URL ──────────────────────────────────────────────
+      try {
+        const url = new URL(trimmed);
+        if (!['http:', 'https:'].includes(url.protocol)) {
+          throw new Error('image_url must be an https URL or a base64 data URI');
+        }
+        return true;
+      } catch {
+        throw new Error('image_url must be a valid https URL or a base64 data URI');
+      }
+    }),
+  validate,
 ];
 
 // ── KYC validation — accepts base64 document data ─────────────────────────────
@@ -111,10 +160,7 @@ const addressParamRule = [
 // =============================================================================
 router.get('/profile',        ctrl.getProfile);
 router.put('/profile',        profileUpdateRules, ctrl.updateProfile);
-router.put('/profile/image', [
-  body('image_url').trim().notEmpty().isURL().withMessage('A valid image URL is required'),
-  validate,
-], ctrl.updateProfileImage);
+router.put('/profile/image', profileImageRules,  ctrl.updateProfileImage);
 
 // =============================================================================
 // ADDRESSES

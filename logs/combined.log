@@ -1649,3 +1649,485 @@
 2026-02-23 13:34:32 [[32mhttp[39m]: [0mGET /api/v1/tickets?page=1&limit=10 [32m200[0m 21.571 ms - 334[0m
 2026-02-23 13:49:06 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
 2026-02-23 13:49:06 [[32mhttp[39m]: [0mPOST /api/v1/tickets [33m400[0m 11.282 ms - 195[0m
+2026-02-23 13:52:57 [[34mdebug[39m]: [SQL] select top(1) "id" from "dbo"."users"
+2026-02-23 13:52:57 [[32minfo[39m]: Kysely — SQL Server connection pool ready ✓
+2026-02-23 13:52:57 [[32minfo[39m]: Database connection established ✓
+2026-02-23 13:52:57 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-23 13:52:57 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-23 13:53:22 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:53:22 [[34mdebug[39m]: [SQL] insert into "dbo"."help_tickets" ("user_id", "ticket_number", "category", "subject", "description", "priority", "attachment_url") output "inserted"."id", "inserted"."ticket_number", "inserted"."status", "inserted"."priority", "inserted"."created_at" values (@1, @2, @3, @4, @5, @6, @7)
+2026-02-23 13:53:22 [[34mdebug[39m]: [SQL] insert into "dbo"."notifications" ("user_id", "type", "title", "body") values (@1, @2, @3, @4)
+2026-02-23 13:53:22 [[32mhttp[39m]: [0mPOST /api/v1/tickets [32m201[0m 71.595 ms - 220[0m
+2026-02-23 13:53:26 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:53:26 [[34mdebug[39m]: [SQL] select "id", "ticket_number", "category", "subject", "description", "status", "priority", "resolved_at", "created_at", "updated_at" from "dbo"."help_tickets" where "id" = @1 and "user_id" = @2
+2026-02-23 13:53:26 [[34mdebug[39m]: [SQL] select "id", "sender_id", "sender_type", "message", "attachment_url", "created_at" from "dbo"."ticket_replies" where "ticket_id" = @1 order by "created_at" asc
+2026-02-23 13:53:26 [[32mhttp[39m]: [0mGET /api/v1/tickets/2 [32m200[0m 31.518 ms - 341[0m
+2026-02-23 13:53:33 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:53:33 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 13:53:33 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 20.244 ms - 549[0m
+2026-02-23 13:53:34 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:53:34 [[34mdebug[39m]: [SQL] 
+      SELECT id, ticket_number, category, subject,
+             status, priority, created_at, updated_at
+      FROM dbo.help_tickets
+      WHERE user_id = @1
+      ORDER BY created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 13:53:34 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."help_tickets" where "user_id" = @1
+2026-02-23 13:53:34 [[32mhttp[39m]: [0mGET /api/v1/tickets?page=1&limit=10 [32m200[0m 15.118 ms - 551[0m
+2026-02-23 13:53:35 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:53:35 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."wallet_transactions" where "user_id" = @1
+2026-02-23 13:53:36 [[34mdebug[39m]: [SQL] 
+      SELECT
+        wt.id, wt.type, wt.amount, wt.balance_after,
+        wt.description, wt.reference_id, wt.reference_type, wt.created_at,
+        po.order_ref, po.payment_status,
+        p.name AS plan_name
+      FROM dbo.wallet_transactions wt
+      LEFT JOIN dbo.payment_orders po
+             ON po.id = TRY_CAST(wt.reference_id AS BIGINT)
+            AND wt.reference_type IN ('payment_order', 'wallet_recharge')
+      LEFT JOIN dbo.broadband_plans p ON p.id = po.plan_id
+      WHERE wt.user_id = @1
+      ORDER BY wt.created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 13:53:36 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 15.847 ms - 3934[0m
+2026-02-23 13:55:36 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:55:36 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."help_tickets" where "user_id" = @1
+2026-02-23 13:55:36 [[34mdebug[39m]: [SQL] 
+      SELECT id, ticket_number, category, subject,
+             status, priority, created_at, updated_at
+      FROM dbo.help_tickets
+      WHERE user_id = @1
+      ORDER BY created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 13:55:36 [[32mhttp[39m]: [0mGET /api/v1/tickets?page=1&limit=10 [32m200[0m 13.200 ms - 551[0m
+2026-02-23 13:56:12 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:56:12 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."wallet_transactions" where "user_id" = @1
+2026-02-23 13:56:12 [[34mdebug[39m]: [SQL] 
+      SELECT
+        wt.id, wt.type, wt.amount, wt.balance_after,
+        wt.description, wt.reference_id, wt.reference_type, wt.created_at,
+        po.order_ref, po.payment_status,
+        p.name AS plan_name
+      FROM dbo.wallet_transactions wt
+      LEFT JOIN dbo.payment_orders po
+             ON po.id = TRY_CAST(wt.reference_id AS BIGINT)
+            AND wt.reference_type IN ('payment_order', 'wallet_recharge')
+      LEFT JOIN dbo.broadband_plans p ON p.id = po.plan_id
+      WHERE wt.user_id = @1
+      ORDER BY wt.created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 13:56:12 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 50.817 ms - 3934[0m
+2026-02-23 13:56:21 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:56:21 [[34mdebug[39m]: [SQL] select "id", "name", "price", "speed_mbps", "data_limit", "validity_days", "category" from "dbo"."broadband_plans" where "is_active" = @1 order by "sort_order" asc, "price" asc
+2026-02-23 13:56:21 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 6.101 ms - 1054[0m
+2026-02-23 13:56:21 [[34mdebug[39m]: [SQL] select top(1) "s"."id" as "subscription_id", "s"."status", "s"."start_date", "s"."expires_at", "s"."data_used_gb", "po"."order_ref", "po"."total_amount" as "amount_paid", "po"."payment_method", "p"."id" as "plan_id", "p"."name" as "plan_name", "p"."speed_mbps", "p"."data_limit", "p"."validity_days", "p"."price", "p"."category" from "dbo"."user_subscriptions" as "s" inner join "dbo"."broadband_plans" as "p" on "p"."id" = "s"."plan_id" inner join "dbo"."payment_orders" as "po" on "po"."id" = "s"."order_id" where "s"."user_id" = @1 and "s"."status" = @2 and "s"."expires_at" >= CAST(SYSDATETIME() AS DATE) order by "s"."expires_at" desc
+2026-02-23 13:56:21 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 11.303 ms - 424[0m
+2026-02-23 13:56:25 [[32mhttp[39m]: [0mPOST / [33m404[0m 2.241 ms - 52[0m
+2026-02-23 13:59:32 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:59:32 [[34mdebug[39m]: [SQL] 
+      SELECT id, ticket_number, category, subject,
+             status, priority, created_at, updated_at
+      FROM dbo.help_tickets
+      WHERE user_id = @1
+      ORDER BY created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 13:59:32 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."help_tickets" where "user_id" = @1
+2026-02-23 13:59:32 [[32mhttp[39m]: [0mGET /api/v1/tickets?page=1&limit=10 [32m200[0m 34.690 ms - 551[0m
+2026-02-23 13:59:35 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:59:35 [[34mdebug[39m]: [SQL] select "id", "ticket_number", "category", "subject", "description", "status", "priority", "resolved_at", "created_at", "updated_at" from "dbo"."help_tickets" where "id" = @1 and "user_id" = @2
+2026-02-23 13:59:35 [[34mdebug[39m]: [SQL] select "id", "sender_id", "sender_type", "message", "attachment_url", "created_at" from "dbo"."ticket_replies" where "ticket_id" = @1 order by "created_at" asc
+2026-02-23 13:59:35 [[32mhttp[39m]: [0mGET /api/v1/tickets/2 [32m200[0m 20.047 ms - 341[0m
+2026-02-23 13:59:37 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:59:37 [[34mdebug[39m]: [SQL] select "id", "ticket_number", "category", "subject", "description", "status", "priority", "resolved_at", "created_at", "updated_at" from "dbo"."help_tickets" where "id" = @1 and "user_id" = @2
+2026-02-23 13:59:37 [[34mdebug[39m]: [SQL] select "id", "sender_id", "sender_type", "message", "attachment_url", "created_at" from "dbo"."ticket_replies" where "ticket_id" = @1 order by "created_at" asc
+2026-02-23 13:59:37 [[32mhttp[39m]: [0mGET /api/v1/tickets/1 [32m200[0m 29.133 ms - 350[0m
+2026-02-23 13:59:44 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:59:44 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."wallet_transactions" where "user_id" = @1
+2026-02-23 13:59:44 [[34mdebug[39m]: [SQL] 
+      SELECT
+        wt.id, wt.type, wt.amount, wt.balance_after,
+        wt.description, wt.reference_id, wt.reference_type, wt.created_at,
+        po.order_ref, po.payment_status,
+        p.name AS plan_name
+      FROM dbo.wallet_transactions wt
+      LEFT JOIN dbo.payment_orders po
+             ON po.id = TRY_CAST(wt.reference_id AS BIGINT)
+            AND wt.reference_type IN ('payment_order', 'wallet_recharge')
+      LEFT JOIN dbo.broadband_plans p ON p.id = po.plan_id
+      WHERE wt.user_id = @1
+      ORDER BY wt.created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 13:59:44 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 19.743 ms - 3934[0m
+2026-02-23 13:59:48 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:59:48 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."help_tickets" where "user_id" = @1
+2026-02-23 13:59:48 [[34mdebug[39m]: [SQL] 
+      SELECT id, ticket_number, category, subject,
+             status, priority, created_at, updated_at
+      FROM dbo.help_tickets
+      WHERE user_id = @1
+      ORDER BY created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 13:59:48 [[32mhttp[39m]: [0mGET /api/v1/tickets?page=1&limit=10 [32m200[0m 15.868 ms - 551[0m
+2026-02-23 13:59:51 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:59:51 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."wallet_transactions" where "user_id" = @1
+2026-02-23 13:59:51 [[34mdebug[39m]: [SQL] 
+      SELECT
+        wt.id, wt.type, wt.amount, wt.balance_after,
+        wt.description, wt.reference_id, wt.reference_type, wt.created_at,
+        po.order_ref, po.payment_status,
+        p.name AS plan_name
+      FROM dbo.wallet_transactions wt
+      LEFT JOIN dbo.payment_orders po
+             ON po.id = TRY_CAST(wt.reference_id AS BIGINT)
+            AND wt.reference_type IN ('payment_order', 'wallet_recharge')
+      LEFT JOIN dbo.broadband_plans p ON p.id = po.plan_id
+      WHERE wt.user_id = @1
+      ORDER BY wt.created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 13:59:51 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 8.086 ms - 3934[0m
+2026-02-23 13:59:53 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 13:59:53 [[34mdebug[39m]: [SQL] select "id", "name", "price", "speed_mbps", "data_limit", "validity_days", "category" from "dbo"."broadband_plans" where "is_active" = @1 order by "sort_order" asc, "price" asc
+2026-02-23 13:59:53 [[32mhttp[39m]: [0mGET /api/v1/plans [32m200[0m 9.957 ms - 1054[0m
+2026-02-23 13:59:53 [[34mdebug[39m]: [SQL] select top(1) "s"."id" as "subscription_id", "s"."status", "s"."start_date", "s"."expires_at", "s"."data_used_gb", "po"."order_ref", "po"."total_amount" as "amount_paid", "po"."payment_method", "p"."id" as "plan_id", "p"."name" as "plan_name", "p"."speed_mbps", "p"."data_limit", "p"."validity_days", "p"."price", "p"."category" from "dbo"."user_subscriptions" as "s" inner join "dbo"."broadband_plans" as "p" on "p"."id" = "s"."plan_id" inner join "dbo"."payment_orders" as "po" on "po"."id" = "s"."order_id" where "s"."user_id" = @1 and "s"."status" = @2 and "s"."expires_at" >= CAST(SYSDATETIME() AS DATE) order by "s"."expires_at" desc
+2026-02-23 13:59:53 [[32mhttp[39m]: [0mGET /api/v1/plans/subscription/active [32m200[0m 18.970 ms - 424[0m
+2026-02-23 14:00:02 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:00:02 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."wallet_transactions" where "user_id" = @1
+2026-02-23 14:00:02 [[34mdebug[39m]: [SQL] 
+      SELECT
+        wt.id, wt.type, wt.amount, wt.balance_after,
+        wt.description, wt.reference_id, wt.reference_type, wt.created_at,
+        po.order_ref, po.payment_status,
+        p.name AS plan_name
+      FROM dbo.wallet_transactions wt
+      LEFT JOIN dbo.payment_orders po
+             ON po.id = TRY_CAST(wt.reference_id AS BIGINT)
+            AND wt.reference_type IN ('payment_order', 'wallet_recharge')
+      LEFT JOIN dbo.broadband_plans p ON p.id = po.plan_id
+      WHERE wt.user_id = @1
+      ORDER BY wt.created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 14:00:02 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 8.454 ms - 3934[0m
+2026-02-23 14:00:09 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:00:09 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."wallet_transactions" where "user_id" = @1
+2026-02-23 14:00:09 [[34mdebug[39m]: [SQL] 
+      SELECT
+        wt.id, wt.type, wt.amount, wt.balance_after,
+        wt.description, wt.reference_id, wt.reference_type, wt.created_at,
+        po.order_ref, po.payment_status,
+        p.name AS plan_name
+      FROM dbo.wallet_transactions wt
+      LEFT JOIN dbo.payment_orders po
+             ON po.id = TRY_CAST(wt.reference_id AS BIGINT)
+            AND wt.reference_type IN ('payment_order', 'wallet_recharge')
+      LEFT JOIN dbo.broadband_plans p ON p.id = po.plan_id
+      WHERE wt.user_id = @1
+      ORDER BY wt.created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 14:00:09 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 26.300 ms - 3934[0m
+2026-02-23 14:00:15 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:00:15 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 14:00:15 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 15.211 ms - 549[0m
+2026-02-23 14:00:18 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:00:18 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."help_tickets" where "user_id" = @1
+2026-02-23 14:00:18 [[34mdebug[39m]: [SQL] 
+      SELECT id, ticket_number, category, subject,
+             status, priority, created_at, updated_at
+      FROM dbo.help_tickets
+      WHERE user_id = @1
+      ORDER BY created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 14:00:18 [[32mhttp[39m]: [0mGET /api/v1/tickets?page=1&limit=10 [32m200[0m 14.649 ms - 551[0m
+2026-02-23 14:00:19 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:00:19 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."wallet_transactions" where "user_id" = @1
+2026-02-23 14:00:19 [[34mdebug[39m]: [SQL] 
+      SELECT
+        wt.id, wt.type, wt.amount, wt.balance_after,
+        wt.description, wt.reference_id, wt.reference_type, wt.created_at,
+        po.order_ref, po.payment_status,
+        p.name AS plan_name
+      FROM dbo.wallet_transactions wt
+      LEFT JOIN dbo.payment_orders po
+             ON po.id = TRY_CAST(wt.reference_id AS BIGINT)
+            AND wt.reference_type IN ('payment_order', 'wallet_recharge')
+      LEFT JOIN dbo.broadband_plans p ON p.id = po.plan_id
+      WHERE wt.user_id = @1
+      ORDER BY wt.created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 14:00:19 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 15.914 ms - 3934[0m
+2026-02-23 14:22:16 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:22:16 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 14:22:16 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 39.608 ms - 549[0m
+2026-02-23 14:22:30 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:22:30 [[32mhttp[39m]: [0mPUT /api/v1/user/profile/image [33m400[0m 5.226 ms - 122[0m
+2026-02-23 14:25:36 [[34mdebug[39m]: [SQL] select top(1) "id" from "dbo"."users"
+2026-02-23 14:25:36 [[32minfo[39m]: Kysely — SQL Server connection pool ready ✓
+2026-02-23 14:25:36 [[32minfo[39m]: Database connection established ✓
+2026-02-23 14:25:36 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-23 14:25:36 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-23 14:25:44 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:25:44 [[31merror[39m]: [SQL ERROR] Error: String or binary data would be truncated in table 'broadbanddb.dbo.users', column 'profile_image'. Truncated value: 'data:image/jpeg;base64,/9j/4QINRXhpZgAATU0AKgAAAAgABwEAAAQAAAABAAACWAEQAAIAAAAUAAAAYgEBAAQAAAABAAADI'.
+2026-02-23 14:25:44 [[31merror[39m]: Error: String or binary data would be truncated in table 'broadbanddb.dbo.users', column 'profile_image'. Truncated value: 'data:image/jpeg;base64,/9j/4QINRXhpZgAATU0AKgAAAAgABwEAAAQAAAABAAACWAEQAAIAAAAUAAAAYgEBAAQAAAABAAADI'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async UpdateQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\update-query-builder.js:461:24)
+    at async Object.updateProfileImage (C:\Users\Developer\app\speedonet-backend\services\userService.js:51:3)
+    at async updateProfileImage (C:\Users\Developer\app\speedonet-backend\controllers\userController.js:34:5)
+2026-02-23 14:25:44 [[32mhttp[39m]: [0mPUT /api/v1/user/profile/image [31m500[0m 57.236 ms - 249[0m
+2026-02-23 14:26:42 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:26:42 [[34mdebug[39m]: [SQL] select top(1) "id", "status", "rejection_reason", "address_proof_type", "id_proof_type", "submitted_at", "reviewed_at" from "dbo"."kyc_submissions" where "user_id" = @1 order by "submitted_at" desc
+2026-02-23 14:26:42 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 22.372 ms - 257[0m
+2026-02-23 14:27:01 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:27:01 [[34mdebug[39m]: [SQL] select top(1) "id", "status", "rejection_reason", "address_proof_type", "id_proof_type", "submitted_at", "reviewed_at" from "dbo"."kyc_submissions" where "user_id" = @1 order by "submitted_at" desc
+2026-02-23 14:27:01 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 8.488 ms - 257[0m
+2026-02-23 14:28:53 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:28:53 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 14:28:53 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 19.620 ms - 549[0m
+2026-02-23 14:29:15 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:29:15 [[34mdebug[39m]: [SQL] update "dbo"."users" set "profile_image" = @1, "updated_at" = SYSUTCDATETIME() where "id" = @2
+2026-02-23 14:29:15 [[32mhttp[39m]: [0mPUT /api/v1/user/profile/image [32m200[0m 37.815 ms - 47354[0m
+2026-02-23 14:29:15 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:29:15 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 14:29:15 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 9.628 ms - 47785[0m
+2026-02-23 14:29:20 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:29:20 [[34mdebug[39m]: [SQL] 
+      SELECT
+        wt.id, wt.type, wt.amount, wt.balance_after,
+        wt.description, wt.reference_id, wt.reference_type, wt.created_at,
+        po.order_ref, po.payment_status,
+        p.name AS plan_name
+      FROM dbo.wallet_transactions wt
+      LEFT JOIN dbo.payment_orders po
+             ON po.id = TRY_CAST(wt.reference_id AS BIGINT)
+            AND wt.reference_type IN ('payment_order', 'wallet_recharge')
+      LEFT JOIN dbo.broadband_plans p ON p.id = po.plan_id
+      WHERE wt.user_id = @1
+      ORDER BY wt.created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 14:29:20 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."wallet_transactions" where "user_id" = @1
+2026-02-23 14:29:20 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 35.731 ms - 3934[0m
+2026-02-23 14:29:26 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:29:26 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 14:29:26 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 55.737 ms - 47785[0m
+2026-02-23 14:29:36 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:29:36 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."wallet_transactions" where "user_id" = @1
+2026-02-23 14:29:36 [[34mdebug[39m]: [SQL] 
+      SELECT
+        wt.id, wt.type, wt.amount, wt.balance_after,
+        wt.description, wt.reference_id, wt.reference_type, wt.created_at,
+        po.order_ref, po.payment_status,
+        p.name AS plan_name
+      FROM dbo.wallet_transactions wt
+      LEFT JOIN dbo.payment_orders po
+             ON po.id = TRY_CAST(wt.reference_id AS BIGINT)
+            AND wt.reference_type IN ('payment_order', 'wallet_recharge')
+      LEFT JOIN dbo.broadband_plans p ON p.id = po.plan_id
+      WHERE wt.user_id = @1
+      ORDER BY wt.created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 14:29:36 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 19.115 ms - 3934[0m
+2026-02-23 14:29:58 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:29:58 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 14:29:58 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 17.027 ms - 47785[0m
+2026-02-23 14:30:44 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:30:44 [[34mdebug[39m]: [SQL] select "id", "name", "phone", "email", "profile_image", "wallet_balance", "is_active" from "dbo"."users" where "id" = @1
+2026-02-23 14:30:44 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 14.664 ms - 47473[0m
+2026-02-23 14:30:44 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:30:44 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:30:44 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 14:30:44 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 15.167 ms - 47785[0m
+2026-02-23 14:30:44 [[34mdebug[39m]: [SQL] select top(1) "id", "status", "rejection_reason", "address_proof_type", "id_proof_type", "submitted_at", "reviewed_at" from "dbo"."kyc_submissions" where "user_id" = @1 order by "submitted_at" desc
+2026-02-23 14:30:44 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 13.776 ms - 257[0m
+2026-02-23 14:30:44 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:30:44 [[34mdebug[39m]: [SQL] select "wallet_balance" from "dbo"."users" where "id" = @1
+2026-02-23 14:30:44 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 10.444 ms - 63[0m
+2026-02-23 14:31:16 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:31:16 [[34mdebug[39m]: [SQL] select "id", "name", "phone", "email", "profile_image", "wallet_balance", "is_active" from "dbo"."users" where "id" = @1
+2026-02-23 14:31:16 [[32mhttp[39m]: [0mGET /api/v1/auth/me [32m200[0m 10.103 ms - 47473[0m
+2026-02-23 14:31:17 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:31:17 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 14:31:17 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 15.908 ms - 47785[0m
+2026-02-23 14:31:17 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:31:17 [[34mdebug[39m]: [SQL] select top(1) "id", "status", "rejection_reason", "address_proof_type", "id_proof_type", "submitted_at", "reviewed_at" from "dbo"."kyc_submissions" where "user_id" = @1 order by "submitted_at" desc
+2026-02-23 14:31:17 [[32mhttp[39m]: [0mGET /api/v1/user/kyc [32m200[0m 10.605 ms - 257[0m
+2026-02-23 14:31:17 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:31:17 [[34mdebug[39m]: [SQL] select "wallet_balance" from "dbo"."users" where "id" = @1
+2026-02-23 14:31:17 [[32mhttp[39m]: [0mGET /api/v1/wallet/balance [32m200[0m 7.046 ms - 63[0m
+2026-02-23 14:38:13 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:38:13 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."wallet_transactions" where "user_id" = @1
+2026-02-23 14:38:13 [[34mdebug[39m]: [SQL] 
+      SELECT
+        wt.id, wt.type, wt.amount, wt.balance_after,
+        wt.description, wt.reference_id, wt.reference_type, wt.created_at,
+        po.order_ref, po.payment_status,
+        p.name AS plan_name
+      FROM dbo.wallet_transactions wt
+      LEFT JOIN dbo.payment_orders po
+             ON po.id = TRY_CAST(wt.reference_id AS BIGINT)
+            AND wt.reference_type IN ('payment_order', 'wallet_recharge')
+      LEFT JOIN dbo.broadband_plans p ON p.id = po.plan_id
+      WHERE wt.user_id = @1
+      ORDER BY wt.created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 14:38:13 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 18.322 ms - 3934[0m
+2026-02-23 14:38:15 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:38:15 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."help_tickets" where "user_id" = @1
+2026-02-23 14:38:15 [[34mdebug[39m]: [SQL] 
+      SELECT id, ticket_number, category, subject,
+             status, priority, created_at, updated_at
+      FROM dbo.help_tickets
+      WHERE user_id = @1
+      ORDER BY created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 14:38:15 [[32mhttp[39m]: [0mGET /api/v1/tickets?page=1&limit=10 [32m200[0m 15.063 ms - 551[0m
+2026-02-23 14:38:17 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:38:17 [[34mdebug[39m]: [SQL] select "u"."id", "u"."name", "u"."phone", "u"."email", "u"."profile_image", "u"."wallet_balance", "u"."is_active", "u"."created_at", "a"."house_no", "a"."address", "a"."city", "a"."state", "a"."pin_code", "k"."status" as "kyc_status", "k"."submitted_at" as "kyc_submitted_at", "rc"."code" as "referral_code", "rc"."referral_url" as "referral_url" from "dbo"."users" as "u" left join "dbo"."user_addresses" as "a" on "a"."user_id" = "u"."id" and "a"."is_primary" = @1 left join "dbo"."kyc_submissions" as "k" on "k"."user_id" = "u"."id" left join "dbo"."referral_codes" as "rc" on "rc"."user_id" = "u"."id" where "u"."id" = @2
+2026-02-23 14:38:17 [[32mhttp[39m]: [0mGET /api/v1/user/profile [32m200[0m 25.361 ms - 47785[0m
+2026-02-23 14:38:22 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:38:22 [[34mdebug[39m]: [SQL] select count("id") as "total" from "dbo"."wallet_transactions" where "user_id" = @1
+2026-02-23 14:38:22 [[34mdebug[39m]: [SQL] 
+      SELECT
+        wt.id, wt.type, wt.amount, wt.balance_after,
+        wt.description, wt.reference_id, wt.reference_type, wt.created_at,
+        po.order_ref, po.payment_status,
+        p.name AS plan_name
+      FROM dbo.wallet_transactions wt
+      LEFT JOIN dbo.payment_orders po
+             ON po.id = TRY_CAST(wt.reference_id AS BIGINT)
+            AND wt.reference_type IN ('payment_order', 'wallet_recharge')
+      LEFT JOIN dbo.broadband_plans p ON p.id = po.plan_id
+      WHERE wt.user_id = @1
+      ORDER BY wt.created_at DESC
+      OFFSET @2 ROWS FETCH NEXT @3 ROWS ONLY
+    
+2026-02-23 14:38:22 [[32mhttp[39m]: [0mGET /api/v1/plans/transactions?page=1&limit=20 [32m200[0m 7.867 ms - 3934[0m
+2026-02-23 14:38:45 [[32mhttp[39m]: [0mGET / [33m404[0m 0.971 ms - 51[0m
+2026-02-23 14:38:48 [[32mhttp[39m]: [0mGET /nice%20ports%2C/Tri%6Eity.txt%2ebak [33m404[0m 0.646 ms - 86[0m
+2026-02-23 14:38:58 [[32mhttp[39m]: [0mGET /cgi-mod/header_logo.cgi?size=big [33m404[0m 0.488 ms - 74[0m
+2026-02-23 14:38:58 [[32mhttp[39m]: [0mGET /health [33m404[0m 0.290 ms - 57[0m
+2026-02-23 14:38:58 [[32mhttp[39m]: [0mGET / [33m404[0m 0.557 ms - 51[0m
+2026-02-23 14:38:59 [[32mhttp[39m]: [0mGET /favicon.ico [33m404[0m 0.713 ms - 62[0m
+2026-02-23 14:38:59 [[32mhttp[39m]: [0mGET / [33m404[0m 0.284 ms - 51[0m
+2026-02-23 14:38:59 [[32mhttp[39m]: [0mGET /ise/img/rm-logo_small.png [33m404[0m 0.623 ms - 76[0m
+2026-02-23 14:38:59 [[32mhttp[39m]: [0mGET /dashboard/ [33m404[0m 0.247 ms - 61[0m
+2026-02-23 14:39:00 [[32mhttp[39m]: [0mGET /images/logo.png [33m404[0m 0.225 ms - 66[0m
+2026-02-23 14:39:00 [[32mhttp[39m]: [0mGET /webui/index.html [33m404[0m 0.330 ms - 67[0m
+2026-02-23 14:39:00 [[32mhttp[39m]: [0mGET /phoenix/favicon.ico [33m404[0m 0.220 ms - 70[0m
+2026-02-23 14:39:00 [[32mhttp[39m]: [0mGET /assets/png/favicon-abe32304.png [33m404[0m 0.613 ms - 82[0m
+2026-02-23 14:39:00 [[32mhttp[39m]: [0mGET /App_Themes/Default/Images/favicon.ico [33m404[0m 0.593 ms - 88[0m
+2026-02-23 14:39:00 [[32mhttp[39m]: [0mGET /images/logo.gif [33m404[0m 0.493 ms - 66[0m
+2026-02-23 14:39:01 [[32mhttp[39m]: [0mGET /assets/img/favicon.ico [33m404[0m 0.556 ms - 73[0m
+2026-02-23 14:39:01 [[32mhttp[39m]: [0mGET /themes/admin/default/build/assets/favicon-19fbef86.svg [33m404[0m 0.537 ms - 105[0m
+2026-02-23 14:39:01 [[32mhttp[39m]: [0mGET /dashboard/favicon.ico [33m404[0m 0.500 ms - 72[0m
+2026-02-23 14:39:01 [[32mhttp[39m]: [0mGET /kubepi/fav.png [33m404[0m 0.482 ms - 65[0m
+2026-02-23 14:39:01 [[32mhttp[39m]: [0mGET /public/static/favicon.png [33m404[0m 0.596 ms - 76[0m
+2026-02-23 14:39:03 [[32mhttp[39m]: [0mGET / [33m404[0m 0.587 ms - 51[0m
+2026-02-23 14:54:18 [[34mdebug[39m]: [SQL] select top(1) "id" from "dbo"."users"
+2026-02-23 14:54:18 [[32minfo[39m]: Kysely — SQL Server connection pool ready ✓
+2026-02-23 14:54:18 [[32minfo[39m]: Database connection established ✓
+2026-02-23 14:54:18 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-23 14:54:18 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-23 14:54:21 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:54:21 [[31merror[39m]: [SQL ERROR] Error: The INSERT statement conflicted with the CHECK constraint "CK_order_method". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_method'.
+2026-02-23 14:54:21 [[31merror[39m]: Error: The INSERT statement conflicted with the CHECK constraint "CK_order_method". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_method'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
+    at async initiateWalletRecharge (C:\Users\Developer\app\speedonet-backend\controllers\paymentController.js:32:5)
+2026-02-23 14:54:21 [[32mhttp[39m]: [0mPOST /api/v1/payments/atom/initiate [33m400[0m 39.444 ms - 63[0m
+2026-02-23 14:54:23 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 14:54:23 [[31merror[39m]: [SQL ERROR] Error: The INSERT statement conflicted with the CHECK constraint "CK_order_method". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_method'.
+2026-02-23 14:54:23 [[31merror[39m]: Error: The INSERT statement conflicted with the CHECK constraint "CK_order_method". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_method'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
+    at async initiateWalletRecharge (C:\Users\Developer\app\speedonet-backend\controllers\paymentController.js:32:5)
+2026-02-23 14:54:23 [[32mhttp[39m]: [0mPOST /api/v1/payments/atom/initiate [33m400[0m 10.178 ms - 63[0m
+2026-02-23 15:00:13 [[34mdebug[39m]: [SQL] select top(1) "id" from "dbo"."users"
+2026-02-23 15:00:13 [[32minfo[39m]: Kysely — SQL Server connection pool ready ✓
+2026-02-23 15:00:13 [[32minfo[39m]: Database connection established ✓
+2026-02-23 15:00:13 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-23 15:00:13 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-23 15:00:19 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 15:00:19 [[31merror[39m]: [SQL ERROR] Error: The INSERT statement conflicted with the CHECK constraint "CK_order_method". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_method'.
+2026-02-23 15:00:19 [[31merror[39m]: Error: The INSERT statement conflicted with the CHECK constraint "CK_order_method". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_method'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
+    at async initiateWalletRecharge (C:\Users\Developer\app\speedonet-backend\controllers\paymentController.js:32:5)
+2026-02-23 15:00:19 [[32mhttp[39m]: [0mPOST /api/v1/payments/atom/initiate [33m400[0m 35.087 ms - 63[0m
+2026-02-23 15:04:23 [[34mdebug[39m]: [SQL] select top(1) "id" from "dbo"."users"
+2026-02-23 15:04:23 [[32minfo[39m]: Kysely — SQL Server connection pool ready ✓
+2026-02-23 15:04:23 [[32minfo[39m]: Database connection established ✓
+2026-02-23 15:04:23 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-02-23 15:04:23 [[32minfo[39m]: Health: http://localhost:3000/api/v1/health
+2026-02-23 15:04:57 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
+2026-02-23 15:04:57 [[34mdebug[39m]: [SQL] insert into "dbo"."payment_orders" ("user_id", "order_ref", "type", "provider_id", "plan_id", "consumer_id", "base_amount", "gst_amount", "discount_amount", "total_amount", "payment_method", "payment_status", "gateway_name", "gateway_order_id", "gateway_txn_id") values (@1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15)
+2026-02-23 15:04:57 [[32minfo[39m]: [Atom] Initiating payment | txnid=SPD-20260223093457-F43299 amt=10.00
+2026-02-23 15:04:57 [[31merror[39m]: [Atom] Unexpected auth response:
+2026-02-23 15:04:57 [[32mhttp[39m]: [0mPOST /api/v1/payments/atom/initiate [31m502[0m 90.251 ms - 70[0m
