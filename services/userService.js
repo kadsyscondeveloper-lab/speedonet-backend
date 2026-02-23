@@ -121,7 +121,7 @@ async function addAddress(userId, { label, house_no, address, city, state, pin_c
       state:    state    ?? null,
       pin_code: pin_code ?? null,
     })
-    .returning('id')
+    .output(['inserted.id'])
     .executeTakeFirstOrThrow();
 }
 
@@ -131,7 +131,7 @@ async function deleteAddress(userId, addressId) {
     .where('id',         '=', BigInt(addressId))
     .where('user_id',    '=', BigInt(userId))
     .where('is_primary', '=', false)
-    .returning('id')
+    .output(['inserted.id'])
     .executeTakeFirst();
   return !!row;
 }
@@ -195,7 +195,7 @@ async function submitKyc(userId, {
       id_proof_data,
       id_proof_mime,
     })
-    .returning('id')
+    .output(['inserted.id'])
     .executeTakeFirstOrThrow();
 
   return row.id;
