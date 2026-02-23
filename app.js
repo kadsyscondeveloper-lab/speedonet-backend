@@ -10,16 +10,10 @@ const app = express();
 // ── Security headers ──────────────────────────────────────────────────────────
 app.use(
   helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https:"],
-        styleSrc: ["'self'", "https:", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:", "https:"],
-        formAction: ["'self'", "https://payment1.atomtech.in"],
-        frameAncestors: ["'self'"],
-      },
-    },
+    contentSecurityPolicy: false,
+    crossOriginOpenerPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
   })
 );
 
