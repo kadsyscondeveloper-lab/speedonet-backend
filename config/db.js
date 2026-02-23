@@ -1,75 +1,64 @@
-const sql = require('mssql');
-const logger = require('../utils/logger');
+/**
+ * config/db.js
+ * Kysely instance using the built-in MssqlDialect with tedious + tarn.
+ * Drop-in replacement for the old db.js — export `db` instead of { sql, query, execProc }.
+ */
 
-const config = {
-  server:   process.env.DB_SERVER,
-  port:     parseInt(process.env.DB_PORT || '1433'),
-  database: process.env.DB_NAME,
-  user:     process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  options: {
-    encrypt:                process.env.DB_ENCRYPT === 'true',
-    trustServerCertificate: process.env.DB_TRUST_CERT === 'true',
-    enableArithAbort:       true,
+require('dotenv').config();
+const { Kysely, MssqlDialect, sql } = require('kysely');
+const Tedious = require('tedious');
+const Tarn    = require('tarn');
+const logger  = require('../utils/logger');
+
+const dialect = new MssqlDialect({
+  tarn: {
+    ...Tarn,
+    options: {
+      min:               2,
+      max:               10,
+      idleTimeoutMillis: 30_000,
+    },
   },
-  pool: {
-    max:              10,
-    min:              2,
-    idleTimeoutMillis: 30000,
+  tedious: {
+    ...Tedious,
+    connectionFactory: () => new Tedious.Connection({
+      server: process.env.DB_SERVER,
+      authentication: {
+        type:    'default',
+        options: {
+          userName: process.env.DB_USER,
+          password: process.env.DB_PASSWORD,
+        },
+      },
+      options: {
+        port:                   parseInt(process.env.DB_PORT || '1433'),
+        database:               process.env.DB_NAME,
+        encrypt:                process.env.DB_ENCRYPT === 'true',
+        trustServerCertificate: process.env.DB_TRUST_CERT === 'true',
+        connectTimeout:         15_000,
+        requestTimeout:         15_000,
+      },
+    }),
   },
-  connectionTimeout: 15000,
-  requestTimeout:    15000,
-};
+});
 
-let pool = null;
-
-/**
- * Get (or lazily create) the shared connection pool.
- */
-async function getPool() {
-  if (pool && pool.connected) return pool;
-  pool = await sql.connect(config);
-  logger.info('SQL Server pool connected');
-  return pool;
-}
+const db = new Kysely({
+  dialect,
+  log: process.env.NODE_ENV !== 'production'
+    ? (event) => {
+        if (event.level === 'query') logger.debug(`[SQL] ${event.query.sql}`);
+        if (event.level === 'error') logger.error(`[SQL ERROR] ${event.error}`);
+      }
+    : undefined,
+});
 
 /**
- * Run a parameterised query.
- *
- * @param {string} query  - T-SQL string with @param placeholders
- * @param {Object} params - { paramName: { type: sql.NVarChar(50), value: 'x' } }
- * @returns {sql.IResult}
+ * Call once at startup to verify the pool is alive.
+ * Replace `await getPool()` in server.js with `await connectDb()`.
  */
-async function query(queryStr, params = {}) {
-  const p = await getPool();
-  const request = p.request();
-
-  for (const [name, { type, value }] of Object.entries(params)) {
-    request.input(name, type, value);
-  }
-
-  return request.query(queryStr);
+async function connectDb() {
+  await db.selectFrom('dbo.users').select('id').top(1).execute();
+  logger.info('Kysely — SQL Server connection pool ready ✓');
 }
 
-/**
- * Execute a stored procedure.
- *
- * @param {string} procName
- * @param {Object} inputs  - { name: { type, value } }
- * @param {Object} outputs - { name: type }
- */
-async function execProc(procName, inputs = {}, outputs = {}) {
-  const p = await getPool();
-  const request = p.request();
-
-  for (const [name, { type, value }] of Object.entries(inputs)) {
-    request.input(name, type, value);
-  }
-  for (const [name, type] of Object.entries(outputs)) {
-    request.output(name, type);
-  }
-
-  return request.execute(procName);
-}
-
-module.exports = { sql, query, execProc, getPool };
+module.exports = { db, sql, connectDb };
