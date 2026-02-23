@@ -89,7 +89,7 @@ async function rechargeWallet(userId, {
         gateway_txn_id:   gatewayTxnId,
         paid_at:          new Date(),
       })
-      .returning('id')
+      .output(['inserted.id'])
       .executeTakeFirstOrThrow();
 
     const orderId = orderRow.id;

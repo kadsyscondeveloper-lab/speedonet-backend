@@ -246,6 +246,45 @@ export interface NotificationsTable {
 export type Notification    = Selectable<NotificationsTable>;
 export type NewNotification = Insertable<NotificationsTable>;
 
+
+// =============================================================================
+// dbo.help_tickets
+// =============================================================================
+export interface HelpTicketsTable {
+  id:             AutoId;
+  user_id:        bigint;
+  ticket_number:  string;                              // e.g. SPT-20240223-AB12CD
+  category:       string;                              // nvarchar(30)
+  subject:        string;                              // nvarchar(300)
+  description:    string;                              // nvarchar(MAX)
+  attachment_url: string | null;                       // nvarchar(500)
+  status:         ColumnType<string, string | undefined, string>; // 'open' | 'in_progress' | 'resolved' | 'closed'
+  priority:       ColumnType<string, string | undefined, string>; // 'low' | 'medium' | 'high'
+  assigned_to:    bigint | null;
+  resolved_at:    Date | null;
+  created_at:     AutoDate;
+  updated_at:     AutoDate;
+}
+
+export type HelpTicket    = Selectable<HelpTicketsTable>;
+export type NewHelpTicket = Insertable<HelpTicketsTable>;
+
+// =============================================================================
+// dbo.ticket_replies
+// =============================================================================
+export interface TicketRepliesTable {
+  id:             AutoId;
+  ticket_id:      bigint;
+  sender_id:      bigint;
+  sender_type:    string;    // 'user' | 'admin'  — nvarchar(10)
+  message:        string;    // nvarchar(MAX)
+  attachment_url: string | null;
+  created_at:     AutoDate;
+}
+
+export type TicketReply    = Selectable<TicketRepliesTable>;
+export type NewTicketReply = Insertable<TicketRepliesTable>;
+
 // =============================================================================
 // Root Database interface — passed to Kysely<Database>
 // =============================================================================
@@ -262,4 +301,6 @@ export interface Database {
   'dbo.user_addresses':       UserAddressesTable;
   'dbo.kyc_submissions':      KycSubmissionsTable;
   'dbo.notifications':        NotificationsTable;
+  'dbo.help_tickets':   HelpTicketsTable;
+  'dbo.ticket_replies': TicketRepliesTable;
 }

@@ -95,19 +95,18 @@ async function purchasePlan(userId, planId, paymentMode = 'wallet') {
         gateway_order_id: null,
         gateway_txn_id:   null,
       })
-      .returning('id')
+      .output(['inserted.id'])
       .executeTakeFirstOrThrow();
 
     const orderId = orderRow.id;
 
     // 2. Re-read wallet balance inside the transaction with a row lock
     //    to guard against two simultaneous purchases draining the wallet
-    const freshUser = await trx
-      .selectFrom('dbo.users')
-      .select('wallet_balance')
-      .where('id', '=', BigInt(userId))
-      .forUpdate()
-      .executeTakeFirstOrThrow();
+    const freshUser = await sql`
+  SELECT wallet_balance
+  FROM dbo.users WITH (UPDLOCK, ROWLOCK)
+  WHERE id = ${BigInt(userId)}
+`.execute(trx).then(r => r.rows[0]);
 
     const freshBalance = parseFloat(freshUser.wallet_balance);
     if (paymentMode === 'wallet' && freshBalance < totalAmount) {
@@ -153,7 +152,7 @@ async function purchasePlan(userId, planId, paymentMode = 'wallet') {
         expires_at:   new Date(toDateStr(expiresAt)),
         data_used_gb: '0',
       })
-      .returning('id')
+      .output(['inserted.id'])
       .executeTakeFirstOrThrow();
 
     // 6. Mark order as success

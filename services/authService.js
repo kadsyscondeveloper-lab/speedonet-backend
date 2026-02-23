@@ -45,7 +45,8 @@ async function createUser({ name, phone, email, password }) {
   return db
     .insertInto('dbo.users')
     .values({ name, phone, email: email ?? null, password_hash: hash })
-    .returning(['id', 'name', 'phone', 'email', 'wallet_balance', 'created_at'])
+    .output(['inserted.id', 'inserted.name', 'inserted.phone',
+         'inserted.email', 'inserted.wallet_balance', 'inserted.created_at'])
     .executeTakeFirstOrThrow();
 }
 
