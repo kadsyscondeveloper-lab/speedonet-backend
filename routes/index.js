@@ -5,6 +5,7 @@ router.use('/auth',  require('./auth'));
 router.use('/user',  require('./user'));
 router.use('/plans', require('./plans'));
 router.use('/wallet', require('./wallet'));
+router.use('/tickets', require('./tickets'));
 
 // Health check
 router.get('/health', (req, res) => {
