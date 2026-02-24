@@ -68,7 +68,7 @@ async function rechargeWallet(userId, {
 } = {}) {
   const amt = parseFloat(parseFloat(amount).toFixed(2));
 
-  if (isNaN(amt) || amt < 10)  throw Object.assign(new Error('Minimum recharge amount is ₹10.'),     { statusCode: 400 });
+  if (isNaN(amt) || amt < 1)  throw Object.assign(new Error('Minimum recharge amount is ₹1.'),     { statusCode: 400 });
   if (amt > 50_000)            throw Object.assign(new Error('Maximum recharge amount is ₹50,000.'), { statusCode: 400 });
 
   const currentBalance = await getWalletBalance(userId);

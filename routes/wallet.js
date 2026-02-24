@@ -9,7 +9,7 @@ router.use(authenticate);
 
 const rechargeRules = [
   body('amount')
-    .isFloat({ min: 10, max: 50000 })
+    .isFloat({ min: 1, max: 50000 })
     .withMessage('Amount must be between ₹10 and ₹50,000'),
   body('payment_method')
     .optional()
