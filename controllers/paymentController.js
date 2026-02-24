@@ -1,12 +1,4 @@
 // controllers/paymentController.js
-//
-// With ntt_atom_flutter SDK, the Flutter app talks to Atom's servers directly.
-// Our backend only needs three endpoints:
-//
-//   POST /api/v1/payments/atom/initiate  — create DB order, return orderRef
-//   POST /api/v1/payments/atom/callback  — Atom webhooks here (credit wallet)
-//   GET  /api/v1/payments/atom/status/:orderRef — Flutter polls for result
-
 const atomService          = require('../services/atomPaymentService');
 const walletService        = require('../services/walletService');
 const { db, sql }          = require('../config/db');
@@ -16,28 +8,31 @@ const logger               = require('../utils/logger');
 
 // =============================================================================
 // POST /api/v1/payments/atom/initiate  (Authenticated)
-//
-// Creates the pending order in DB and returns the orderRef (txnid) plus the
-// user's details needed by the SDK (email, mobile, name).
-// The SDK uses these directly — no encData generation needed server-side.
 // =============================================================================
 async function initiateWalletRecharge(req, res, next) {
   try {
     const amount = parseFloat(req.body.amount);
 
-    if (!amount || isNaN(amount) || amount < 10)
-      return R.badRequest(res, 'Minimum recharge amount is ₹10.');
+    if (!amount || isNaN(amount) || amount < 1)
+      return R.badRequest(res, 'Minimum recharge amount is ₹1.');
     if (amount > 50000)
       return R.badRequest(res, 'Maximum recharge amount is ₹50,000.');
 
     const orderRef  = generateOrderRef();
     const amtString = amount.toFixed(2);
 
+    // dbo.users has a single 'name' column — not 'first_name'/'last_name'
     const userRow = await db
       .selectFrom('dbo.users')
-      .select(['phone', 'email', 'first_name', 'last_name'])
+      .select(['phone', 'email', 'name'])
       .where('id', '=', BigInt(req.user.id))
       .executeTakeFirst();
+
+    // Split single name into first/last for the Atom SDK
+    const fullName  = userRow?.name || '';
+    const spaceIdx  = fullName.indexOf(' ');
+    const firstName = spaceIdx === -1 ? fullName : fullName.slice(0, spaceIdx);
+    const lastName  = spaceIdx === -1 ? ''       : fullName.slice(spaceIdx + 1);
 
     await db
       .insertInto('dbo.payment_orders')
@@ -47,11 +42,10 @@ async function initiateWalletRecharge(req, res, next) {
         type:             'wallet_recharge',
         provider_id:      null,
         plan_id:          null,
-        consumer_id:      String(req.user.id),
-        base_amount:      amount,
-        gst_amount:       0,
-        discount_amount:  0,
-        total_amount:     amount,
+        base_amount:      String(amount),
+        gst_amount:       '0',
+        discount_amount:  '0',
+        total_amount:     String(amount),
         payment_method:   'atom',
         payment_status:   'pending',
         gateway_name:     'atom',
@@ -62,14 +56,13 @@ async function initiateWalletRecharge(req, res, next) {
 
     logger.info(`[Payment] Initiated | user=${req.user.id} orderRef=${orderRef} amt=${amtString}`);
 
-    // Return everything the Flutter SDK needs
     return R.ok(res, {
       orderRef,
       amount:        amtString,
-      custEmail:     userRow?.email      || '',
-      custMobile:    userRow?.phone      || '',
-      custFirstName: userRow?.first_name || '',
-      custLastName:  userRow?.last_name  || '',
+      custEmail:     userRow?.email || '',
+      custMobile:    userRow?.phone || '',
+      custFirstName: firstName,
+      custLastName:  lastName,
     }, 'Payment initiated');
 
   } catch (err) {
@@ -80,9 +73,6 @@ async function initiateWalletRecharge(req, res, next) {
 
 // =============================================================================
 // POST /api/v1/payments/atom/callback  (PUBLIC — Atom webhooks here)
-//
-// Atom POSTs the encrypted response to this URL after payment completion.
-// We decrypt it, update the order, and credit the wallet if successful.
 // =============================================================================
 async function atomCallback(req, res, next) {
   try {
@@ -147,9 +137,6 @@ async function atomCallback(req, res, next) {
 
 // =============================================================================
 // GET /api/v1/payments/atom/status/:orderRef  (Authenticated)
-//
-// Flutter polls this after the SDK's onClose fires to get the authoritative
-// payment status from our DB (set by the callback above).
 // =============================================================================
 async function checkPaymentStatus(req, res, next) {
   try {

@@ -526,3 +526,5 @@
     at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
     at middleware (C:\Users\Developer\app\speedonet-backend\node_modules\express-validator\lib\middlewares\check.js:16:13)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+2026-02-24 11:16:39 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'first_name'.,Error: Invalid column name 'last_name'.
+2026-02-24 11:16:39 [[31merror[39m]: Error: Invalid column name 'first_name'.,Error: Invalid column name 'last_name'.
