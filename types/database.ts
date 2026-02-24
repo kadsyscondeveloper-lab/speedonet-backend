@@ -285,6 +285,23 @@ export interface TicketRepliesTable {
 export type TicketReply    = Selectable<TicketRepliesTable>;
 export type NewTicketReply = Insertable<TicketRepliesTable>;
 
+
+
+export interface CarouselBannersTable {
+  id: AutoId;
+  title: string | null;
+  subtitle: string | null;
+  image_data: string;           // Base64 string
+  image_mime: string;           // e.g., 'image/jpeg', 'image/png'
+  description: string | null;
+  order: ColumnType<number, number | undefined, number>;
+  is_active: ColumnType<boolean, boolean | undefined, boolean>;
+  created_at: AutoDate;
+  updated_at: AutoDate;
+}
+
+export type CarouselBanner = Selectable<CarouselBannersTable>;
+
 // =============================================================================
 // Root Database interface — passed to Kysely<Database>
 // =============================================================================
@@ -303,4 +320,5 @@ export interface Database {
   'dbo.notifications':        NotificationsTable;
   'dbo.help_tickets':   HelpTicketsTable;
   'dbo.ticket_replies': TicketRepliesTable;
+  'dbo.carousel_banners': CarouselBannersTable;
 }
