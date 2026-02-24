@@ -1,11 +1,9 @@
 // routes/payments.js
-const router = require('express').Router();
+const router          = require('express').Router();
 const { body, param } = require('express-validator');
-const { authenticate } = require('../middleware/auth');
-const { validate }     = require('../middleware/validators');
-const ctrl             = require('../controllers/paymentController');
-
-// ── Validation ────────────────────────────────────────────────────────────────
+const { authenticate }= require('../middleware/auth');
+const { validate }    = require('../middleware/validators');
+const ctrl            = require('../controllers/paymentController');
 
 const initiateRules = [
   body('amount')
@@ -15,27 +13,15 @@ const initiateRules = [
 ];
 
 const orderRefRule = [
-  param('orderRef')
-    .trim()
-    .notEmpty()
-    .withMessage('orderRef is required'),
+  param('orderRef').trim().notEmpty().withMessage('orderRef is required'),
   validate,
 ];
 
-// ── Routes ────────────────────────────────────────────────────────────────────
+// Authenticated
+router.post('/atom/initiate',         authenticate, initiateRules, ctrl.initiateWalletRecharge);
+router.get( '/atom/status/:orderRef', authenticate, orderRefRule,  ctrl.checkPaymentStatus);
 
-// Authenticated — initiate payment
-router.post('/atom/initiate', authenticate, initiateRules, ctrl.initiateWalletRecharge);
-
-// Authenticated — poll payment status after WebView closes
-router.get('/atom/status/:orderRef', authenticate, orderRefRule, ctrl.checkPaymentStatus);
-
-
-router.get('/atom/redirect/:orderRef', authenticate, orderRefRule, ctrl.redirectToAtom);
-
-// PUBLIC — Atom calls this after payment (no auth, verified by hash instead)
-router.post('/atom/callback', ctrl.atomCallback);
-
-
+// Public — Atom POSTs callback here
+router.post('/atom/callback',         ctrl.atomCallback);
 
 module.exports = router;

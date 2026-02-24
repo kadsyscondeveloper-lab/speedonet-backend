@@ -1,37 +1,44 @@
 // controllers/paymentController.js
-const atomService   = require('../services/atomPaymentService');
-const walletService = require('../services/walletService');
-const { db, sql }   = require('../config/db');
+//
+// With ntt_atom_flutter SDK, the Flutter app talks to Atom's servers directly.
+// Our backend only needs three endpoints:
+//
+//   POST /api/v1/payments/atom/initiate  — create DB order, return orderRef
+//   POST /api/v1/payments/atom/callback  — Atom webhooks here (credit wallet)
+//   GET  /api/v1/payments/atom/status/:orderRef — Flutter polls for result
+
+const atomService          = require('../services/atomPaymentService');
+const walletService        = require('../services/walletService');
+const { db, sql }          = require('../config/db');
 const { generateOrderRef } = require('../utils/helpers');
-const R             = require('../utils/response');
-const logger        = require('../utils/logger');
+const R                    = require('../utils/response');
+const logger               = require('../utils/logger');
 
 // =============================================================================
-// POST /api/v1/payments/atom/initiate
+// POST /api/v1/payments/atom/initiate  (Authenticated)
+//
+// Creates the pending order in DB and returns the orderRef (txnid) plus the
+// user's details needed by the SDK (email, mobile, name).
+// The SDK uses these directly — no encData generation needed server-side.
 // =============================================================================
 async function initiateWalletRecharge(req, res, next) {
   try {
     const amount = parseFloat(req.body.amount);
 
-    if (!amount || isNaN(amount) || amount < 10) {
+    if (!amount || isNaN(amount) || amount < 10)
       return R.badRequest(res, 'Minimum recharge amount is ₹10.');
-    }
-    if (amount > 50000) {
+    if (amount > 50000)
       return R.badRequest(res, 'Maximum recharge amount is ₹50,000.');
-    }
 
-    const orderRef   = generateOrderRef();
-    const amtString  = amount.toFixed(2);
-    const clientcode = String(req.user.id);
+    const orderRef  = generateOrderRef();
+    const amtString = amount.toFixed(2);
 
-    // ── Fetch user details to pass email/mobile to Atom ──────────────────────
     const userRow = await db
       .selectFrom('dbo.users')
-      .select(['phone', 'email'])
+      .select(['phone', 'email', 'first_name', 'last_name'])
       .where('id', '=', BigInt(req.user.id))
       .executeTakeFirst();
 
-    // ── Insert pending order ─────────────────────────────────────────────────
     await db
       .insertInto('dbo.payment_orders')
       .values({
@@ -40,7 +47,7 @@ async function initiateWalletRecharge(req, res, next) {
         type:             'wallet_recharge',
         provider_id:      null,
         plan_id:          null,
-        consumer_id:      clientcode,
+        consumer_id:      String(req.user.id),
         base_amount:      amount,
         gst_amount:       0,
         discount_amount:  0,
@@ -53,22 +60,17 @@ async function initiateWalletRecharge(req, res, next) {
       })
       .execute();
 
-    // ── Call Atom auth API ───────────────────────────────────────────────────
-    const { atomUrl, encData } = atomService.initiatePayment({
-  txnid: orderRef,
-  amt: amtString,
-  custEmail: userRow?.email || '',
-  custMobile: userRow?.phone || '',
-});
+    logger.info(`[Payment] Initiated | user=${req.user.id} orderRef=${orderRef} amt=${amtString}`);
 
-logger.info(`[Payment] Legacy initiated | user=${req.user.id} orderRef=${orderRef}`);
-
-return R.ok(res, {
-  atomUrl,
-  encData,
-  orderRef,
-  amount: amtString,
-}, 'Payment initiated');
+    // Return everything the Flutter SDK needs
+    return R.ok(res, {
+      orderRef,
+      amount:        amtString,
+      custEmail:     userRow?.email      || '',
+      custMobile:    userRow?.phone      || '',
+      custFirstName: userRow?.first_name || '',
+      custLastName:  userRow?.last_name  || '',
+    }, 'Payment initiated');
 
   } catch (err) {
     if (err.statusCode) return R.error(res, err.message, err.statusCode);
@@ -77,16 +79,18 @@ return R.ok(res, {
 }
 
 // =============================================================================
-// POST /api/v1/payments/atom/callback  (PUBLIC — called by Atom)
+// POST /api/v1/payments/atom/callback  (PUBLIC — Atom webhooks here)
+//
+// Atom POSTs the encrypted response to this URL after payment completion.
+// We decrypt it, update the order, and credit the wallet if successful.
 // =============================================================================
 async function atomCallback(req, res, next) {
   try {
-    // processCallback now handles both JSON and legacy encData formats
     const result = atomService.processCallback(req.body);
     const { txnid: orderRef, atomtxnId, bankTxnId, amt, txnStatus, success } = result;
 
     if (!orderRef) {
-      logger.warn('[Payment] Callback missing orderRef / merchTxnId');
+      logger.warn('[Payment] Callback missing orderRef');
       return R.badRequest(res, 'Missing transaction reference');
     }
 
@@ -103,11 +107,10 @@ async function atomCallback(req, res, next) {
     }
 
     if (order.payment_status === 'success') {
-      logger.info(`[Payment] Duplicate callback ignored for orderRef=${orderRef}`);
+      logger.info(`[Payment] Duplicate callback ignored | orderRef=${orderRef}`);
       return R.ok(res, null, 'Already processed');
     }
 
-    // ── Update order status ──────────────────────────────────────────────────
     await db
       .updateTable('dbo.payment_orders')
       .set({
@@ -120,20 +123,17 @@ async function atomCallback(req, res, next) {
       .where('order_ref', '=', orderRef)
       .execute();
 
-    // ── Credit wallet on success ─────────────────────────────────────────────
     if (success) {
       const userId = Number(order.user_id);
       const amount = parseFloat(amt || String(order.total_amount));
-
-      // Pass existing order ref so walletService doesn't create a second order
       await walletService.rechargeWallet(userId, {
         amount,
-        paymentMethod:  'atom',
-        gatewayOrderId: atomtxnId,
-        gatewayTxnId:   bankTxnId,
-        existingOrderRef: orderRef,   // tells walletService to skip order INSERT
+        paymentMethod:    'atom',
+        gatewayOrderId:   atomtxnId,
+        gatewayTxnId:     bankTxnId,
+        existingOrderRef: orderRef,
       });
-      logger.info(`[Payment] Wallet credited | user=${userId} amt=${amount}`);
+      logger.info(`[Payment] Wallet credited | user=${userId} amt=${amount} orderRef=${orderRef}`);
     }
 
     return R.ok(res, { orderRef, success, txnStatus },
@@ -146,7 +146,10 @@ async function atomCallback(req, res, next) {
 }
 
 // =============================================================================
-// GET /api/v1/payments/atom/status/:orderRef  (Authenticated — Flutter polls)
+// GET /api/v1/payments/atom/status/:orderRef  (Authenticated)
+//
+// Flutter polls this after the SDK's onClose fires to get the authoritative
+// payment status from our DB (set by the callback above).
 // =============================================================================
 async function checkPaymentStatus(req, res, next) {
   try {
@@ -154,84 +157,20 @@ async function checkPaymentStatus(req, res, next) {
 
     const order = await db
       .selectFrom('dbo.payment_orders')
-      .select([
-        'order_ref', 'payment_status', 'total_amount',
-        'gateway_txn_id', 'gateway_order_id', 'paid_at',
-      ])
+      .select(['order_ref', 'payment_status', 'total_amount',
+               'gateway_txn_id', 'gateway_order_id', 'paid_at'])
       .where('order_ref', '=', orderRef)
       .where('user_id',   '=', BigInt(req.user.id))
       .executeTakeFirst();
 
     if (!order) return R.notFound(res, 'Order not found');
-
     return R.ok(res, { order });
 
-  } catch (err) {
-    next(err);
-  }
+  } catch (err) { next(err); }
 }
 
-
-
-// =============================================================================
-// GET /api/v1/payments/atom/redirect/:orderRef  (Authenticated — WebView loads this)
-// =============================================================================
-async function redirectToAtom(req, res, next) {
-  try {
-    const { orderRef } = req.params;
-
-    const order = await db
-      .selectFrom('dbo.payment_orders')
-      .select(['order_ref', 'total_amount', 'payment_status'])
-      .where('order_ref', '=', orderRef)
-      .where('user_id',   '=', BigInt(req.user.id))
-      .executeTakeFirst();
-
-    if (!order) return R.notFound(res, 'Order not found');
-    if (order.payment_status !== 'pending') {
-      return R.badRequest(res, 'Order already processed');
-    }
-
-    const { atomUrl, encData } = atomService.initiatePayment({
-      txnid:      orderRef,
-      amt:        parseFloat(order.total_amount).toFixed(2),
-      custEmail:  '',
-      custMobile: '',
-    });
-
-    // Return raw HTML — no helmet CSP interference
-    res.setHeader('Content-Type', 'text/html');
-    res.setHeader('X-Frame-Options', 'ALLOWALL');
-    res.removeHeader('Content-Security-Policy');
-    
-    return res.send(`<!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting to Payment...</title>
-    <style>
-      body { font-family: sans-serif; text-align: center; padding: 40px; }
-      p { color: #555; }
-    </style>
-  </head>
-  <body>
-    <p>Redirecting to secure payment gateway...</p>
-    <form id="payForm" method="post" action="${atomUrl}">
-      <input type="hidden" name="encData" value="${encData}" />
-    </form>
-    <script>
-      window.onload = function() {
-        setTimeout(function() {
-          document.getElementById('payForm').submit();
-        }, 100);
-      };
-    </script>
-  </body>
-</html>`);
-
-  } catch (err) {
-    next(err);
-  }
-}
-
-module.exports = { initiateWalletRecharge, atomCallback, checkPaymentStatus, redirectToAtom };
+module.exports = {
+  initiateWalletRecharge,
+  atomCallback,
+  checkPaymentStatus,
+};
