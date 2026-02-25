@@ -1,11 +1,13 @@
+// routes/carousels.js
+const router = require('express').Router();
 const carouselService = require('../services/carouselService');
 const R = require('../utils/response');
 
+// GET all active carousels
 async function getCarousels(req, res, next) {
   try {
     const carousels = await carouselService.getActiveCarousels();
     
-    // Format for Flutter: data:mime;base64,xxxxx
     const formattedCarousels = carousels.map(c => ({
       id: c.id,
       title: c.title,
@@ -20,11 +22,12 @@ async function getCarousels(req, res, next) {
   }
 }
 
+// POST create carousel (no auth for testing)
 async function createCarousel(req, res, next) {
   try {
     const { title, subtitle, image_data, image_mime, description, order } = req.body;
 
-    const carousel = await carouselService.createCarousel(req.user.id, {
+    const carousel = await carouselService.createCarousel(null, {  // ← Pass null instead of req.user.id
       title,
       subtitle,
       image_data,
@@ -40,4 +43,7 @@ async function createCarousel(req, res, next) {
   }
 }
 
-module.exports = { getCarousels, createCarousel };
+router.get('/', getCarousels);
+router.post('/', createCarousel);
+
+module.exports = router;

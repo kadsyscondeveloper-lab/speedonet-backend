@@ -528,3 +528,14 @@
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
 2026-02-24 11:16:39 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'first_name'.,Error: Invalid column name 'last_name'.
 2026-02-24 11:16:39 [[31merror[39m]: Error: Invalid column name 'first_name'.,Error: Invalid column name 'last_name'.
+2026-02-24 18:10:54 [[31merror[39m]: TypeError: Cannot read properties of undefined (reading 'id')
+    at createCarousel (C:\Users\Developer\app\speedonet-backend\routes\carousels.js:31:68)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:175:3)
+    at router (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:47:12)
