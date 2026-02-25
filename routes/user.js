@@ -4,6 +4,7 @@ const { body, query, param } = require('express-validator');
 const { authenticate }       = require('../middleware/auth');
 const { validate }           = require('../middleware/validators');
 const ctrl                   = require('../controllers/userController');
+const billCtrl = require('../controllers/billController');
 
 // All user routes require authentication
 router.use(authenticate);
@@ -186,5 +187,12 @@ router.patch('/notifications/read', markReadRules,   ctrl.markRead);
 // REFERRALS
 // =============================================================================
 router.get('/referrals', ctrl.getReferralStats);
+
+
+// =============================================================================
+// BILLS
+// =============================================================================
+router.get('/bills',     paginationRules, billCtrl.getBills);
+router.get('/bills/:id', param('id').isInt({ min: 1 }), validate, billCtrl.getBill);
 
 module.exports = router;
