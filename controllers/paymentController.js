@@ -56,6 +56,14 @@ async function initiateWalletRecharge(req, res, next) {
 
     logger.info(`[Payment] Initiated | user=${req.user.id} orderRef=${orderRef} amt=${amtString}`);
 
+    // Generate encData for Atom gateway
+    const { atomUrl, encData } = atomService.initiatePayment({
+      txnid:      orderRef,
+      amt:        amtString,
+      custEmail:  userRow?.email || '',
+      custMobile: userRow?.phone || '',
+    });
+
     return R.ok(res, {
       orderRef,
       amount:        amtString,
@@ -63,6 +71,8 @@ async function initiateWalletRecharge(req, res, next) {
       custMobile:    userRow?.phone || '',
       custFirstName: firstName,
       custLastName:  lastName,
+      atomUrl,
+      encData,
     }, 'Payment initiated');
 
   } catch (err) {
