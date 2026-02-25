@@ -67,8 +67,24 @@ async function purchasePlan(userId, planId, paymentMode = 'wallet') {
   }
 
   const orderRef     = generateOrderRef();
-  const startDate    = new Date();
-  const expiresAt    = new Date(Date.now() + plan.validity_days * 86_400_000);
+ // After the pre-flight checks, replace the startDate/expiresAt lines with this:
+
+const activeSub = await db
+  .selectFrom('dbo.user_subscriptions')
+  .select('expires_at')
+  .where('user_id', '=', BigInt(userId))
+  .where('status',  '=', 'active')
+  .where('expires_at', '>=', sql`CAST(SYSDATETIME() AS DATE)`)
+  .orderBy('expires_at', 'desc')
+  .top(1)
+  .executeTakeFirst();
+
+// If active plan exists, stack on top of it. Otherwise start today.
+const startDate = activeSub
+  ? new Date(activeSub.expires_at)
+  : new Date();
+
+const expiresAt = new Date(startDate.getTime() + plan.validity_days * 86_400_000);
   const toDateStr    = (d) => d.toISOString().slice(0, 10);
   const balanceAfter = parseFloat((walletBalance - totalAmount).toFixed(2));
 
@@ -166,6 +182,27 @@ async function purchasePlan(userId, planId, paymentMode = 'wallet') {
       .where('id', '=', orderId)
       .execute();
 
+
+      // 8. Generate bill for this purchase
+      const billNumber = `INV-${Date.now()}-${orderRef.slice(-6)}`;
+      await trx
+        .insertInto('dbo.bills')
+        .values({
+          user_id:               BigInt(userId),
+          plan_id:               planId,
+          bill_number:           billNumber,
+          billing_period_start:  new Date(toDateStr(startDate)),
+          billing_period_end:    new Date(toDateStr(expiresAt)),
+          base_amount:           String(baseAmount),
+          gst_amount:            String(gstAmount),
+          total_amount:          String(totalAmount),
+          due_date:              new Date(toDateStr(startDate)),  // immediate since wallet payment
+          status:                'paid',
+          paid_via_order:        orderId,
+          paid_at:               sql`SYSUTCDATETIME()`,
+        })
+        .execute();
+
     // 7. Activation notification
     await trx
       .insertInto('dbo.notifications')
@@ -173,7 +210,9 @@ async function purchasePlan(userId, planId, paymentMode = 'wallet') {
         user_id: BigInt(userId),
         type:    'plan_activated',
         title:   'Plan Activated 🎉',
-        body:    `Your ${plan.name} plan is active until ${expiresAt.toDateString()}. Enjoy ${plan.speed_mbps} Mbps!`,
+        body: activeSub
+  ? `Your ${plan.name} plan has been queued and starts on ${startDate.toDateString()}. Valid until ${expiresAt.toDateString()}.`
+  : `Your ${plan.name} plan is active until ${expiresAt.toDateString()}. Enjoy ${plan.speed_mbps} Mbps!`,
       })
       .execute();
 
@@ -206,6 +245,7 @@ async function getActiveSubscription(userId) {
     ])
     .where('s.user_id', '=', BigInt(userId))
     .where('s.status',  '=', 'active')
+    .where('s.start_date', '<=', sql`CAST(SYSDATETIME() AS DATE)`)
     .where('s.expires_at', '>=', sql`CAST(SYSDATETIME() AS DATE)`)
     .orderBy('s.expires_at', 'desc')
     .top(1)
