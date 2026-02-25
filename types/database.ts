@@ -285,7 +285,9 @@ export interface TicketRepliesTable {
 export type TicketReply    = Selectable<TicketRepliesTable>;
 export type NewTicketReply = Insertable<TicketRepliesTable>;
 
-
+// =============================================================================
+// dbo.carousel_banners
+// =============================================================================
 
 export interface CarouselBannersTable {
   id: AutoId;
@@ -301,6 +303,31 @@ export interface CarouselBannersTable {
 }
 
 export type CarouselBanner = Selectable<CarouselBannersTable>;
+
+
+// =============================================================================
+// dbo.bills
+// =============================================================================
+export interface BillsTable {
+  id:                    AutoId;
+  user_id:               bigint;
+  plan_id:               number | null;
+  bill_number:           string;
+  billing_period_start:  Date;
+  billing_period_end:    Date;
+  base_amount:           string;
+  gst_amount:            string;
+  total_amount:          string;
+  due_date:              Date;
+  status:                ColumnType<string, string | undefined, string>; // 'paid' | 'unpaid' | 'overdue'
+  paid_via_order:        bigint | null;
+  paid_at:               Date | null;
+  created_at:            AutoDate;
+}
+
+export type Bill       = Selectable<BillsTable>;
+export type NewBill    = Insertable<BillsTable>;
+export type BillUpdate = Updateable<BillsTable>;
 
 // =============================================================================
 // Root Database interface — passed to Kysely<Database>
@@ -321,4 +348,5 @@ export interface Database {
   'dbo.help_tickets':   HelpTicketsTable;
   'dbo.ticket_replies': TicketRepliesTable;
   'dbo.carousel_banners': CarouselBannersTable;
+  'dbo.bills': BillsTable;
 }

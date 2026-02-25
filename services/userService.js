@@ -212,8 +212,8 @@ async function getNotifications(userId, { page = 1, limit = 20 } = {}) {
       .select(['id', 'type', 'title', 'body', 'is_read', 'deep_link', 'created_at'])
       .where('user_id', '=', BigInt(userId))
       .orderBy('created_at', 'desc')
-      .limit(limit)
       .offset(offset)
+      .limit(limit)
       .execute(),
 
     db
@@ -226,11 +226,7 @@ async function getNotifications(userId, { page = 1, limit = 20 } = {}) {
       .executeTakeFirstOrThrow(),
   ]);
 
-  return {
-    notifications: rows,
-    total:         Number(countRow.total),
-    unread:        Number(countRow.unread),
-  };
+  return { notifications: rows, total: Number(countRow.total), unread: Number(countRow.unread) };
 }
 
 async function markNotificationsRead(userId, ids = null) {
