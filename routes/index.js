@@ -6,7 +6,8 @@ router.use('/user',     require('./user'));
 router.use('/plans',    require('./plans'));
 router.use('/wallet',   require('./wallet'));
 router.use('/tickets',  require('./tickets'));
-router.use('/payments', require('./payments')); // NEW — Atom payment gateway
+router.use('/payments', require('./payments'));
+router.use('/carousels', require('./carousels')) // NEW — Atom payment gateway
 
 // Health check
 router.get('/health', (req, res) => {
