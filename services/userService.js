@@ -207,14 +207,14 @@ async function getNotifications(userId, { page = 1, limit = 20 } = {}) {
   const offset = (page - 1) * limit;
 
   const [rows, countRow] = await Promise.all([
-    db
-      .selectFrom('dbo.notifications')
-      .select(['id', 'type', 'title', 'body', 'is_read', 'deep_link', 'created_at'])
-      .where('user_id', '=', BigInt(userId))
-      .orderBy('created_at', 'desc')
-      .offset(offset)
-      .limit(limit)
-      .execute(),
+    // Use raw SQL instead of query builder for pagination
+    sql`
+      SELECT id, type, title, body, is_read, deep_link, created_at
+      FROM dbo.notifications
+      WHERE user_id = ${BigInt(userId)}
+      ORDER BY created_at DESC
+      OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
+    `.execute(db).then(r => r.rows),
 
     db
       .selectFrom('dbo.notifications')
@@ -226,7 +226,11 @@ async function getNotifications(userId, { page = 1, limit = 20 } = {}) {
       .executeTakeFirstOrThrow(),
   ]);
 
-  return { notifications: rows, total: Number(countRow.total), unread: Number(countRow.unread) };
+  return {
+    notifications: rows,
+    total: Number(countRow.total),
+    unread: Number(countRow.unread),
+  };
 }
 
 async function markNotificationsRead(userId, ids = null) {
