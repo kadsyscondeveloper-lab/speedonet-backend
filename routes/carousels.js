@@ -43,6 +43,11 @@ async function createCarousel(req, res, next) {
   }
 }
 
+router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
+  await db.deleteFrom('dbo.carousel_banners').where('id','=',parseInt(req.params.id)).execute();
+  return R.ok(res, null, 'Banner deleted');
+});
+
 router.get('/', getCarousels);
 router.post('/', createCarousel);
 
