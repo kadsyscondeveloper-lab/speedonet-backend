@@ -1,14 +1,15 @@
 // routes/index.js
 const router = require('express').Router();
 
-router.use('/auth',     require('./auth'));
-router.use('/user',     require('./user'));
-router.use('/plans',    require('./plans'));
-router.use('/wallet',   require('./wallet'));
-router.use('/tickets',  require('./tickets'));
-router.use('/payments', require('./payments'));
-router.use('/carousels', require('./carousels'))
-router.use('/admin', require('./admin')); 
+router.use('/auth',       require('./auth'));
+router.use('/user',       require('./user'));
+router.use('/plans',      require('./plans'));
+router.use('/wallet',     require('./wallet'));
+router.use('/tickets',    require('./tickets'));
+router.use('/payments',   require('./payments'));
+router.use('/carousels',  require('./carousels'));
+router.use('/admin/auth', require('./adminAuth'));   // ← admin login (public)
+router.use('/admin',      require('./admin'));        // ← admin dashboard (protected)
 
 // Health check
 router.get('/health', (req, res) => {
