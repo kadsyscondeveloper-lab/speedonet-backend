@@ -69,6 +69,15 @@ const resetPasswordValidation  = [
   validate,
 ];
 
+const changePasswordValidation = [
+  body('old_password')
+    .notEmpty().withMessage('Old password is required'),
+  body('new_password')
+    .notEmpty().withMessage('New password is required')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+  validate,
+];
+
 module.exports = {
   validate,
   signupValidation,
@@ -77,4 +86,5 @@ module.exports = {
   verifyOtpValidation,
   forgotPasswordValidation,
   resetPasswordValidation,
+  changePasswordValidation,
 };
