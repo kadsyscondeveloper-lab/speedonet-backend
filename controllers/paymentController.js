@@ -18,45 +18,81 @@ async function initiateWalletRecharge(req, res, next) {
     if (amount > 50000)
       return R.badRequest(res, 'Maximum recharge amount is ₹50,000.');
 
-    const orderRef  = generateOrderRef();
     const amtString = amount.toFixed(2);
 
-    // dbo.users has a single 'name' column — not 'first_name'/'last_name'
     const userRow = await db
       .selectFrom('dbo.users')
       .select(['phone', 'email', 'name'])
       .where('id', '=', BigInt(req.user.id))
       .executeTakeFirst();
 
-    // Split single name into first/last for the Atom SDK
     const fullName  = userRow?.name || '';
     const spaceIdx  = fullName.indexOf(' ');
     const firstName = spaceIdx === -1 ? fullName : fullName.slice(0, spaceIdx);
     const lastName  = spaceIdx === -1 ? ''       : fullName.slice(spaceIdx + 1);
 
-    await db
-      .insertInto('dbo.payment_orders')
-      .values({
-        user_id:          BigInt(req.user.id),
-        order_ref:        orderRef,
-        type:             'wallet_recharge',
-        provider_id:      null,
-        plan_id:          null,
-        base_amount:      String(amount),
-        gst_amount:       '0',
-        discount_amount:  '0',
-        total_amount:     String(amount),
-        payment_method:   'atom',
-        payment_status:   'pending',
-        gateway_name:     'atom',
-        gateway_order_id: null,
-        gateway_txn_id:   null,
-      })
-      .execute();
+    // ── Reuse any existing pending order for the SAME amount ────────────────
+    // This prevents duplicate pending rows when a user cancels and retries.
+    // If the amount changed, abandon the old one and create a fresh order.
+    const existingPending = await db
+      .selectFrom('dbo.payment_orders')
+      .select(['id', 'order_ref'])
+      .where('user_id',        '=', BigInt(req.user.id))
+      .where('type',           '=', 'wallet_recharge')
+      .where('payment_status', '=', 'pending')
+      .where('gateway_name',   '=', 'atom')
+      .where('total_amount',   '=', amtString)
+      .orderBy('created_at',   'desc')
+      .executeTakeFirst();
 
-    logger.info(`[Payment] Initiated | user=${req.user.id} orderRef=${orderRef} amt=${amtString}`);
+    let orderRef;
 
-    // Generate encData for Atom gateway
+    if (existingPending) {
+      // Reuse — just refresh the updated_at so it stays "alive"
+      orderRef = existingPending.order_ref;
+      await db
+        .updateTable('dbo.payment_orders')
+        .set({ updated_at: sql`SYSUTCDATETIME()` })
+        .where('id', '=', existingPending.id)
+        .execute();
+      logger.info(`[Payment] Reusing pending order | user=${req.user.id} orderRef=${orderRef} amt=${amtString}`);
+    } else {
+      // Abandon any stale pending orders (different amount or very old) by
+      // marking them failed so the wallet is never accidentally credited later.
+      await db
+        .updateTable('dbo.payment_orders')
+        .set({ payment_status: 'failed', updated_at: sql`SYSUTCDATETIME()` })
+        .where('user_id',        '=', BigInt(req.user.id))
+        .where('type',           '=', 'wallet_recharge')
+        .where('payment_status', '=', 'pending')
+        .where('gateway_name',   '=', 'atom')
+        .execute();
+
+      orderRef = generateOrderRef();
+
+      await db
+        .insertInto('dbo.payment_orders')
+        .values({
+          user_id:          BigInt(req.user.id),
+          order_ref:        orderRef,
+          type:             'wallet_recharge',
+          provider_id:      null,
+          plan_id:          null,
+          base_amount:      amtString,
+          gst_amount:       '0',
+          discount_amount:  '0',
+          total_amount:     amtString,
+          payment_method:   'atom',
+          payment_status:   'pending',
+          gateway_name:     'atom',
+          gateway_order_id: null,
+          gateway_txn_id:   null,
+        })
+        .execute();
+
+      logger.info(`[Payment] New order created | user=${req.user.id} orderRef=${orderRef} amt=${amtString}`);
+    }
+
     const { atomUrl, encData } = atomService.initiatePayment({
       txnid:      orderRef,
       amt:        amtString,
