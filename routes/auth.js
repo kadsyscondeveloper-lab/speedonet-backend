@@ -9,6 +9,7 @@ const {
   verifyOtpValidation,
   forgotPasswordValidation,
   resetPasswordValidation,
+  changePasswordValidation,
 } = require('../middleware/validators');
 
 // ── Public ────────────────────────────────────────────────────────────────────
@@ -26,6 +27,7 @@ router.post('/otp/verify',      authLimiter, verifyOtpValidation,     ctrl.verif
 // Forgot / reset password
 router.post('/forgot-password', otpLimiter,  forgotPasswordValidation, ctrl.forgotPassword);
 router.post('/reset-password',  authLimiter, resetPasswordValidation,  ctrl.resetPassword);
+router.post('/change-password', authenticate, changePasswordValidation, ctrl.changePassword);
 
 // Token refresh (refresh token in body)
 router.post('/refresh',         ctrl.refreshToken);

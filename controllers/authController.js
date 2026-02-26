@@ -37,7 +37,7 @@ async function signup(req, res, next) {
     const user = await authService.createUser({ name, phone, email, password });
 
     // 3. Auto-generate a referral code for the new user
-    const refCode = phone.slice(-4) + crypto.randomBytes(2).toString('hex').toUpperCase();
+    const refCode = phone.slice(-4) + crypto.randomBytes(4).toString('hex').toUpperCase();
     await authService.createReferralCode(user.id, refCode);
 
     // 4. If a referral code was provided, link the referral
@@ -338,6 +338,37 @@ async function me(req, res, next) {
   }
 }
 
+// =============================================================================
+// POST /api/auth/change-password
+// =============================================================================
+
+async function changePassword(req, res, next) {
+  try {
+    const { old_password, new_password } = req.body;
+
+    // 1. Fetch user with password hash
+    const user = await authService.findUserByPhone(
+      (await authService.findUserById(req.user.id)).phone
+    );
+    if (!user) return R.notFound(res, 'User not found.');
+
+    // 2. Verify old password
+    const valid = await authService.verifyPassword(old_password, user.password_hash);
+    if (!valid) {
+      return R.unauthorized(res, 'Old password is incorrect.');
+    }
+
+    // 3. Update to new password
+    await authService.updatePassword(req.user.id, new_password);
+
+    logger.info(`Password changed for user ${req.user.id}`);
+    return R.ok(res, null, 'Password changed successfully.');
+
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   signup,
   loginWithPassword,
@@ -345,6 +376,7 @@ module.exports = {
   verifyOtp,
   forgotPassword,
   resetPassword,
+  changePassword,
   refreshToken,
   logout,
   logoutAll,
