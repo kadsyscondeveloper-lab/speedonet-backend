@@ -1,5 +1,6 @@
 /**
  * controllers/ticketController.js
+ * Added: getMessages (polling endpoint for chat)
  */
 
 const ticketService = require('../services/ticketService');
@@ -70,4 +71,21 @@ async function addReply(req, res, next) {
   }
 }
 
-module.exports = { createTicket, getTickets, getTicket, addReply };
+// GET /api/v1/tickets/:id/messages?after=<reply_id>
+// Polling endpoint — returns only messages newer than `after` (for incremental updates)
+// If `after` is omitted, returns full message history
+async function getMessages(req, res, next) {
+  try {
+    const ticketId = parseInt(req.params.id);
+    if (isNaN(ticketId)) return R.badRequest(res, 'Invalid ticket ID.');
+
+    const afterId = req.query.after ? parseInt(req.query.after) : null;
+
+    const result = await ticketService.getMessages(req.user.id, ticketId, { afterId });
+    if (!result) return R.notFound(res, 'Ticket not found.');
+
+    return R.ok(res, result);
+  } catch (err) { next(err); }
+}
+
+module.exports = { createTicket, getTickets, getTicket, addReply, getMessages };
