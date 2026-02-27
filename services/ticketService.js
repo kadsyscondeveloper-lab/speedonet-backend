@@ -1,5 +1,6 @@
 /**
  * services/ticketService.js
+ * Added: getMessages() — used by the polling chat endpoint
  */
 
 const { db, sql } = require('../config/db');
@@ -11,7 +12,6 @@ function generateTicketNumber() {
   return `SPT-${date}-${rand}`;
 }
 
-// ── Keep in sync with Flutter TicketService.categories ───────────────────────
 const VALID_CATEGORIES = [
   'Billing',
   'Technical Issue',
@@ -38,7 +38,7 @@ async function createTicket(userId, { category, subject, description, priority =
       subject,
       description,
       priority,
-      attachment_url: attachmentData ?? null,   // stores base64 string or null
+      attachment_url: attachmentData ?? null,
     })
     .output(['inserted.id', 'inserted.ticket_number', 'inserted.status',
              'inserted.priority', 'inserted.created_at'])
@@ -57,7 +57,7 @@ async function createTicket(userId, { category, subject, description, priority =
   return row;
 }
 
-// ── List tickets (paginated) ──────────────────────────────────────────────────
+// ── List tickets ──────────────────────────────────────────────────────────────
 
 async function getUserTickets(userId, { page = 1, limit = 10 } = {}) {
   const offset = (page - 1) * limit;
@@ -89,7 +89,6 @@ async function getTicketById(userId, ticketId) {
     .selectFrom('dbo.help_tickets')
     .select([
       'id', 'ticket_number', 'category', 'subject', 'description',
-      // NOTE: attachment_url intentionally omitted from detail — it's base64 and large
       'status', 'priority', 'resolved_at', 'created_at', 'updated_at',
     ])
     .where('id',      '=', BigInt(ticketId))
@@ -108,6 +107,42 @@ async function getTicketById(userId, ticketId) {
   return { ...ticket, replies };
 }
 
+// ── Chat: get messages (with optional incremental polling via afterId) ─────────
+
+async function getMessages(userId, ticketId, { afterId = null } = {}) {
+  // Verify the ticket belongs to this user and get its status
+  const ticket = await db
+    .selectFrom('dbo.help_tickets')
+    .select(['id', 'status', 'ticket_number', 'subject'])
+    .where('id',      '=', BigInt(ticketId))
+    .where('user_id', '=', BigInt(userId))
+    .executeTakeFirst();
+
+  if (!ticket) return null;
+
+  // Build query — only fetch messages newer than afterId if provided
+  let query = db
+    .selectFrom('dbo.ticket_replies')
+    .select(['id', 'sender_id', 'sender_type', 'message', 'attachment_url', 'created_at'])
+    .where('ticket_id', '=', BigInt(ticketId))
+    .orderBy('created_at', 'asc');
+
+  if (afterId) {
+    query = query.where('id', '>', BigInt(afterId));
+  }
+
+  const messages = await query.execute();
+
+  return {
+    ticket_id:     ticket.id,
+    ticket_number: ticket.ticket_number,
+    subject:       ticket.subject,
+    status:        ticket.status,
+    is_active:     !['resolved', 'closed', 'Resolved', 'Closed'].includes(ticket.status),
+    messages,
+  };
+}
+
 // ── Add a user reply ──────────────────────────────────────────────────────────
 
 async function addReply(userId, ticketId, { message, attachmentData = null }) {
@@ -119,8 +154,11 @@ async function addReply(userId, ticketId, { message, attachmentData = null }) {
     .executeTakeFirst();
 
   if (!ticket) throw Object.assign(new Error('Ticket not found.'), { statusCode: 404 });
-  if (ticket.status === 'closed') {
-    throw Object.assign(new Error('Cannot reply to a closed ticket.'), { statusCode: 400 });
+
+  // Block replies on closed/resolved tickets
+  const closedStatuses = ['closed', 'resolved', 'Closed', 'Resolved'];
+  if (closedStatuses.includes(ticket.status)) {
+    throw Object.assign(new Error('Cannot reply to a closed or resolved ticket.'), { statusCode: 400 });
   }
 
   const row = await db
@@ -148,6 +186,7 @@ module.exports = {
   createTicket,
   getUserTickets,
   getTicketById,
+  getMessages,
   addReply,
   VALID_CATEGORIES,
 };
