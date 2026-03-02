@@ -4,6 +4,7 @@ const { db, sql } = require('../config/db');
 const { authenticateAdmin } = require('../middleware/adminAuth');
 const R = require('../utils/response');
 const logger = require('../utils/logger');
+const payServicesCtrl = require('../controllers/payServicesController');
 
 router.use(authenticateAdmin);
 
@@ -477,5 +478,16 @@ router.patch('/carousel/:id', async (req, res, next) => {
     return R.ok(res, null, 'Banner updated');
   } catch (err) { next(err); }
 });
+
+
+
+router.get   ('/pay-services',     payServicesCtrl.getAllServices);
+router.post  ('/pay-services',     payServicesCtrl.createService);
+router.patch ('/pay-services/:id', payServicesCtrl.updateService);
+router.delete('/pay-services/:id', payServicesCtrl.deleteService);
+router.patch ('/pay-services/providers/:providerId', payServicesCtrl.updateProvider);
+router.delete('/pay-services/providers/:providerId', payServicesCtrl.deleteProvider);
+router.post  ('/pay-services/:id/providers',         payServicesCtrl.addProvider);
+
 
 module.exports = router;
