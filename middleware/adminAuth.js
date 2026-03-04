@@ -39,7 +39,7 @@ async function authenticateAdmin(req, res, next) {
     const admin = await db
       .selectFrom('dbo.admin_users')
       .select(['id', 'email', 'role', 'is_active'])
-      .where('id', '=', BigInt(decoded.sub))
+      .where('id', '=', Number(decoded.sub))
       .executeTakeFirst();
 
     if (!admin || !admin.is_active) {
