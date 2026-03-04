@@ -3,6 +3,7 @@ const router = require('express').Router();
 const { param, body, query } = require('express-validator');
 const { authenticate }       = require('../middleware/auth');
 const { validate }           = require('../middleware/validators');
+const { validateCouponForPlan } = require('../services/planService');
 const ctrl                   = require('../controllers/planController');
 
 // ── Validation ────────────────────────────────────────────────────────────────
@@ -48,10 +49,38 @@ router.get('/subscription/active', ctrl.getActiveSubscription);
 // Subscription history
 router.get('/subscription/history', paginationRules, ctrl.getSubscriptionHistory);
 
+router.post('/coupon/validate', async (req, res, next) => {
+  try {
+    const { plan_id, coupon_code } = req.body;
+
+    if (!plan_id || !coupon_code) {
+      return res.status(400).json({ success: false, message: 'plan_id and coupon_code are required.' });
+    }
+
+    const result = await validateCouponForPlan(req.user.id, Number(plan_id), coupon_code);
+
+    return res.json({
+      success: true,
+      message: `Coupon applied! You save ₹${result.discount_amount.toFixed(2)}`,
+      data:    result,
+    });
+  } catch (err) {
+    if (err.statusCode === 400) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    next(err);
+  }
+});
+
 // Purchase a plan (must be before /:id route)
 router.post('/:id/purchase', purchaseRules, ctrl.purchasePlan);
 
 // Get single plan details (generic route — MUST be last)
 router.get('/:id', planIdRule, ctrl.getPlan);
+
+// POST /api/v1/plans/coupon/validate
+// Body: { plan_id: number, coupon_code: string }
+// Used by Flutter to validate + preview discount before purchase
+
 
 module.exports = router;

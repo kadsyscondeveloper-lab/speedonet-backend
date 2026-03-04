@@ -324,3 +324,236 @@
     at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
     at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
     at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:262:27
+2026-03-04 10:46:02 [[31merror[39m]: [SQL ERROR] Error: Incorrect syntax near '@1'.
+2026-03-04 10:46:02 [[31merror[39m]: Error: Incorrect syntax near '@1'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:262:27
+2026-03-04 10:46:04 [[31merror[39m]: [SQL ERROR] Error: Incorrect syntax near '@1'.
+2026-03-04 10:46:04 [[31merror[39m]: Error: Incorrect syntax near '@1'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:397:27
+2026-03-04 10:46:05 [[31merror[39m]: [SQL ERROR] Error: Incorrect syntax near '@1'.
+2026-03-04 10:46:05 [[31merror[39m]: Error: Incorrect syntax near '@1'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:262:27
+2026-03-04 10:49:20 [[31merror[39m]: [SQL ERROR] Error: Validation failed for parameter '1'. Invalid string.
+2026-03-04 10:49:20 [[31merror[39m]: Error: Validation failed for parameter '1'. Invalid string.
+    at Request.validateParameters (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\request.js:331:15)
+    at Connection.execSql (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:1629:15)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:130:30)
+    at connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:43)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:45
+    at DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:26)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:262:27
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:262:27
+2026-03-04 10:49:24 [[31merror[39m]: [SQL ERROR] Error: Validation failed for parameter '1'. Invalid string.
+2026-03-04 10:49:24 [[31merror[39m]: Error: Validation failed for parameter '1'. Invalid string.
+    at Request.validateParameters (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\request.js:331:15)
+    at Connection.execSql (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:1629:15)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:130:30)
+    at connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:43)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:45
+    at DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:26)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:397:27
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:397:27
+2026-03-04 10:53:14 [[31merror[39m]: [SQL ERROR] Error: Validation failed for parameter '1'. Invalid string.
+2026-03-04 10:53:14 [[31merror[39m]: Error: Validation failed for parameter '1'. Invalid string.
+    at Request.validateParameters (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\request.js:331:15)
+    at Connection.execSql (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:1629:15)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:130:30)
+    at connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:43)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:45
+    at DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:26)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:264:27
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:264:27
+2026-03-04 10:53:16 [[31merror[39m]: [SQL ERROR] Error: Validation failed for parameter '1'. Invalid string.
+2026-03-04 10:53:16 [[31merror[39m]: Error: Validation failed for parameter '1'. Invalid string.
+    at Request.validateParameters (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\request.js:331:15)
+    at Connection.execSql (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:1629:15)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:130:30)
+    at connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:43)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:45
+    at DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:26)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:399:27
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:399:27
+2026-03-04 10:53:56 [[31merror[39m]: [SQL ERROR] Error: Validation failed for parameter '1'. Invalid string.
+2026-03-04 10:53:56 [[31merror[39m]: Error: Validation failed for parameter '1'. Invalid string.
+    at Request.validateParameters (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\request.js:331:15)
+    at Connection.execSql (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:1629:15)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:130:30)
+    at connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:43)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:45
+    at DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:26)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:264:27
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:264:27
+2026-03-04 10:53:57 [[31merror[39m]: [SQL ERROR] Error: Validation failed for parameter '1'. Invalid string.
+2026-03-04 10:53:57 [[31merror[39m]: Error: Validation failed for parameter '1'. Invalid string.
+    at Request.validateParameters (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\request.js:331:15)
+    at Connection.execSql (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:1629:15)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:130:30)
+    at connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:43)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:45
+    at DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:26)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:264:27
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:264:27
+2026-03-04 10:53:58 [[31merror[39m]: [SQL ERROR] Error: Validation failed for parameter '1'. Invalid string.
+2026-03-04 10:53:58 [[31merror[39m]: Error: Validation failed for parameter '1'. Invalid string.
+    at Request.validateParameters (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\request.js:331:15)
+    at Connection.execSql (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:1629:15)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:130:30)
+    at connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:43)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:45
+    at DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:26)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:399:27
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:399:27
+2026-03-04 10:54:01 [[31merror[39m]: [SQL ERROR] Error: Validation failed for parameter '1'. Invalid string.
+2026-03-04 10:54:01 [[31merror[39m]: Error: Validation failed for parameter '1'. Invalid string.
+    at Request.validateParameters (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\request.js:331:15)
+    at Connection.execSql (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\connection.js:1629:15)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:130:30)
+    at connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:43)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:45
+    at DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:26)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:399:27
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async C:\Users\Developer\app\speedonet-backend\routes\admin.js:399:27
+2026-03-04 17:25:04 [[31merror[39m]: [SQL ERROR] Error: Incorrect syntax near 'limit'.
+2026-03-04 17:25:04 [[31merror[39m]: Error: Incorrect syntax near 'limit'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
+    at async SelectQueryBuilderImpl.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:323:26)
+    at async getActiveSubscription (C:\Users\Developer\app\speedonet-backend\controllers\planController.js:58:26)
+2026-03-04 17:25:06 [[31merror[39m]: [SQL ERROR] Error: Incorrect syntax near 'limit'.
+2026-03-04 17:25:06 [[31merror[39m]: Error: Incorrect syntax near 'limit'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)
+    at Readable.push (node:internal/streams/readable:391:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
+    at async SelectQueryBuilderImpl.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:323:26)
+    at async getActiveSubscription (C:\Users\Developer\app\speedonet-backend\controllers\planController.js:58:26)

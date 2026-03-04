@@ -96,7 +96,7 @@ router.get('/me', authenticateAdmin, async (req, res, next) => {
     const admin = await db
       .selectFrom('dbo.admin_users')
       .select(['id', 'name', 'email', 'role', 'created_at'])
-      .where('id', '=', BigInt(req.admin.id))
+      .where('id', '=', req.admin.id)
       .executeTakeFirst();
 
     if (!admin) return R.notFound(res, 'Admin not found');

@@ -7,6 +7,8 @@ const logger = require('../utils/logger');
 const payServicesCtrl = require('../controllers/payServicesController');
 
 router.use(authenticateAdmin);
+const { adminLimiter } = require('../middleware/errorHandler');
+router.use(adminLimiter);
 
 // =============================================================================
 // GET /admin/stats
@@ -260,7 +262,7 @@ router.get('/subscriptions', async (req, res, next) => {
   try {
     const limit = Math.max(1, parseInt(req.query.limit || '20'));
     const subscriptions = await sql`
-      SELECT TOP ${limit}
+      SELECT TOP (${limit})
         s.id, s.status, s.start_date, s.expires_at,
         u.name AS user_name, u.phone AS user_phone,
         p.name AS plan_name, p.speed_mbps
@@ -395,7 +397,7 @@ router.get('/notifications', async (req, res, next) => {
   try {
     const limit = Math.max(1, parseInt(req.query.limit || '20'));
     const notifications = await sql`
-      SELECT TOP ${limit}
+      SELECT TOP (${limit})
         n.id, n.title, n.body, n.type, n.created_at,
         u.name AS user_name, u.phone AS user_phone
       FROM dbo.notifications n
