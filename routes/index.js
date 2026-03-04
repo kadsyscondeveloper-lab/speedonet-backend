@@ -8,6 +8,7 @@ router.use('/wallet',     require('./wallet'));
 router.use('/tickets',    require('./tickets'));
 router.use('/payments',   require('./payments'));
 router.use('/carousels',  require('./carousels'));
+router.use('/pay', require('./payServices'));
 router.use('/admin/auth', require('./adminAuth'));   // ← admin login (public)
 router.use('/admin',      require('./admin'));        // ← admin dashboard (protected)
 
