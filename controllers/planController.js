@@ -33,15 +33,15 @@ async function purchasePlan(req, res, next) {
   try {
     const planId      = parseInt(req.params.id);
     const paymentMode = req.body.payment_mode || 'wallet';
+    const couponCode  = req.body.coupon_code  || null;   // ← ADD THIS
 
     if (isNaN(planId)) return R.badRequest(res, 'Invalid plan ID.');
 
-    const result = await planService.purchasePlan(req.user.id, planId, paymentMode);
+    const result = await planService.purchasePlan(req.user.id, planId, paymentMode, couponCode);  // ← PASS IT
 
     const expiryDisplay = new Date(result.expires_at).toDateString();
     return R.created(res, result, `Plan activated successfully! Valid until ${expiryDisplay}.`);
   } catch (err) {
-    // Forward our custom statusCode errors cleanly
     if (err.statusCode) {
       return R.error(res, err.message, err.statusCode);
     }
