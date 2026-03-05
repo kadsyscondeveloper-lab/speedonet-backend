@@ -274,6 +274,23 @@ async function getReferralStats(userId) {
   };
 }
 
+
+// ── Coupons ───────────────────────────────────────────────────────────────────
+
+async function getMyCoupons(userId) {
+  return db
+    .selectFrom('dbo.coupons')
+    .select([
+      'code', 'description', 'discount_type',
+      'discount_value', 'max_discount_amount',
+      'valid_to', 'is_active',
+    ])
+    .where('user_id',   '=', BigInt(userId))
+    .where('is_active', '=', true)
+    .where('valid_to',  '>', new Date())
+    .execute();
+}
+
 module.exports = {
   getFullProfile,
   updateBasicInfo,
@@ -287,4 +304,5 @@ module.exports = {
   getNotifications,
   markNotificationsRead,
   getReferralStats,
+  getMyCoupons,
 };

@@ -190,9 +190,10 @@ router.get  ('/notifications',      notifQueryRules, ctrl.getNotifications);
 router.patch('/notifications/read', markReadRules,   ctrl.markRead);
 
 // =============================================================================
-// REFERRALS
+// REFERRALS & COUPONS
 // =============================================================================
 router.get('/referrals', ctrl.getReferralStats);
+router.get('/coupons', ctrl.getMyCoupons);
 
 
 // =============================================================================

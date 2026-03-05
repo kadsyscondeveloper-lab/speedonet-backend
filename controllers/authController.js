@@ -1,6 +1,6 @@
 const authService   = require('../services/authService');
 const tokenService  = require('../services/tokenService');
-const { generateReferralCoupon } = require('../services/couponService'); // ← ADDED
+const { generateReferralCoupon } = require('../services/couponService');
 const { maskPhone } = require('../utils/helpers');
 const R             = require('../utils/response');
 const logger        = require('../utils/logger');
@@ -38,26 +38,26 @@ async function signup(req, res, next) {
     await authService.createReferralCode(user.id, refCode);
 
     // ── If signed up with a referral code → link referral + issue coupon ──
+    // referralCouponCode will be returned to the app so the user can see it.
+    let referralCouponCode = null;
+
     if (referral_code) {
       const referrer = await authService.findReferralCode(referral_code);
       if (referrer && referrer.user_id !== user.id) {
         await authService.applyReferral(referrer.user_id, user.id, referral_code);
         logger.info(`Referral applied: ${referrer.user_id} → ${user.id}`);
 
-        // ── FIXED: was never called before ──────────────────────────────
-        // Generates the 20%-off first-purchase coupon for the new user.
         try {
-          const couponCode = await generateReferralCoupon(user.id);
+          referralCouponCode = await generateReferralCoupon(user.id);
           logger.info(
-            `Referral coupon ${couponCode} generated for new user ${user.id}`
+            `Referral coupon ${referralCouponCode} generated for new user ${user.id}`
           );
         } catch (couponErr) {
-          // Non-fatal: don't fail the whole signup if coupon insert fails
+          // Non-fatal — don't fail signup if coupon insert fails
           logger.error(
             `Failed to generate referral coupon for user ${user.id}: ${couponErr.message}`
           );
         }
-        // ─────────────────────────────────────────────────────────────────
       }
     }
 
@@ -79,12 +79,14 @@ async function signup(req, res, next) {
       res,
       {
         user: {
-          id:             user.id,
-          name:           user.name,
-          phone:          user.phone,
-          email:          user.email,
-          wallet_balance: user.wallet_balance,
-          referral_code:  refCode,
+          id:               user.id,
+          name:             user.name,
+          phone:            user.phone,
+          email:            user.email,
+          wallet_balance:   user.wallet_balance,
+          referral_code:    refCode,
+          // ── ADDED: null if no referral code was used, otherwise "REF00XXXXX"
+          referral_coupon:  referralCouponCode,
         },
         tokens: { access_token: accessToken, refresh_token: refreshToken },
       },
