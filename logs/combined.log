@@ -18838,3 +18838,10 @@
     
 2026-03-05 12:20:39 [[32mhttp[39m]: [0mGET /api/v1/user/notifications?page=1&limit=1 [32m200[0m 12.620 ms - 261[0m
 2026-03-05 12:27:53 [[32mhttp[39m]: [0mGET / [33m404[0m 0.513 ms - 51[0m
+2026-03-05 12:40:09 [[34mdebug[39m]: [SQL] select top(1) "id" from "dbo"."users"
+2026-03-05 12:40:09 [[32minfo[39m]: Kysely — SQL Server connection pool ready ✓
+2026-03-05 12:40:09 [[32minfo[39m]: Database connection established ✓
+2026-03-05 12:40:09 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-03-05 12:40:09 [[32minfo[39m]: Local: http://localhost:3000/api/v1/health
+2026-03-05 12:40:09 [[32minfo[39m]: Public: http://103.88.81.7:3000/api/v1/health
+2026-03-05 12:45:42 [[32mhttp[39m]: [0mGET /..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd [33m404[0m 1.767 ms - 93[0m
