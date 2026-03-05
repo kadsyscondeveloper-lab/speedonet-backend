@@ -171,6 +171,14 @@ async function getReferralStats(req, res, next) {
   } catch (err) { next(err); }
 }
 
+async function getMyCoupons(req, res, next) {
+  try {
+    const coupons = await userService.getMyCoupons(req.user.id);
+    return R.ok(res, { coupons });
+  } catch (err) { next(err); }
+}
+
+
 module.exports = {
   getProfile,
   updateProfile,
@@ -184,4 +192,5 @@ module.exports = {
   getNotifications,
   markRead,
   getReferralStats,
+  getMyCoupons,
 };
