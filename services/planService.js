@@ -279,25 +279,63 @@ async function purchasePlan(
         .executeTakeFirst();
 
       if (referralRow) {
-        await trx
-          .updateTable('dbo.referrals')
-          .set({
-            status:          'rewarded',
-            referrer_reward: String(discountAmount),
-          })
-          .where('id', '=', referralRow.id)
-          .execute();
+  const REFERRAL_REWARD = 50; // ₹50 — change this to whatever amount you want
 
-        await trx
-          .insertInto('dbo.notifications')
-          .values({
-            user_id: referralRow.referrer_id,
-            type:    'referral_rewarded',
-            title:   'Referral Reward Unlocked 🎁',
-            body:    'Someone you referred just activated their first Speedonet plan!',
-          })
-          .execute();
-      }
+  // 1. Mark referral as rewarded
+  await trx
+    .updateTable('dbo.referrals')
+    .set({
+      status:          'rewarded',
+      referrer_reward: String(REFERRAL_REWARD),
+    })
+    .where('id', '=', referralRow.id)
+    .execute();
+
+  // 2. Get referrer's current balance
+  const referrerRow = await trx
+    .selectFrom('dbo.users')
+    .select('wallet_balance')
+    .where('id', '=', referralRow.referrer_id)
+    .executeTakeFirst();
+
+  const referrerCurrentBalance = parseFloat(referrerRow?.wallet_balance ?? '0');
+  const referrerBalanceAfter   = parseFloat((referrerCurrentBalance + REFERRAL_REWARD).toFixed(2));
+
+  // 3. Credit referrer's wallet
+  await trx
+    .updateTable('dbo.users')
+    .set({
+      wallet_balance: sql`wallet_balance + ${REFERRAL_REWARD}`,
+      updated_at:     sql`SYSUTCDATETIME()`,
+    })
+    .where('id', '=', referralRow.referrer_id)
+    .execute();
+
+  // 4. Record wallet credit transaction
+  await trx
+    .insertInto('dbo.wallet_transactions')
+    .values({
+      user_id:        referralRow.referrer_id,
+      type:           'credit',
+      amount:         String(REFERRAL_REWARD),
+      balance_after:  String(referrerBalanceAfter),
+      description:    `Referral reward — your referral activated their first plan`,
+      reference_id:   String(orderId),
+      reference_type: 'referral',
+    })
+    .execute();
+
+  // 5. Notify referrer
+  await trx
+    .insertInto('dbo.notifications')
+    .values({
+      user_id: referralRow.referrer_id,
+      type:    'referral_rewarded',
+      title:   'Referral Reward Unlocked 🎁',
+      body:    `₹${REFERRAL_REWARD} has been added to your wallet! Someone you referred just activated their first Speedonet plan.`,
+    })
+    .execute();
+}
     }
 
     return {

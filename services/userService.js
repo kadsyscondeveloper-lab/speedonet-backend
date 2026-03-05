@@ -19,16 +19,26 @@ async function getFullProfile(userId) {
         .onRef('a.user_id', '=', 'u.id')
         .on('a.is_primary', '=', true),
     )
-    .leftJoin('dbo.kyc_submissions as k',  'k.user_id',  'u.id')
-    .leftJoin('dbo.referral_codes as rc',  'rc.user_id', 'u.id')
+    .leftJoin('dbo.referral_codes as rc', 'rc.user_id', 'u.id')
     .select([
       'u.id', 'u.name', 'u.phone', 'u.email', 'u.profile_image',
       'u.wallet_balance', 'u.is_active', 'u.created_at',
       'a.house_no', 'a.address', 'a.city', 'a.state', 'a.pin_code',
-      'k.status as kyc_status',
-      'k.submitted_at as kyc_submitted_at',
       'rc.code as referral_code',
       'rc.referral_url as referral_url',
+      // ── Correlated subqueries for latest KYC submission ──
+      sql`(
+        SELECT TOP 1 status 
+        FROM dbo.kyc_submissions 
+        WHERE user_id = u.id 
+        ORDER BY submitted_at DESC
+      )`.as('kyc_status'),
+      sql`(
+        SELECT TOP 1 submitted_at 
+        FROM dbo.kyc_submissions 
+        WHERE user_id = u.id 
+        ORDER BY submitted_at DESC
+      )`.as('kyc_submitted_at'),
     ])
     .where('u.id', '=', BigInt(userId))
     .executeTakeFirst();
