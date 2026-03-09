@@ -11,6 +11,7 @@ router.use('/carousels',  require('./carousels'));
 router.use('/pay', require('./payServices'));
 router.use('/admin/auth', require('./adminAuth'));   // ← admin login (public)
 router.use('/admin',      require('./admin'));        // ← admin dashboard (protected)
+router.use('/locations',  require('./locations'));    // ← location data (public)
 
 // Health check
 router.get('/health', (req, res) => {
