@@ -598,3 +598,12 @@
     at async UpdateQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\update-query-builder.js:461:24)
     at async Object.updateBasicInfo (C:\Users\Developer\app\speedonet-backend\services\userService.js:43:3)
     at async updateProfile (C:\Users\Developer\app\speedonet-backend\controllers\userController.js:21:5)
+2026-03-09 13:32:23 [[31merror[39m]: ReferenceError: ru is not defined
+    at initiateWalletRecharge (C:\Users\Developer\app\speedonet-backend\controllers\paymentController.js:112:7)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+2026-03-10 18:53:43 [[31merror[39m]: [Atom] Decryption failed:
+2026-03-10 18:53:48 [[31merror[39m]: [Atom] Decryption failed:
+2026-03-10 18:53:53 [[31merror[39m]: [Atom] Decryption failed:
+2026-03-10 19:03:37 [[31merror[39m]: [Atom] Decryption failed:
+2026-03-10 19:03:42 [[31merror[39m]: [Atom] Decryption failed:
+2026-03-10 19:03:47 [[31merror[39m]: [Atom] Decryption failed:
