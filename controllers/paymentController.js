@@ -31,9 +31,6 @@ async function initiateWalletRecharge(req, res, next) {
     const firstName = spaceIdx === -1 ? fullName : fullName.slice(0, spaceIdx);
     const lastName  = spaceIdx === -1 ? ''       : fullName.slice(spaceIdx + 1);
 
-    // ── Reuse any existing pending order for the SAME amount ────────────────
-    // This prevents duplicate pending rows when a user cancels and retries.
-    // If the amount changed, abandon the old one and create a fresh order.
     const existingPending = await db
       .selectFrom('dbo.payment_orders')
       .select(['id', 'order_ref'])
@@ -48,7 +45,6 @@ async function initiateWalletRecharge(req, res, next) {
     let orderRef;
 
     if (existingPending) {
-      // Reuse — just refresh the updated_at so it stays "alive"
       orderRef = existingPending.order_ref;
       await db
         .updateTable('dbo.payment_orders')
@@ -57,8 +53,6 @@ async function initiateWalletRecharge(req, res, next) {
         .execute();
       logger.info(`[Payment] Reusing pending order | user=${req.user.id} orderRef=${orderRef} amt=${amtString}`);
     } else {
-      // Abandon any stale pending orders (different amount or very old) by
-      // marking them failed so the wallet is never accidentally credited later.
       await db
         .updateTable('dbo.payment_orders')
         .set({ payment_status: 'failed', updated_at: sql`SYSUTCDATETIME()` })
@@ -93,7 +87,7 @@ async function initiateWalletRecharge(req, res, next) {
       logger.info(`[Payment] New order created | user=${req.user.id} orderRef=${orderRef} amt=${amtString}`);
     }
 
-    const { atomUrl, encData } = atomService.initiatePayment({
+    const { atomUrl, encData, ru, login } = atomService.initiatePayment({
       txnid:      orderRef,
       amt:        amtString,
       custEmail:  userRow?.email || '',
@@ -109,6 +103,8 @@ async function initiateWalletRecharge(req, res, next) {
       custLastName:  lastName,
       atomUrl,
       encData,
+      ru,
+      login,
     }, 'Payment initiated');
 
   } catch (err) {
@@ -122,7 +118,20 @@ async function initiateWalletRecharge(req, res, next) {
 // =============================================================================
 async function atomCallback(req, res, next) {
   try {
-    const result = atomService.processCallback(req.body);
+    // ── LOG EVERYTHING so we can see exactly what Atom sends ─────────────────
+    logger.info(`[Payment] Callback headers: ${JSON.stringify(req.headers['content-type'])}`);
+    logger.info(`[Payment] Callback raw body: ${JSON.stringify(req.body)}`);
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // Atom can send encData as either key name
+    const encData = req.body?.encData || req.body?.encdata || req.body?.EncData;
+
+    if (!encData) {
+      logger.error(`[Payment] No encData found. Full body keys: ${Object.keys(req.body || {}).join(', ')}`);
+      return R.badRequest(res, 'Missing encData in callback');
+    }
+
+    const result = atomService.processCallback({ encData });
     const { txnid: orderRef, atomtxnId, bankTxnId, amt, txnStatus, success } = result;
 
     if (!orderRef) {

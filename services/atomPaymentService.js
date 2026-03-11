@@ -21,7 +21,7 @@ const ATOM_CONFIG = {
   password:    process.env.ATOM_TXN_PASSWORD  || 'fb1489ed',
 
   atomUrl:     process.env.ATOM_AUTH_API_URL  || 'https://payment1.atomtech.in/ots/aipay/auth',
-  callbackUrl: process.env.ATOM_CALLBACK_URL  || 'https://kadsyscon.in/api/v1/payments/atom/callback',
+  callbackUrl: process.env.ATOM_CALLBACK_URL  || 'https://unworshipping-kathrin-parablastic.ngrok-free.dev/api/v1/payments/atom/callback',
 
   hashReqKey:  process.env.ATOM_HASH_REQ_KEY  || '2a63f76ede75f9a022',
   hashResKey:  process.env.ATOM_HASH_RES_KEY  || 'e0e6459946dff4c378',
@@ -95,9 +95,11 @@ function initiatePayment({ txnid, amt, custEmail = '', custMobile = '' }) {
   logger.debug(`[Atom] Generated encData`);
 
   return {
-    atomUrl: ATOM_CONFIG.atomUrl,
-    encData,
-  };
+  atomUrl: ATOM_CONFIG.atomUrl,
+  encData,
+  ru:    ATOM_CONFIG.callbackUrl,  // ← WHERE Atom should POST back
+  login: ATOM_CONFIG.mercId,       // ← required in form post
+};
 }
 
 //
