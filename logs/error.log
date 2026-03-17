@@ -607,3 +607,94 @@
 2026-03-10 19:03:37 [[31merror[39m]: [Atom] Decryption failed:
 2026-03-10 19:03:42 [[31merror[39m]: [Atom] Decryption failed:
 2026-03-10 19:03:47 [[31merror[39m]: [Atom] Decryption failed:
+2026-03-16 11:28:04 [[31merror[39m]: [SQL ERROR] Error: The INSERT statement conflicted with the CHECK constraint "CK_order_method". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_method'.
+2026-03-16 11:28:04 [[31merror[39m]: Error: The INSERT statement conflicted with the CHECK constraint "CK_order_method". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_method'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:513:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Readable.push (node:internal/streams/readable:228:10)
+    at next (node:internal/streams/from:98:31)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+    at async MssqlConnection.connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
+    at async initiateWalletRecharge (C:\Users\Developer\app\speedonet-backend\controllers\paymentController.js:71:7)
+2026-03-16 11:30:22 [[31merror[39m]: [SQL ERROR] Error: The INSERT statement conflicted with the CHECK constraint "CK_order_method". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_method'.
+2026-03-16 11:30:22 [[31merror[39m]: Error: The INSERT statement conflicted with the CHECK constraint "CK_order_method". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_method'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:513:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Readable.push (node:internal/streams/readable:228:10)
+    at next (node:internal/streams/from:98:31)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+    at async MssqlConnection.connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
+    at async initiateWalletRecharge (C:\Users\Developer\app\speedonet-backend\controllers\paymentController.js:71:7)
+2026-03-16 11:30:54 [[31merror[39m]: [SQL ERROR] Error: The INSERT statement conflicted with the CHECK constraint "CK_order_method". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_method'.
+2026-03-16 11:30:54 [[31merror[39m]: Error: The INSERT statement conflicted with the CHECK constraint "CK_order_method". The conflict occurred in database "broadbanddb", table "dbo.payment_orders", column 'payment_method'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:513:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Readable.push (node:internal/streams/readable:228:10)
+    at next (node:internal/streams/from:98:31)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+    at async MssqlConnection.connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
+    at async initiateWalletRecharge (C:\Users\Developer\app\speedonet-backend\controllers\paymentController.js:71:7)
+2026-03-16 11:31:40 [[31merror[39m]: Error: getaddrinfo ENOTFOUND checkout.paymentgateway.co.in
+    at Function.from (C:\Users\Developer\app\speedonet-backend\node_modules\axios\dist\node\axios.cjs:906:28)
+    at RedirectableRequest.handleRequestError (C:\Users\Developer\app\speedonet-backend\node_modules\axios\dist\node\axios.cjs:3567:27)
+    at RedirectableRequest.emit (node:events:513:28)
+    at ClientRequest.eventHandlers.<computed> (C:\Users\Developer\app\speedonet-backend\node_modules\follow-redirects\index.js:49:24)
+    at ClientRequest.emit (node:events:513:28)
+    at TLSSocket.socketErrorListener (node:_http_client:494:9)
+    at TLSSocket.emit (node:events:513:28)
+    at emitErrorNT (node:internal/streams/destroy:157:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:122:3)
+    at processTicksAndRejections (node:internal/process/task_queues:83:21)
+    at Axios.request (C:\Users\Developer\app\speedonet-backend\node_modules\axios\dist\node\axios.cjs:4796:41)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+    at async Object.getPaymentUrl (C:\Users\Developer\app\speedonet-backend\services\pgPaymentService.js:126:20)
+    at async initiateWalletRecharge (C:\Users\Developer\app\speedonet-backend\controllers\paymentController.js:95:20)
+2026-03-16 14:40:21 [[31merror[39m]: [Atom] Decryption failed:
+2026-03-16 14:40:21 [[31merror[39m]: [Payment] Callback parse error: Invalid encrypted response
+2026-03-16 14:43:27 [[31merror[39m]: [Atom] Decryption failed: error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt
+2026-03-16 14:43:27 [[31merror[39m]: [Atom] ResKey=75AEF0FA1B94B3C10D4F5B268F757F11 ResSalt=D32C2C50D8AC0FD983D7A710C64FB2BD
+2026-03-16 14:43:27 [[31merror[39m]: [Atom] encData length=1984
+2026-03-16 14:43:27 [[31merror[39m]: [Payment] Callback parse error: Invalid encrypted response
+2026-03-16 14:50:25 [[31merror[39m]: [Atom] Decryption failed: error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt
+2026-03-16 14:50:25 [[31merror[39m]: [Atom] ResKey=75AEF0FA1B94B3C10D4F5B268F757F11 ResSalt=75AEF0FA1B94B3C10D4F5B268F757F11
+2026-03-16 14:50:25 [[31merror[39m]: [Atom] encData length=1984
+2026-03-16 14:50:25 [[31merror[39m]: [Payment] Callback parse error: Invalid encrypted response
+2026-03-16 14:51:37 [[31merror[39m]: [Atom] Decryption failed: error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt
+2026-03-16 14:51:37 [[31merror[39m]: [Atom] ResKey=75AEF0FA1B94B3C10D4F5B268F757F11 ResSalt=75AEF0FA1B94B3C10D4F5B268F757F11
+2026-03-16 14:51:37 [[31merror[39m]: [Atom] encData length=1984
+2026-03-16 14:51:37 [[31merror[39m]: [Payment] Callback parse error: Invalid encrypted response
+2026-03-16 14:52:34 [[31merror[39m]: [Atom] Decryption failed: error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt
+2026-03-16 14:52:34 [[31merror[39m]: [Atom] ResKey=75AEF0FA1B94B3C10D4F5B268F757F11 ResSalt=75AEF0FA1B94B3C10D4F5B268F757F11
+2026-03-16 14:52:34 [[31merror[39m]: [Atom] encData length=1984
+2026-03-16 14:52:34 [[31merror[39m]: [Payment] Callback parse error: Invalid encrypted response
+2026-03-16 14:55:21 [[31merror[39m]: [Atom] Decryption failed: error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt
+2026-03-16 14:55:21 [[31merror[39m]: [Atom] ResKey=75AEF0FA1B94B3C10D4F5B268F757F11 ResSalt=75AEF0FA1B94B3C10D4F5B268F757F11
+2026-03-16 14:55:21 [[31merror[39m]: [Atom] encData length=1984
+2026-03-16 14:55:21 [[31merror[39m]: [Payment] Callback parse error: Invalid encrypted response
