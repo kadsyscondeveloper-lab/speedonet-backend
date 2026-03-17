@@ -1,5 +1,5 @@
 // controllers/paymentController.js
-const atomService          = require('../services/atomPaymentService');
+const gatewayService       = require('../services/gatewayService');
 const walletService        = require('../services/walletService');
 const { db, sql }          = require('../config/db');
 const { generateOrderRef } = require('../utils/helpers');
@@ -7,7 +7,13 @@ const R                    = require('../utils/response');
 const logger               = require('../utils/logger');
 
 // =============================================================================
-// POST /api/v1/payments/atom/initiate  (Authenticated)
+// POST /api/v1/payments/pg/initiate  (Authenticated)
+//
+// Routes to the right gateway based on payment_mode in request body:
+//   payment_mode=upi  → Omniware (live)
+//   payment_mode=card → NTT Atom (UAT/test)
+//
+// Falls back to PAYMENT_GATEWAY env var if payment_mode not sent.
 // =============================================================================
 async function initiateWalletRecharge(req, res, next) {
   try {
@@ -20,92 +26,63 @@ async function initiateWalletRecharge(req, res, next) {
 
     const amtString = amount.toFixed(2);
 
+    // Use gateway from request body if provided, else fall back to env
+    const requestedGateway = (req.body.gateway || '').toLowerCase();
+    const gateway = ['atom', 'omniware'].includes(requestedGateway)
+      ? requestedGateway
+      : gatewayService.getActiveGateway();
+
+    logger.info(`[Payment] Gateway=${gateway} | user=${req.user.id}`);
+
     const userRow = await db
       .selectFrom('dbo.users')
       .select(['phone', 'email', 'name'])
       .where('id', '=', BigInt(req.user.id))
       .executeTakeFirst();
 
-    const fullName  = userRow?.name || '';
-    const spaceIdx  = fullName.indexOf(' ');
-    const firstName = spaceIdx === -1 ? fullName : fullName.slice(0, spaceIdx);
-    const lastName  = spaceIdx === -1 ? ''       : fullName.slice(spaceIdx + 1);
-
-    const existingPending = await db
-      .selectFrom('dbo.payment_orders')
-      .select(['id', 'order_ref'])
+    // Expire all previous pending orders for this user + gateway
+    await db
+      .updateTable('dbo.payment_orders')
+      .set({ payment_status: 'failed', updated_at: sql`SYSUTCDATETIME()` })
       .where('user_id',        '=', BigInt(req.user.id))
       .where('type',           '=', 'wallet_recharge')
       .where('payment_status', '=', 'pending')
-      .where('gateway_name',   '=', 'atom')
-      .where('total_amount',   '=', amtString)
-      .orderBy('created_at',   'desc')
-      .executeTakeFirst();
+      .where('gateway_name',   '=', gateway)
+      .execute();
 
-    let orderRef;
+    // Always generate a fresh order_ref — gateways reject reused IDs
+    const orderRef = generateOrderRef();
 
-    if (existingPending) {
-      orderRef = existingPending.order_ref;
-      await db
-        .updateTable('dbo.payment_orders')
-        .set({ updated_at: sql`SYSUTCDATETIME()` })
-        .where('id', '=', existingPending.id)
-        .execute();
-      logger.info(`[Payment] Reusing pending order | user=${req.user.id} orderRef=${orderRef} amt=${amtString}`);
-    } else {
-      await db
-        .updateTable('dbo.payment_orders')
-        .set({ payment_status: 'failed', updated_at: sql`SYSUTCDATETIME()` })
-        .where('user_id',        '=', BigInt(req.user.id))
-        .where('type',           '=', 'wallet_recharge')
-        .where('payment_status', '=', 'pending')
-        .where('gateway_name',   '=', 'atom')
-        .execute();
+    await db
+      .insertInto('dbo.payment_orders')
+      .values({
+        user_id:          BigInt(req.user.id),
+        order_ref:        orderRef,
+        type:             'wallet_recharge',
+        plan_id:          null,
+        base_amount:      amtString,
+        gst_amount:       '0',
+        discount_amount:  '0',
+        total_amount:     amtString,
+        payment_method:   gateway,
+        payment_status:   'pending',
+        gateway_name:     gateway,
+        gateway_order_id: null,
+        gateway_txn_id:   null,
+      })
+      .execute();
 
-      orderRef = generateOrderRef();
+    logger.info(`[Payment] Order created | user=${req.user.id} orderRef=${orderRef} gateway=${gateway}`);
 
-      await db
-        .insertInto('dbo.payment_orders')
-        .values({
-          user_id:          BigInt(req.user.id),
-          order_ref:        orderRef,
-          type:             'wallet_recharge',
-          provider_id:      null,
-          plan_id:          null,
-          base_amount:      amtString,
-          gst_amount:       '0',
-          discount_amount:  '0',
-          total_amount:     amtString,
-          payment_method:   'atom',
-          payment_status:   'pending',
-          gateway_name:     'atom',
-          gateway_order_id: null,
-          gateway_txn_id:   null,
-        })
-        .execute();
-
-      logger.info(`[Payment] New order created | user=${req.user.id} orderRef=${orderRef} amt=${amtString}`);
-    }
-
-    const { atomUrl, encData, ru, login } = atomService.initiatePayment({
-      txnid:      orderRef,
-      amt:        amtString,
-      custEmail:  userRow?.email || '',
-      custMobile: userRow?.phone || '',
+    // Call the active gateway
+    const result = await gatewayService.initiatePayment({
+      orderRef,
+      amount:          amtString,
+      user:            userRow || {},
+      gatewayOverride: gateway,
     });
 
-    return R.ok(res, {
-      orderRef,
-      amount:        amtString,
-      custEmail:     userRow?.email || '',
-      custMobile:    userRow?.phone || '',
-      custFirstName: firstName,
-      custLastName:  lastName,
-      atomUrl,
-      encData,
-      ru,
-      login,
-    }, 'Payment initiated');
+    return R.ok(res, result, 'Payment initiated');
 
   } catch (err) {
     if (err.statusCode) return R.error(res, err.message, err.statusCode);
@@ -114,75 +91,83 @@ async function initiateWalletRecharge(req, res, next) {
 }
 
 // =============================================================================
-// POST /api/v1/payments/atom/callback  (PUBLIC — Atom webhooks here)
+// POST /api/v1/payments/pg/callback  (PUBLIC — Omniware)
+// POST /api/v1/payments/atom/callback (PUBLIC — Atom SDK returnUrl)
 // =============================================================================
-async function atomCallback(req, res, next) {
+async function pgCallback(req, res, next) {
   try {
-    // ── LOG EVERYTHING so we can see exactly what Atom sends ─────────────────
-    logger.info(`[Payment] Callback headers: ${JSON.stringify(req.headers['content-type'])}`);
-    logger.info(`[Payment] Callback raw body: ${JSON.stringify(req.body)}`);
-    // ─────────────────────────────────────────────────────────────────────────
+    logger.info(`[Payment] Callback body: ${JSON.stringify(req.body)}`);
 
-    // Atom can send encData as either key name
-    const encData = req.body?.encData || req.body?.encdata || req.body?.EncData;
-
-    if (!encData) {
-      logger.error(`[Payment] No encData found. Full body keys: ${Object.keys(req.body || {}).join(', ')}`);
-      return R.badRequest(res, 'Missing encData in callback');
+    let result;
+    try {
+      result = await gatewayService.processCallback(req.body);
+    } catch (err) {
+      logger.error(`[Payment] Callback parse error: ${err.message}`);
+      return R.badRequest(res, err.message);
     }
 
-    const result = atomService.processCallback({ encData });
-    const { txnid: orderRef, atomtxnId, bankTxnId, amt, txnStatus, success } = result;
+    const { success, orderRef, transactionId, amount } = result;
 
     if (!orderRef) {
       logger.warn('[Payment] Callback missing orderRef');
-      return R.badRequest(res, 'Missing transaction reference');
+      return R.badRequest(res, 'Missing order reference');
     }
 
     const order = await db
       .selectFrom('dbo.payment_orders')
-      .select(['id', 'user_id', 'total_amount', 'payment_status'])
-      .where('order_ref',    '=', orderRef)
-      .where('gateway_name', '=', 'atom')
+      .select(['id', 'user_id', 'total_amount', 'payment_status', 'gateway_name'])
+      .where('order_ref', '=', orderRef)
       .executeTakeFirst();
 
     if (!order) {
-      logger.error(`[Payment] Callback for unknown orderRef: ${orderRef}`);
+      logger.error(`[Payment] Unknown orderRef in callback: ${orderRef}`);
       return R.notFound(res, 'Order not found');
     }
 
+    // Idempotency — ignore duplicate callbacks
     if (order.payment_status === 'success') {
       logger.info(`[Payment] Duplicate callback ignored | orderRef=${orderRef}`);
+      // For Atom — return empty 200 so SDK doesn't show error page
+      if (order.gateway_name === 'atom') return res.status(200).send('OK');
       return R.ok(res, null, 'Already processed');
     }
 
     await db
       .updateTable('dbo.payment_orders')
       .set({
-        payment_status:   success ? 'success' : 'failed',
-        gateway_order_id: atomtxnId || null,
-        gateway_txn_id:   bankTxnId || null,
-        paid_at:          success ? new Date() : null,
-        updated_at:       sql`SYSUTCDATETIME()`,
+        payment_status: success ? 'success' : 'failed',
+        gateway_txn_id: transactionId || null,
+        paid_at:        success ? new Date() : null,
+        updated_at:     sql`SYSUTCDATETIME()`,
       })
       .where('order_ref', '=', orderRef)
       .execute();
 
     if (success) {
-      const userId = Number(order.user_id);
-      const amount = parseFloat(amt || String(order.total_amount));
+      const userId    = Number(order.user_id);
+      const creditAmt = parseFloat(amount || String(order.total_amount));
+
       await walletService.rechargeWallet(userId, {
-        amount,
-        paymentMethod:    'atom',
-        gatewayOrderId:   atomtxnId,
-        gatewayTxnId:     bankTxnId,
+        amount:           creditAmt,
+        paymentMethod:    order.gateway_name || 'pg',
+        gatewayTxnId:     transactionId,
         existingOrderRef: orderRef,
       });
-      logger.info(`[Payment] Wallet credited | user=${userId} amt=${amount} orderRef=${orderRef}`);
+
+      logger.info(`[Payment] Wallet credited | user=${userId} amt=${creditAmt} order=${orderRef}`);
     }
 
-    return R.ok(res, { orderRef, success, txnStatus },
-      success ? 'Payment successful' : 'Payment failed');
+    // For Atom SDK — return plain 200, SDK handles its own UI
+    // For Omniware — return JSON as normal
+    if (order.gateway_name === 'atom') {
+      return res.status(200).send('OK');
+    }
+
+    return R.ok(
+      res,
+      { orderRef, success, responseCode: result.responseCode },
+      success ? 'Payment successful' : 'Payment failed'
+    );
 
   } catch (err) {
     if (err.statusCode) return R.error(res, err.message, err.statusCode);
@@ -191,7 +176,7 @@ async function atomCallback(req, res, next) {
 }
 
 // =============================================================================
-// GET /api/v1/payments/atom/status/:orderRef  (Authenticated)
+// GET /api/v1/payments/pg/status/:orderRef  (Authenticated)
 // =============================================================================
 async function checkPaymentStatus(req, res, next) {
   try {
@@ -199,20 +184,40 @@ async function checkPaymentStatus(req, res, next) {
 
     const order = await db
       .selectFrom('dbo.payment_orders')
-      .select(['order_ref', 'payment_status', 'total_amount',
-               'gateway_txn_id', 'gateway_order_id', 'paid_at'])
+      .select([
+        'order_ref', 'payment_status', 'total_amount',
+        'gateway_txn_id', 'gateway_order_id', 'gateway_name', 'paid_at',
+      ])
       .where('order_ref', '=', orderRef)
       .where('user_id',   '=', BigInt(req.user.id))
       .executeTakeFirst();
 
     if (!order) return R.notFound(res, 'Order not found');
+
     return R.ok(res, { order });
 
   } catch (err) { next(err); }
 }
 
+// =============================================================================
+// POST /api/v1/payments/pg/webhook  (PUBLIC — server-to-server)
+// =============================================================================
+async function pgWebhook(req, res, next) {
+  return pgCallback(req, res, next);
+}
+
+// =============================================================================
+// Atom callback also routes here (separate path for clarity)
+// POST /api/v1/payments/atom/callback
+// =============================================================================
+async function atomCallback(req, res, next) {
+  return pgCallback(req, res, next);
+}
+
 module.exports = {
   initiateWalletRecharge,
+  pgCallback,
   atomCallback,
   checkPaymentStatus,
+  pgWebhook,
 };

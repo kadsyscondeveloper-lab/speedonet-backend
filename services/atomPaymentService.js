@@ -1,6 +1,9 @@
 // services/atomPaymentService.js
 //
-// ── NTT DATA / Atom Payment Gateway — LEGACY encData Integration ───────────
+// ── NTT DATA / Atom Payment Gateway — UAT / TEST Integration ─────────────────
+//
+// UAT Payment URL : https://caller.atomtech.in/ots/aipay/auth
+// CDN             : https://pgtest.atomtech.in/staticdata/ots/js/atomcheckout.js
 //
 // Flow:
 // 1. Build pipe-separated string
@@ -9,54 +12,69 @@
 // 4. Frontend auto-posts to Atom URL
 // 5. Atom redirects to callback with encData
 // 6. Decrypt response using HashResponseKey + AESResponseSalt
-//
 // ─────────────────────────────────────────────────────────────────────────────
 
 const crypto = require('crypto');
 const logger = require('../utils/logger');
 
 const ATOM_CONFIG = {
-  mercId:      process.env.ATOM_MERC_ID       || '792811',
-  prodId:      process.env.ATOM_PROD_ID       || 'SYSCON',
-  password:    process.env.ATOM_TXN_PASSWORD  || 'fb1489ed',
+  mercId:      process.env.ATOM_MERC_ID       || '317159',
+  prodId:      process.env.ATOM_PROD_ID       || 'NSE',
+  password:    process.env.ATOM_TXN_PASSWORD  || 'Test@123',
 
-  atomUrl:     process.env.ATOM_AUTH_API_URL  || 'https://payment1.atomtech.in/ots/aipay/auth',
+  atomUrl:     process.env.ATOM_AUTH_API_URL  || 'https://caller.atomtech.in/ots/aipay/auth',
   callbackUrl: process.env.ATOM_CALLBACK_URL  || 'https://unworshipping-kathrin-parablastic.ngrok-free.dev/api/v1/payments/atom/callback',
 
-  hashReqKey:  process.env.ATOM_HASH_REQ_KEY  || '2a63f76ede75f9a022',
-  hashResKey:  process.env.ATOM_HASH_RES_KEY  || 'e0e6459946dff4c378',
+  // Hash keys
+  hashReqKey:  process.env.ATOM_HASH_REQ_KEY  || 'KEY123657234',
+  hashResKey:  process.env.ATOM_HASH_RES_KEY  || 'KEYRESP123657234',
 
-  aesReqSalt:  process.env.ATOM_AES_REQ_SALT  || '1CFAC0C7097BD6FAA950892F87B45960',
-  aesResSalt:  process.env.ATOM_AES_RES_SALT  || 'D32C2C50D8AC0FD983D7A710C64FB2BD',
+  // AES keys — for UAT, Request key/salt are the same value, same for Response
+  aesReqKey:   process.env.ATOM_AES_REQ_KEY   || 'A4476C2062FFA58980DC8F79EB6A799E',
+  aesReqSalt:  process.env.ATOM_AES_REQ_SALT  || 'A4476C2062FFA58980DC8F79EB6A799E',
+  aesResKey:   process.env.ATOM_AES_RES_KEY   || '75AEF0FA1B94B3C10D4F5B268F757F11',
+  aesResSalt:  process.env.ATOM_AES_RES_SALT  || '75AEF0FA1B94B3C10D4F5B268F757F11',
 };
 
-//
-// ── AES Encrypt (Request) ───────────────────────────────────────────────────
-//
-function _aesEncrypt(plainText, hashKey, saltHex) {
-  const key = crypto.createHash('sha256').update(hashKey).digest();
-  const iv  = Buffer.from(saltHex.substring(0, 32), 'hex');
+// ── AES Encrypt (Request) ─────────────────────────────────────────────────────
+// Algorithm matches Dart SDK source (lib/src/functions/a_e_s_helper.dart):
+//   PBKDF2(password=key, salt=utf8(key), iterations=65536, bits=256, digest=SHA512)
+//   IV = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+//   Cipher = AES-256-CBC
+//   Output = HEX encoded (not base64)
 
-  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-  return cipher.update(plainText, 'utf8', 'base64') + cipher.final('base64');
+async function _aesEncrypt(plainText, key) {
+  return new Promise((resolve, reject) => {
+    const salt = Buffer.from(key, 'utf8');
+    crypto.pbkdf2(key, salt, 65536, 32, 'sha512', (err, derivedKey) => {
+      if (err) return reject(err);
+      const iv     = Buffer.from([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
+      const cipher = crypto.createCipheriv('aes-256-cbc', derivedKey, iv);
+      const enc    = Buffer.concat([cipher.update(Buffer.from(plainText, 'utf8')), cipher.final()]);
+      resolve(enc.toString('hex').toUpperCase());
+    });
+  });
 }
 
-//
-// ── AES Decrypt (Response) ───────────────────────────────────────────────────
-//
-function _aesDecrypt(cipherText, hashKey, saltHex) {
-  const key = crypto.createHash('sha256').update(hashKey).digest();
-  const iv  = Buffer.from(saltHex.substring(0, 32), 'hex');
+// ── AES Decrypt (Response) ────────────────────────────────────────────────────
 
-  const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-  return decipher.update(cipherText, 'base64', 'utf8') + decipher.final('utf8');
+async function _aesDecrypt(encryptedHex, key) {
+  return new Promise((resolve, reject) => {
+    const salt = Buffer.from(key, 'utf8');
+    crypto.pbkdf2(key, salt, 65536, 32, 'sha512', (err, derivedKey) => {
+      if (err) return reject(err);
+      const iv       = Buffer.from([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
+      const encBytes = Buffer.from(encryptedHex, 'hex');
+      const decipher = crypto.createDecipheriv('aes-256-cbc', derivedKey, iv);
+      const dec      = Buffer.concat([decipher.update(encBytes), decipher.final()]);
+      resolve(dec.toString('utf8'));
+    });
+  });
 }
 
-//
-// ── Build Legacy Pipe String ─────────────────────────────────────────────────
-// Format:
-// login|password|txnid|amount|prodid|udf1|udf2|udf3|udf4|udf5|email|mobile
-//
+// ── Build Pipe String ─────────────────────────────────────────────────────────
+// Format: login|password|txnid|amount|prodid|udf1|udf2|udf3|udf4|udf5|email|mobile
+
 function _buildRequestString({ txnid, amount, email, mobile }) {
   return [
     ATOM_CONFIG.mercId,
@@ -64,85 +82,84 @@ function _buildRequestString({ txnid, amount, email, mobile }) {
     txnid,
     amount,
     ATOM_CONFIG.prodId,
-    '', '', '', '', '',      // udf1-5
-    email || '',
-    mobile || ''
+    '', '', '', '', '',   // udf1-5
+    email  || '',
+    mobile || '',
   ].join('|');
 }
 
-//
-// ── Initiate Payment (LEGACY) ───────────────────────────────────────────────
-// Returns encData + atomUrl
-//
+// ── Initiate Payment ──────────────────────────────────────────────────────────
+
 function initiatePayment({ txnid, amt, custEmail = '', custMobile = '' }) {
-  logger.info(`[Atom] Legacy Initiating | txnid=${txnid} amt=${amt}`);
+  logger.info(`[Atom] Initiating | txnid=${txnid} amt=${amt}`);
 
   const plainText = _buildRequestString({
     txnid,
     amount: amt,
-    email: custEmail,
-    mobile: custMobile
+    email:  custEmail,
+    mobile: custMobile,
   });
 
   logger.debug(`[Atom] Plain String: ${plainText}`);
 
-  const encData = _aesEncrypt(
-    plainText,
-    ATOM_CONFIG.hashReqKey,
-    ATOM_CONFIG.aesReqSalt
-  );
-
-  logger.debug(`[Atom] Generated encData`);
-
-  return {
-  atomUrl: ATOM_CONFIG.atomUrl,
-  encData,
-  ru:    ATOM_CONFIG.callbackUrl,  // ← WHERE Atom should POST back
-  login: ATOM_CONFIG.mercId,       // ← required in form post
-};
+  // Returns a promise — caller must await
+  return _aesEncrypt(plainText, ATOM_CONFIG.aesReqKey).then(encData => {
+    return {
+      atomUrl: ATOM_CONFIG.atomUrl,
+      encData,
+      ru:    ATOM_CONFIG.callbackUrl,
+      login: ATOM_CONFIG.mercId,
+    };
+  });
 }
 
-//
-// ── Process Callback ─────────────────────────────────────────────────────────
-// Atom will POST: encData
-//
-function processCallback(body) {
-  const encData = body?.encData || body?.encdata;
+// ── Process Callback ──────────────────────────────────────────────────────────
+
+async function processCallback(body) {
+  const encData = body?.encData || body?.encdata || body?.EncData;
 
   if (!encData) {
-    logger.error('[Atom] No encData received in callback');
+    logger.error(`[Atom] No encData in callback. Keys: ${Object.keys(body || {}).join(', ')}`);
     throw Object.assign(new Error('Invalid callback format'), { statusCode: 400 });
   }
 
   let decrypted;
-
   try {
-    decrypted = _aesDecrypt(
-      encData,
-      ATOM_CONFIG.hashResKey,
-      ATOM_CONFIG.aesResSalt
-    );
+    decrypted = await _aesDecrypt(encData, ATOM_CONFIG.aesResKey);
   } catch (e) {
-    logger.error('[Atom] Decryption failed:', e.message);
+    logger.error(`[Atom] Decryption failed: ${e.message}`);
     throw Object.assign(new Error('Invalid encrypted response'), { statusCode: 400 });
   }
 
-  logger.debug(`[Atom] Decrypted Response: ${decrypted}`);
+  logger.debug(`[Atom] Decrypted: ${decrypted}`);
 
-  const params = Object.fromEntries(new URLSearchParams(decrypted));
+  // Atom response is JSON
+  let json;
+  try {
+    json = JSON.parse(decrypted);
+  } catch (e) {
+    logger.error(`[Atom] JSON parse failed: ${e.message}`);
+    throw Object.assign(new Error('Invalid response format'), { statusCode: 400 });
+  }
 
-  const success = params.txnStatus === 'Ok';
+  const pi         = json.payInstrument;
+  const orderRef   = pi?.merchDetails?.merchTxnId;
+  const atomTxnId  = pi?.payDetails?.atomTxnId?.toString();
+  const bankTxnId  = pi?.payModeSpecificData?.bankDetails?.bankTxnId;
+  const amount     = pi?.payDetails?.totalAmount?.toString();
+  const statusCode = pi?.responseDetails?.statusCode;
+  const success    = statusCode === 'OTS0000' || statusCode === 'OTS0551';
 
-  logger.info(`[Atom] Callback | txnid=${params.txnid} status=${params.txnStatus}`);
+  logger.info(`[Atom] Callback | orderRef=${orderRef} atomTxnId=${atomTxnId} status=${statusCode} success=${success}`);
 
   return {
     success,
-    txnid:     params.txnid,
-    atomtxnId: params.atomtxnId,
-    bankTxnId: params.bankTxnId,
-    amt:       params.amt,
-    txnStatus: params.txnStatus,
-    params,
+    txnid:     orderRef,   // our order_ref
+    atomtxnId: atomTxnId,
+    bankTxnId: bankTxnId,
+    amt:       amount,
+    txnStatus: statusCode,
+    params:    pi,
   };
 }
 
