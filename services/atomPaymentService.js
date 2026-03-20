@@ -17,23 +17,20 @@
 const crypto = require('crypto');
 const logger = require('../utils/logger');
 
+const isUAT = (process.env.ATOM_MODE || 'LIVE').toUpperCase() === 'UAT';
+
 const ATOM_CONFIG = {
-  mercId:      process.env.ATOM_MERC_ID       || '317159',
-  prodId:      process.env.ATOM_PROD_ID       || 'NSE',
-  password:    process.env.ATOM_TXN_PASSWORD  || 'Test@123',
-
-  atomUrl:     process.env.ATOM_AUTH_API_URL  || 'https://caller.atomtech.in/ots/aipay/auth',
-  callbackUrl: process.env.ATOM_CALLBACK_URL  || 'https://unworshipping-kathrin-parablastic.ngrok-free.dev/api/v1/payments/atom/callback',
-
-  // Hash keys
-  hashReqKey:  process.env.ATOM_HASH_REQ_KEY  || 'KEY123657234',
-  hashResKey:  process.env.ATOM_HASH_RES_KEY  || 'KEYRESP123657234',
-
-  // AES keys — for UAT, Request key/salt are the same value, same for Response
-  aesReqKey:   process.env.ATOM_AES_REQ_KEY   || 'A4476C2062FFA58980DC8F79EB6A799E',
-  aesReqSalt:  process.env.ATOM_AES_REQ_SALT  || 'A4476C2062FFA58980DC8F79EB6A799E',
-  aesResKey:   process.env.ATOM_AES_RES_KEY   || '75AEF0FA1B94B3C10D4F5B268F757F11',
-  aesResSalt:  process.env.ATOM_AES_RES_SALT  || '75AEF0FA1B94B3C10D4F5B268F757F11',
+  mercId:      isUAT ? process.env.ATOM_UAT_MERC_ID      : process.env.ATOM_LIVE_MERC_ID,
+  prodId:      isUAT ? process.env.ATOM_UAT_PROD_ID      : process.env.ATOM_LIVE_PROD_ID,
+  password:    isUAT ? process.env.ATOM_UAT_TXN_PASSWORD : process.env.ATOM_LIVE_TXN_PASSWORD,
+  atomUrl:     isUAT ? process.env.ATOM_UAT_AUTH_API_URL : process.env.ATOM_LIVE_AUTH_API_URL,
+  callbackUrl: process.env.ATOM_CALLBACK_URL,
+  hashReqKey:  isUAT ? process.env.ATOM_UAT_HASH_REQ_KEY : process.env.ATOM_LIVE_HASH_REQ_KEY,
+  hashResKey:  isUAT ? process.env.ATOM_UAT_HASH_RES_KEY : process.env.ATOM_LIVE_HASH_RES_KEY,
+  aesReqKey:   isUAT ? process.env.ATOM_UAT_AES_REQ_KEY  : process.env.ATOM_LIVE_AES_REQ_KEY,
+  aesReqSalt:  isUAT ? process.env.ATOM_UAT_AES_REQ_SALT : process.env.ATOM_LIVE_AES_REQ_SALT,
+  aesResKey:   isUAT ? process.env.ATOM_UAT_AES_RES_KEY  : process.env.ATOM_LIVE_AES_RES_KEY,
+  aesResSalt:  isUAT ? process.env.ATOM_UAT_AES_RES_SALT : process.env.ATOM_LIVE_AES_RES_SALT,
 };
 
 // ── AES Encrypt (Request) ─────────────────────────────────────────────────────
