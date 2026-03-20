@@ -8,12 +8,6 @@ const logger               = require('../utils/logger');
 
 // =============================================================================
 // POST /api/v1/payments/pg/initiate  (Authenticated)
-//
-// Routes to the right gateway based on payment_mode in request body:
-//   payment_mode=upi  → Omniware (live)
-//   payment_mode=card → NTT Atom (UAT/test)
-//
-// Falls back to PAYMENT_GATEWAY env var if payment_mode not sent.
 // =============================================================================
 async function initiateWalletRecharge(req, res, next) {
   try {
@@ -26,7 +20,6 @@ async function initiateWalletRecharge(req, res, next) {
 
     const amtString = amount.toFixed(2);
 
-    // Use gateway from request body if provided, else fall back to env
     const requestedGateway = (req.body.gateway || '').toLowerCase();
     const gateway = ['atom', 'omniware'].includes(requestedGateway)
       ? requestedGateway
@@ -50,9 +43,11 @@ async function initiateWalletRecharge(req, res, next) {
       .where('gateway_name',   '=', gateway)
       .execute();
 
-    // Always generate a fresh order_ref — gateways reject reused IDs
     const orderRef = generateOrderRef();
 
+    // ── Store base_amount = the amount the USER requested (before gateway fees) ──
+    // total_amount here is also the user's amount — gateway fees are their own cost,
+    // not something we credit to the wallet.
     await db
       .insertInto('dbo.payment_orders')
       .values({
@@ -63,7 +58,7 @@ async function initiateWalletRecharge(req, res, next) {
         base_amount:      amtString,
         gst_amount:       '0',
         discount_amount:  '0',
-        total_amount:     amtString,
+        total_amount:     amtString,   // ← user's requested amount, NOT gateway total
         payment_method:   gateway,
         payment_status:   'pending',
         gateway_name:     gateway,
@@ -74,7 +69,6 @@ async function initiateWalletRecharge(req, res, next) {
 
     logger.info(`[Payment] Order created | user=${req.user.id} orderRef=${orderRef} gateway=${gateway}`);
 
-    // Call the active gateway
     const result = await gatewayService.initiatePayment({
       orderRef,
       amount:          amtString,
@@ -106,7 +100,10 @@ async function pgCallback(req, res, next) {
       return R.badRequest(res, err.message);
     }
 
-    const { success, orderRef, transactionId, amount } = result;
+    const { success, orderRef, transactionId } = result;
+    // NOTE: We intentionally ignore `result.amount` (the gateway's charged amount
+    // which includes platform fees). We always credit only what the user requested,
+    // which is stored in order.total_amount.
 
     if (!orderRef) {
       logger.warn('[Payment] Callback missing orderRef');
@@ -127,7 +124,6 @@ async function pgCallback(req, res, next) {
     // Idempotency — ignore duplicate callbacks
     if (order.payment_status === 'success') {
       logger.info(`[Payment] Duplicate callback ignored | orderRef=${orderRef}`);
-      // For Atom — return empty 200 so SDK doesn't show error page
       if (order.gateway_name === 'atom') return res.status(200).send('OK');
       return R.ok(res, null, 'Already processed');
     }
@@ -144,8 +140,16 @@ async function pgCallback(req, res, next) {
       .execute();
 
     if (success) {
-      const userId    = Number(order.user_id);
-      const creditAmt = parseFloat(amount || String(order.total_amount));
+      const userId = Number(order.user_id);
+
+      // ── FIX: Always credit order.total_amount (the user's requested amount),
+      //         never the gateway's returned amount (which includes their fees).
+      const creditAmt = parseFloat(String(order.total_amount));
+
+      logger.info(
+        `[Payment] Crediting wallet | user=${userId} ` +
+        `creditAmt=${creditAmt} (order.total_amount) | orderRef=${orderRef}`
+      );
 
       await walletService.rechargeWallet(userId, {
         amount:           creditAmt,
@@ -157,8 +161,6 @@ async function pgCallback(req, res, next) {
       logger.info(`[Payment] Wallet credited | user=${userId} amt=${creditAmt} order=${orderRef}`);
     }
 
-    // For Atom SDK — return plain 200, SDK handles its own UI
-    // For Omniware — return JSON as normal
     if (order.gateway_name === 'atom') {
       return res.status(200).send('OK');
     }
