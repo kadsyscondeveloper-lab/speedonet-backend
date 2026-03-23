@@ -30,7 +30,6 @@ const paginationRules = [
 
 // ── Public routes ─────────────────────────────────────────────────────────────
 
-// List all active plans (no auth needed — shown on plan selection screen)
 router.get('/', ctrl.getPlans);
 
 // ── Authenticated routes ──────────────────────────────────────────────────────
@@ -38,16 +37,11 @@ router.get('/', ctrl.getPlans);
 router.use(authenticate);
 
 // IMPORTANT: Specific routes MUST come BEFORE generic :id routes
-// Otherwise /transactions gets matched as /:id with id='transactions'
 
-// Full transaction history (used by payments screen)
-router.get('/transactions', paginationRules, ctrl.getTransactions);
-
-// Current active subscription
-router.get('/subscription/active', ctrl.getActiveSubscription);
-
-// Subscription history
-router.get('/subscription/history', paginationRules, ctrl.getSubscriptionHistory);
+router.get('/transactions',          paginationRules, ctrl.getTransactions);
+router.get('/subscription/active',                    ctrl.getActiveSubscription);
+router.get('/subscription/queued',                    ctrl.getQueuedSubscription);   // ← NEW
+router.get('/subscription/history',  paginationRules, ctrl.getSubscriptionHistory);
 
 router.post('/coupon/validate', async (req, res, next) => {
   try {
@@ -72,15 +66,7 @@ router.post('/coupon/validate', async (req, res, next) => {
   }
 });
 
-// Purchase a plan (must be before /:id route)
 router.post('/:id/purchase', purchaseRules, ctrl.purchasePlan);
-
-// Get single plan details (generic route — MUST be last)
-router.get('/:id', planIdRule, ctrl.getPlan);
-
-// POST /api/v1/plans/coupon/validate
-// Body: { plan_id: number, coupon_code: string }
-// Used by Flutter to validate + preview discount before purchase
-
+router.get('/:id',           planIdRule,    ctrl.getPlan);
 
 module.exports = router;
