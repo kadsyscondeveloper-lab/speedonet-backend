@@ -115,9 +115,18 @@ function initiatePayment({ txnid, amt, custEmail = '', custMobile = '' }) {
 async function processCallback(body) {
   const encData = body?.encData || body?.encdata || body?.EncData;
 
-  if (!encData) {
-    logger.error(`[Atom] No encData in callback. Keys: ${Object.keys(body || {}).join(', ')}`);
-    throw Object.assign(new Error('Invalid callback format'), { statusCode: 400 });
+  // ── Handle Atom cancel/error special strings ──────────────────────────────
+  if (!encData || encData === 'cancelTransaction' || encData === 'errorTransaction') {
+    logger.info(`[Atom] Transaction cancelled/errored by user`);
+    return {
+      success:   false,
+      txnid:     body?.merchId !== 'cancelTransaction' ? body?.merchId : null,
+      atomtxnId: null,
+      bankTxnId: null,
+      amt:       null,
+      txnStatus: encData,
+      params:    null,
+    };
   }
 
   let decrypted;
