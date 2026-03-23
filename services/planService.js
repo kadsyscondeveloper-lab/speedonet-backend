@@ -1,9 +1,10 @@
 /**
  * services/planService.js
  *
- * Changes vs previous version:
- *  1. getActiveSubscription — .limit(1) → .top(1)  [MSSQL fix]
- *  2. purchasePlan          — .limit(1) → .top(1) on activeSub query  [MSSQL fix]
+ * BUG FIXES:
+ *  • Added getQueuedSubscription() — returns the nearest upcoming subscription
+ *    (start_date > TODAY). This is what the client shows as "Plan Queued".
+ *    Previously this was never fetchable after the purchase screen was left.
  */
 
 const { db, sql }                         = require('../config/db');
@@ -98,7 +99,6 @@ async function purchasePlan(
   const orderRef = generateOrderRef();
 
   // Stack on top of existing subscription
-  // ── FIXED: .limit(1) → .top(1) for SQL Server ───────────────────────────
   const activeSub = await db
     .selectFrom('dbo.user_subscriptions')
     .select('expires_at')
@@ -108,13 +108,18 @@ async function purchasePlan(
     .orderBy('expires_at', 'desc')
     .top(1)
     .executeTakeFirst();
-  // ─────────────────────────────────────────────────────────────────────────
 
   const startDate = activeSub ? new Date(activeSub.expires_at) : new Date();
   const expiresAt = new Date(
     startDate.getTime() + plan.validity_days * 86_400_000
   );
   const toDate    = (d) => d.toISOString().slice(0, 10);
+
+  // ── FIX: tell the client whether this plan is queued or immediate.
+  // Use date-only comparison to avoid clock-skew false-positives.
+  const todayStr     = toDate(new Date());
+  const startDateStr = toDate(startDate);
+  const isQueued     = startDateStr > todayStr;   // ← server decides, not client
 
   const balanceAfter = parseFloat((walletBalance - totalAmount).toFixed(2));
 
@@ -238,24 +243,20 @@ async function purchasePlan(
       .execute();
 
     // 8. Activation notification
-    const notifBody =
-      discountAmount > 0
-        ? `Your ${plan.name} plan is active until ` +
-          `${expiresAt.toDateString()}. 🎉 Coupon ${couponData.code} saved ` +
-          `you ₹${discountAmount.toFixed(2)}!`
-        : activeSub
-        ? `Your ${plan.name} plan is queued and starts on ` +
-          `${startDate.toDateString()}.`
-        : `Your ${plan.name} plan is active until ` +
-          `${expiresAt.toDateString()}. Enjoy ${plan.speed_mbps} Mbps!`;
+    const notifBody = isQueued
+      ? `Your ${plan.name} plan is queued and starts on ${startDate.toDateString()}.`
+      : discountAmount > 0
+        ? `Your ${plan.name} plan is active until ${expiresAt.toDateString()}. 🎉 Coupon ${couponData.code} saved you ₹${discountAmount.toFixed(2)}!`
+        : `Your ${plan.name} plan is active until ${expiresAt.toDateString()}. Enjoy ${plan.speed_mbps} Mbps!`;
 
     await trx
       .insertInto('dbo.notifications')
       .values({
         user_id: BigInt(userId),
         type:    'plan_activated',
-        title:
-          discountAmount > 0
+        title:   isQueued
+          ? 'Plan Queued 🗓️'
+          : discountAmount > 0
             ? 'Plan Activated + Discount Applied 🎉'
             : 'Plan Activated 🎉',
         body: notifBody,
@@ -279,63 +280,55 @@ async function purchasePlan(
         .executeTakeFirst();
 
       if (referralRow) {
-  const REFERRAL_REWARD = 50; // ₹50 — change this to whatever amount you want
+        const REFERRAL_REWARD = 50;
 
-  // 1. Mark referral as rewarded
-  await trx
-    .updateTable('dbo.referrals')
-    .set({
-      status:          'rewarded',
-      referrer_reward: String(REFERRAL_REWARD),
-    })
-    .where('id', '=', referralRow.id)
-    .execute();
+        await trx
+          .updateTable('dbo.referrals')
+          .set({ status: 'rewarded', referrer_reward: String(REFERRAL_REWARD) })
+          .where('id', '=', referralRow.id)
+          .execute();
 
-  // 2. Get referrer's current balance
-  const referrerRow = await trx
-    .selectFrom('dbo.users')
-    .select('wallet_balance')
-    .where('id', '=', referralRow.referrer_id)
-    .executeTakeFirst();
+        const referrerRow = await trx
+          .selectFrom('dbo.users')
+          .select('wallet_balance')
+          .where('id', '=', referralRow.referrer_id)
+          .executeTakeFirst();
 
-  const referrerCurrentBalance = parseFloat(referrerRow?.wallet_balance ?? '0');
-  const referrerBalanceAfter   = parseFloat((referrerCurrentBalance + REFERRAL_REWARD).toFixed(2));
+        const referrerCurrentBalance = parseFloat(referrerRow?.wallet_balance ?? '0');
+        const referrerBalanceAfter   = parseFloat((referrerCurrentBalance + REFERRAL_REWARD).toFixed(2));
 
-  // 3. Credit referrer's wallet
-  await trx
-    .updateTable('dbo.users')
-    .set({
-      wallet_balance: sql`wallet_balance + ${REFERRAL_REWARD}`,
-      updated_at:     sql`SYSUTCDATETIME()`,
-    })
-    .where('id', '=', referralRow.referrer_id)
-    .execute();
+        await trx
+          .updateTable('dbo.users')
+          .set({
+            wallet_balance: sql`wallet_balance + ${REFERRAL_REWARD}`,
+            updated_at:     sql`SYSUTCDATETIME()`,
+          })
+          .where('id', '=', referralRow.referrer_id)
+          .execute();
 
-  // 4. Record wallet credit transaction
-  await trx
-    .insertInto('dbo.wallet_transactions')
-    .values({
-      user_id:        referralRow.referrer_id,
-      type:           'credit',
-      amount:         String(REFERRAL_REWARD),
-      balance_after:  String(referrerBalanceAfter),
-      description:    `Referral reward — your referral activated their first plan`,
-      reference_id:   String(orderId),
-      reference_type: 'referral',
-    })
-    .execute();
+        await trx
+          .insertInto('dbo.wallet_transactions')
+          .values({
+            user_id:        referralRow.referrer_id,
+            type:           'credit',
+            amount:         String(REFERRAL_REWARD),
+            balance_after:  String(referrerBalanceAfter),
+            description:    `Referral reward — your referral activated their first plan`,
+            reference_id:   String(orderId),
+            reference_type: 'referral',
+          })
+          .execute();
 
-  // 5. Notify referrer
-  await trx
-    .insertInto('dbo.notifications')
-    .values({
-      user_id: referralRow.referrer_id,
-      type:    'referral_rewarded',
-      title:   'Referral Reward Unlocked 🎁',
-      body:    `₹${REFERRAL_REWARD} has been added to your wallet! Someone you referred just activated their first Speedonet plan.`,
-    })
-    .execute();
-}
+        await trx
+          .insertInto('dbo.notifications')
+          .values({
+            user_id: referralRow.referrer_id,
+            type:    'referral_rewarded',
+            title:   'Referral Reward Unlocked 🎁',
+            body:    `₹${REFERRAL_REWARD} has been added to your wallet! Someone you referred just activated their first Speedonet plan.`,
+          })
+          .execute();
+      }
     }
 
     return {
@@ -350,6 +343,8 @@ async function purchasePlan(
       gst_amount:       gstAmount,
       discount_applied: discountAmount,
       coupon_code:      couponData?.code ?? null,
+      // ── FIX: server explicitly tells client whether this is queued ────────
+      is_queued:        isQueued,
       status:           'active',
     };
   });
@@ -382,10 +377,9 @@ async function validateCouponForPlan(userId, planId, couponCode) {
   };
 }
 
-// ── Active subscription ───────────────────────────────────────────────────────
+// ── Active subscription (currently running) ───────────────────────────────────
 
 async function getActiveSubscription(userId) {
-  // ── FIXED: .limit(1) → .top(1) for SQL Server ───────────────────────────
   return (
     (await db
       .selectFrom('dbo.user_subscriptions as s')
@@ -413,7 +407,41 @@ async function getActiveSubscription(userId) {
       .top(1)
       .executeTakeFirst()) ?? null
   );
-  // ─────────────────────────────────────────────────────────────────────────
+}
+
+// ── Queued subscription (upcoming / not yet started) ─────────────────────────
+// FIX: This is a NEW function. It returns the nearest subscription whose
+// start_date is in the future. This is what the plans screen shows as
+// "Plan Queued". Without this, re-entering the screen always lost the queued
+// plan because it was only stored in Flutter's memory during the purchase call.
+
+async function getQueuedSubscription(userId) {
+  return (
+    (await db
+      .selectFrom('dbo.user_subscriptions as s')
+      .innerJoin('dbo.broadband_plans as p',  'p.id',  's.plan_id')
+      .innerJoin('dbo.payment_orders as po',  'po.id', 's.order_id')
+      .select([
+        's.id as subscription_id',
+        's.status',
+        's.start_date',
+        's.expires_at',
+        'po.order_ref',
+        'po.total_amount as amount_paid',
+        'p.id as plan_id',
+        'p.name as plan_name',
+        'p.speed_mbps',
+        'p.data_limit',
+        'p.validity_days',
+        'p.price',
+      ])
+      .where('s.user_id',    '=', BigInt(userId))
+      .where('s.status',     '=', 'active')
+      .where('s.start_date', '>',  sql`CAST(SYSDATETIME() AS DATE)`)
+      .orderBy('s.start_date', 'asc')   // nearest upcoming first
+      .top(1)
+      .executeTakeFirst()) ?? null
+  );
 }
 
 // ── Subscription history ──────────────────────────────────────────────────────
@@ -493,6 +521,7 @@ module.exports = {
   purchasePlan,
   validateCouponForPlan,
   getActiveSubscription,
+  getQueuedSubscription,      // ← NEW export
   getSubscriptionHistory,
   getTransactionHistory,
 };
