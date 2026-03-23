@@ -3,30 +3,27 @@ const logger    = require('../utils/logger');
 const R         = require('../utils/response');
 
 // ── Global limiter ─────────────────────────────────────────────────────────────
-// 600/15 min — Flutter app fires 8–12 requests on every cold start
 const globalLimiter = rateLimit({
-  windowMs:        parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'),
-  max:             parseInt(process.env.RATE_LIMIT_MAX       || '600'),
+  windowMs:        15 * 60 * 1000,  // 15 minutes
+  max:             10000,            // was 600 — effectively no limit
   standardHeaders: true,
   legacyHeaders:   false,
   handler:         (req, res) => R.tooMany(res, 'Too many requests, please try again later.'),
 });
 
 // ── Auth limiter ───────────────────────────────────────────────────────────────
-// 20/15 min — still blocks brute force, won't trip on normal usage
 const authLimiter = rateLimit({
   windowMs:        15 * 60 * 1000,
-  max:             parseInt(process.env.AUTH_RATE_LIMIT_MAX || '20'),
+  max:             200,              // was 20
   standardHeaders: true,
   legacyHeaders:   false,
   handler:         (req, res) => R.tooMany(res, 'Too many auth attempts. Please try again in 15 minutes.'),
 });
 
 // ── OTP limiter ────────────────────────────────────────────────────────────────
-// 5/10 min per phone — accounts for SMS delays causing retries
 const otpLimiter = rateLimit({
   windowMs:        10 * 60 * 1000,
-  max:             5,
+  max:             20,               // was 5
   keyGenerator:    (req) => req.body?.phone || req.ip,
   standardHeaders: true,
   legacyHeaders:   false,

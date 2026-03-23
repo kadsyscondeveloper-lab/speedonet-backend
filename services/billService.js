@@ -4,7 +4,6 @@ const { db, sql } = require('../config/db');
 /**
  * GET /api/v1/user/bills
  * Returns paginated bill list for the authenticated user.
- * Joins with broadband_plans to get the plan name.
  */
 async function getUserBills(userId, { page = 1, limit = 20 } = {}) {
   const offset = (page - 1) * limit;
@@ -23,9 +22,12 @@ async function getUserBills(userId, { page = 1, limit = 20 } = {}) {
         b.status,
         b.paid_at,
         b.created_at,
-        p.name AS plan_name
+        p.name AS plan_name,
+        po.discount_amount,
+        po.coupon_code
       FROM dbo.bills b
-      LEFT JOIN dbo.broadband_plans p ON p.id = b.plan_id
+      LEFT JOIN dbo.broadband_plans p  ON p.id  = b.plan_id
+      LEFT JOIN dbo.payment_orders po  ON po.id = b.paid_via_order
       WHERE b.user_id = ${BigInt(userId)}
       ORDER BY b.created_at DESC
       OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
@@ -43,7 +45,7 @@ async function getUserBills(userId, { page = 1, limit = 20 } = {}) {
 
 /**
  * GET /api/v1/user/bills/:id
- * Returns a single bill detail.
+ * Returns a single bill detail with full coupon/discount info.
  */
 async function getBillById(userId, billId) {
   const row = await sql`
@@ -60,13 +62,15 @@ async function getBillById(userId, billId) {
       b.paid_via_order,
       b.paid_at,
       b.created_at,
-      p.name AS plan_name,
+      p.name    AS plan_name,
       po.order_ref,
-      po.payment_method
+      po.payment_method,
+      po.discount_amount,
+      po.coupon_code
     FROM dbo.bills b
-    LEFT JOIN dbo.broadband_plans p ON p.id = b.plan_id
-    LEFT JOIN dbo.payment_orders po ON po.id = b.paid_via_order
-    WHERE b.id = ${BigInt(billId)}
+    LEFT JOIN dbo.broadband_plans p  ON p.id  = b.plan_id
+    LEFT JOIN dbo.payment_orders po  ON po.id = b.paid_via_order
+    WHERE b.id      = ${BigInt(billId)}
       AND b.user_id = ${BigInt(userId)}
   `.execute(db).then(r => r.rows[0] ?? null);
 

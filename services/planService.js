@@ -230,7 +230,7 @@ async function purchasePlan(
         base_amount:          String(baseAmount),
         gst_amount:           String(gstAmount),
         total_amount:         String(totalAmount),
-        due_date:             new Date(toDate(startDate)),
+        due_date:             new Date(toDate(expiresAt)),
         status:               'paid',
         paid_via_order:       orderId,
         paid_at:              sql`SYSUTCDATETIME()`,
