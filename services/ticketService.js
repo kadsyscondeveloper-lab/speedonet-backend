@@ -1,10 +1,8 @@
-/**
- * services/ticketService.js
- * Added: getMessages() — used by the polling chat endpoint
- */
+// services/ticketService.js
 
 const { db, sql } = require('../config/db');
 const crypto      = require('crypto');
+const notifyUser  = require('../utils/notifyUser');
 
 function generateTicketNumber() {
   const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
@@ -13,20 +11,15 @@ function generateTicketNumber() {
 }
 
 const VALID_CATEGORIES = [
-  'Billing',
-  'Technical Issue',
-  'Connection Issue',
-  'Slow Speed',
-  'New Connection',
-  'Installation',
-  'Plan Change',
-  'KYC',
-  'Other',
+  'Billing', 'Technical Issue', 'Connection Issue', 'Slow Speed',
+  'New Connection', 'Installation', 'Plan Change', 'KYC', 'Other',
 ];
 
 // ── Create ticket ─────────────────────────────────────────────────────────────
 
-async function createTicket(userId, { category, subject, description, priority = 'medium', attachmentData = null }) {
+async function createTicket(userId, {
+  category, subject, description, priority = 'medium', attachmentData = null,
+}) {
   const ticketNumber = generateTicketNumber();
 
   const row = await db
@@ -44,15 +37,13 @@ async function createTicket(userId, { category, subject, description, priority =
              'inserted.priority', 'inserted.created_at'])
     .executeTakeFirstOrThrow();
 
-  await db
-    .insertInto('dbo.notifications')
-    .values({
-      user_id: BigInt(userId),
-      type:    'support_ticket',
-      title:   'Support Ticket Created 🎫',
-      body:    `Your ticket ${ticketNumber} has been received. We'll get back to you shortly.`,
-    })
-    .execute();
+  // Ticket created notification (DB + Push)
+  await notifyUser(db, userId, {
+    type:  'support_ticket',
+    title: 'Support Ticket Created 🎫',
+    body:  `Your ticket ${ticketNumber} has been received. We'll get back to you shortly.`,
+    data:  { ticket_number: ticketNumber },
+  });
 
   return row;
 }
@@ -72,8 +63,7 @@ async function getUserTickets(userId, { page = 1, limit = 10 } = {}) {
       OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
     `.execute(db).then(r => r.rows),
 
-    db
-      .selectFrom('dbo.help_tickets')
+    db.selectFrom('dbo.help_tickets')
       .select(db.fn.count('id').as('total'))
       .where('user_id', '=', BigInt(userId))
       .executeTakeFirstOrThrow(),
@@ -87,10 +77,8 @@ async function getUserTickets(userId, { page = 1, limit = 10 } = {}) {
 async function getTicketById(userId, ticketId) {
   const ticket = await db
     .selectFrom('dbo.help_tickets')
-    .select([
-      'id', 'ticket_number', 'category', 'subject', 'description',
-      'status', 'priority', 'resolved_at', 'created_at', 'updated_at',
-    ])
+    .select(['id', 'ticket_number', 'category', 'subject', 'description',
+             'status', 'priority', 'resolved_at', 'created_at', 'updated_at'])
     .where('id',      '=', BigInt(ticketId))
     .where('user_id', '=', BigInt(userId))
     .executeTakeFirst();
@@ -107,10 +95,9 @@ async function getTicketById(userId, ticketId) {
   return { ...ticket, replies };
 }
 
-// ── Chat: get messages (with optional incremental polling via afterId) ─────────
+// ── Chat: get messages ────────────────────────────────────────────────────────
 
 async function getMessages(userId, ticketId, { afterId = null } = {}) {
-  // Verify the ticket belongs to this user and get its status
   const ticket = await db
     .selectFrom('dbo.help_tickets')
     .select(['id', 'status', 'ticket_number', 'subject'])
@@ -120,16 +107,13 @@ async function getMessages(userId, ticketId, { afterId = null } = {}) {
 
   if (!ticket) return null;
 
-  // Build query — only fetch messages newer than afterId if provided
   let query = db
     .selectFrom('dbo.ticket_replies')
     .select(['id', 'sender_id', 'sender_type', 'message', 'attachment_url', 'created_at'])
     .where('ticket_id', '=', BigInt(ticketId))
     .orderBy('created_at', 'asc');
 
-  if (afterId) {
-    query = query.where('id', '>', BigInt(afterId));
-  }
+  if (afterId) query = query.where('id', '>', BigInt(afterId));
 
   const messages = await query.execute();
 
@@ -153,13 +137,15 @@ async function addReply(userId, ticketId, { message, attachmentData = null }) {
     .where('user_id', '=', BigInt(userId))
     .executeTakeFirst();
 
-  if (!ticket) throw Object.assign(new Error('Ticket not found.'), { statusCode: 404 });
+  if (!ticket)
+    throw Object.assign(new Error('Ticket not found.'), { statusCode: 404 });
 
-  // Block replies on closed/resolved tickets
   const closedStatuses = ['closed', 'resolved', 'Closed', 'Resolved'];
-  if (closedStatuses.includes(ticket.status)) {
-    throw Object.assign(new Error('Cannot reply to a closed or resolved ticket.'), { statusCode: 400 });
-  }
+  if (closedStatuses.includes(ticket.status))
+    throw Object.assign(
+      new Error('Cannot reply to a closed or resolved ticket.'),
+      { statusCode: 400 }
+    );
 
   const row = await db
     .insertInto('dbo.ticket_replies')

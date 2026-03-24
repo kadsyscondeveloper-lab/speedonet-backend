@@ -1,25 +1,16 @@
-/**
- * services/planService.js
- *
- * BUG FIXES:
- *  • Added getQueuedSubscription() — returns the nearest upcoming subscription
- *    (start_date > TODAY). This is what the client shows as "Plan Queued".
- *    Previously this was never fetchable after the purchase screen was left.
- */
+// services/planService.js
 
 const { db, sql }                         = require('../config/db');
 const { generateOrderRef }                = require('../utils/helpers');
 const { validateCoupon, recordCouponUse } = require('./couponService');
+const notifyUser                          = require('../utils/notifyUser');
 
 // ── Plans catalogue ───────────────────────────────────────────────────────────
 
 async function getAllPlans() {
   return db
     .selectFrom('dbo.broadband_plans')
-    .select([
-      'id', 'name', 'price', 'speed_mbps',
-      'data_limit', 'validity_days', 'category',
-    ])
+    .select(['id', 'name', 'price', 'speed_mbps', 'data_limit', 'validity_days', 'category'])
     .where('is_active', '=', true)
     .orderBy('sort_order', 'asc')
     .orderBy('price', 'asc')
@@ -30,10 +21,7 @@ async function getPlanById(planId) {
   return (
     (await db
       .selectFrom('dbo.broadband_plans')
-      .select([
-        'id', 'name', 'price', 'speed_mbps',
-        'data_limit', 'validity_days', 'category',
-      ])
+      .select(['id', 'name', 'price', 'speed_mbps', 'data_limit', 'validity_days', 'category'])
       .where('id',        '=', planId)
       .where('is_active', '=', true)
       .executeTakeFirst()) ?? null
@@ -42,17 +30,10 @@ async function getPlanById(planId) {
 
 // ── Plan purchase ─────────────────────────────────────────────────────────────
 
-async function purchasePlan(
-  userId,
-  planId,
-  paymentMode = 'wallet',
-  couponCode  = null
-) {
+async function purchasePlan(userId, planId, paymentMode = 'wallet', couponCode = null) {
   const plan = await getPlanById(planId);
   if (!plan)
-    throw Object.assign(new Error('Plan not found or inactive.'), {
-      statusCode: 404,
-    });
+    throw Object.assign(new Error('Plan not found or inactive.'), { statusCode: 404 });
 
   const userRow = await db
     .selectFrom('dbo.users')
@@ -68,17 +49,12 @@ async function purchasePlan(
   const subtotal   = parseFloat((baseAmount + gstAmount).toFixed(2));
 
   // ── Coupon ────────────────────────────────────────────────────────────────
-  let couponId       = null;
-  let couponData     = null;
-  let discountAmount = 0;
+  let couponId = null, couponData = null, discountAmount = 0;
 
   if (couponCode && couponCode.trim()) {
     const result = await validateCoupon(couponCode.trim(), userId, subtotal);
     if (!result.valid)
-      throw Object.assign(new Error(result.error), {
-        statusCode:  400,
-        couponError: true,
-      });
+      throw Object.assign(new Error(result.error), { statusCode: 400, couponError: true });
     couponId       = result.coupon.id;
     couponData     = result.coupon;
     discountAmount = result.discount;
@@ -89,16 +65,12 @@ async function purchasePlan(
 
   if (paymentMode === 'wallet' && walletBalance < totalAmount)
     throw Object.assign(
-      new Error(
-        `Insufficient wallet balance. Required ₹${totalAmount.toFixed(2)}, ` +
-          `available ₹${walletBalance.toFixed(2)}.`
-      ),
+      new Error(`Insufficient wallet balance. Required ₹${totalAmount.toFixed(2)}, available ₹${walletBalance.toFixed(2)}.`),
       { statusCode: 400 }
     );
 
   const orderRef = generateOrderRef();
 
-  // Stack on top of existing subscription
   const activeSub = await db
     .selectFrom('dbo.user_subscriptions')
     .select('expires_at')
@@ -109,18 +81,12 @@ async function purchasePlan(
     .top(1)
     .executeTakeFirst();
 
-  const startDate = activeSub ? new Date(activeSub.expires_at) : new Date();
-  const expiresAt = new Date(
-    startDate.getTime() + plan.validity_days * 86_400_000
-  );
-  const toDate    = (d) => d.toISOString().slice(0, 10);
-
-  // ── FIX: tell the client whether this plan is queued or immediate.
-  // Use date-only comparison to avoid clock-skew false-positives.
+  const startDate    = activeSub ? new Date(activeSub.expires_at) : new Date();
+  const expiresAt    = new Date(startDate.getTime() + plan.validity_days * 86_400_000);
+  const toDate       = (d) => d.toISOString().slice(0, 10);
   const todayStr     = toDate(new Date());
   const startDateStr = toDate(startDate);
-  const isQueued     = startDateStr > todayStr;   // ← server decides, not client
-
+  const isQueued     = startDateStr > todayStr;
   const balanceAfter = parseFloat((walletBalance - totalAmount).toFixed(2));
 
   return db.transaction().execute(async (trx) => {
@@ -147,42 +113,29 @@ async function purchasePlan(
 
     const orderId = orderRow.id;
 
-    // 2. Re-read wallet with row lock to prevent race conditions
+    // 2. Re-read wallet with row lock
     const fresh = await sql`
-      SELECT wallet_balance
-      FROM dbo.users WITH (UPDLOCK, ROWLOCK)
+      SELECT wallet_balance FROM dbo.users WITH (UPDLOCK, ROWLOCK)
       WHERE id = ${BigInt(userId)}
-    `
-      .execute(trx)
-      .then((r) => r.rows[0]);
+    `.execute(trx).then(r => r.rows[0]);
 
-    if (
-      paymentMode === 'wallet' &&
-      parseFloat(fresh.wallet_balance) < totalAmount
-    )
+    if (paymentMode === 'wallet' && parseFloat(fresh.wallet_balance) < totalAmount)
       throw Object.assign(
-        new Error(
-          `Insufficient wallet balance. Required ₹${totalAmount.toFixed(2)}.`
-        ),
+        new Error(`Insufficient wallet balance. Required ₹${totalAmount.toFixed(2)}.`),
         { statusCode: 400 }
       );
 
     // 3. Deduct wallet
     await trx
       .updateTable('dbo.users')
-      .set({
-        wallet_balance: sql`wallet_balance - ${totalAmount}`,
-        updated_at:     sql`SYSUTCDATETIME()`,
-      })
+      .set({ wallet_balance: sql`wallet_balance - ${totalAmount}`, updated_at: sql`SYSUTCDATETIME()` })
       .where('id', '=', BigInt(userId))
       .execute();
 
-    // 4. Wallet debit transaction record
-    const description =
-      discountAmount > 0
-        ? `Plan purchase: ${plan.name} (incl. GST · coupon ${couponData.code} ` +
-          `saved ₹${discountAmount.toFixed(2)})`
-        : `Plan purchase: ${plan.name} (incl. GST)`;
+    // 4. Wallet debit transaction
+    const description = discountAmount > 0
+      ? `Plan purchase: ${plan.name} (incl. GST · coupon ${couponData.code} saved ₹${discountAmount.toFixed(2)})`
+      : `Plan purchase: ${plan.name} (incl. GST)`;
 
     await trx
       .insertInto('dbo.wallet_transactions')
@@ -215,11 +168,7 @@ async function purchasePlan(
     // 6. Mark order success
     await trx
       .updateTable('dbo.payment_orders')
-      .set({
-        payment_status: 'success',
-        paid_at:        sql`SYSUTCDATETIME()`,
-        updated_at:     sql`SYSUTCDATETIME()`,
-      })
+      .set({ payment_status: 'success', paid_at: sql`SYSUTCDATETIME()`, updated_at: sql`SYSUTCDATETIME()` })
       .where('id', '=', orderId)
       .execute();
 
@@ -242,35 +191,27 @@ async function purchasePlan(
       })
       .execute();
 
-    // 8. Activation notification
+    // 8. Plan activation notification (DB + Push)
     const notifBody = isQueued
       ? `Your ${plan.name} plan is queued and starts on ${startDate.toDateString()}.`
       : discountAmount > 0
         ? `Your ${plan.name} plan is active until ${expiresAt.toDateString()}. 🎉 Coupon ${couponData.code} saved you ₹${discountAmount.toFixed(2)}!`
         : `Your ${plan.name} plan is active until ${expiresAt.toDateString()}. Enjoy ${plan.speed_mbps} Mbps!`;
 
-    await trx
-      .insertInto('dbo.notifications')
-      .values({
-        user_id: BigInt(userId),
-        type:    'plan_activated',
-        title:   isQueued
-          ? 'Plan Queued 🗓️'
-          : discountAmount > 0
-            ? 'Plan Activated + Discount Applied 🎉'
-            : 'Plan Activated 🎉',
-        body: notifBody,
-      })
-      .execute();
+    await notifyUser(trx, userId, {
+      type:  'plan_activated',
+      title: isQueued
+        ? 'Plan Queued 🗓️'
+        : discountAmount > 0
+          ? 'Plan Activated + Discount Applied 🎉'
+          : 'Plan Activated 🎉',
+      body: notifBody,
+      data: { plan_name: plan.name, order_ref: orderRef },
+    });
 
-    // 9. Record coupon use + reward referrer
+    // 9. Coupon + referral reward
     if (couponId) {
-      await recordCouponUse(trx, {
-        couponId,
-        userId,
-        orderId,
-        discountApplied: discountAmount,
-      });
+      await recordCouponUse(trx, { couponId, userId, orderId, discountApplied: discountAmount });
 
       const referralRow = await trx
         .selectFrom('dbo.referrals')
@@ -299,10 +240,7 @@ async function purchasePlan(
 
         await trx
           .updateTable('dbo.users')
-          .set({
-            wallet_balance: sql`wallet_balance + ${REFERRAL_REWARD}`,
-            updated_at:     sql`SYSUTCDATETIME()`,
-          })
+          .set({ wallet_balance: sql`wallet_balance + ${REFERRAL_REWARD}`, updated_at: sql`SYSUTCDATETIME()` })
           .where('id', '=', referralRow.referrer_id)
           .execute();
 
@@ -319,15 +257,13 @@ async function purchasePlan(
           })
           .execute();
 
-        await trx
-          .insertInto('dbo.notifications')
-          .values({
-            user_id: referralRow.referrer_id,
-            type:    'referral_rewarded',
-            title:   'Referral Reward Unlocked 🎁',
-            body:    `₹${REFERRAL_REWARD} has been added to your wallet! Someone you referred just activated their first Speedonet plan.`,
-          })
-          .execute();
+        // Referral reward notification (DB + Push) to the referrer
+        await notifyUser(trx, referralRow.referrer_id, {
+          type:  'referral_rewarded',
+          title: 'Referral Reward Unlocked 🎁',
+          body:  `₹${REFERRAL_REWARD} has been added to your wallet! Someone you referred just activated their first Speedonet plan.`,
+          data:  { amount: String(REFERRAL_REWARD) },
+        });
       }
     }
 
@@ -343,27 +279,24 @@ async function purchasePlan(
       gst_amount:       gstAmount,
       discount_applied: discountAmount,
       coupon_code:      couponData?.code ?? null,
-      // ── FIX: server explicitly tells client whether this is queued ────────
       is_queued:        isQueued,
       status:           'active',
     };
   });
 }
 
-// ── Coupon pre-validation endpoint helper ─────────────────────────────────────
+// ── Coupon pre-validation ─────────────────────────────────────────────────────
 
 async function validateCouponForPlan(userId, planId, couponCode) {
   const plan = await getPlanById(planId);
-  if (!plan)
-    throw Object.assign(new Error('Plan not found.'), { statusCode: 404 });
+  if (!plan) throw Object.assign(new Error('Plan not found.'), { statusCode: 404 });
 
   const baseAmount = parseFloat(plan.price);
   const gstAmount  = parseFloat((baseAmount * 0.18).toFixed(2));
   const subtotal   = parseFloat((baseAmount + gstAmount).toFixed(2));
 
   const result = await validateCoupon(couponCode, userId, subtotal);
-  if (!result.valid)
-    throw Object.assign(new Error(result.error), { statusCode: 400 });
+  if (!result.valid) throw Object.assign(new Error(result.error), { statusCode: 400 });
 
   return {
     valid:           true,
@@ -377,7 +310,7 @@ async function validateCouponForPlan(userId, planId, couponCode) {
   };
 }
 
-// ── Active subscription (currently running) ───────────────────────────────────
+// ── Active subscription ───────────────────────────────────────────────────────
 
 async function getActiveSubscription(userId) {
   return (
@@ -386,18 +319,10 @@ async function getActiveSubscription(userId) {
       .innerJoin('dbo.broadband_plans as p',  'p.id',  's.plan_id')
       .innerJoin('dbo.payment_orders as po',  'po.id', 's.order_id')
       .select([
-        's.id as subscription_id',
-        's.status',
-        's.start_date',
-        's.expires_at',
-        'po.order_ref',
-        'po.total_amount as amount_paid',
-        'p.id as plan_id',
-        'p.name as plan_name',
-        'p.speed_mbps',
-        'p.data_limit',
-        'p.validity_days',
-        'p.price',
+        's.id as subscription_id', 's.status', 's.start_date', 's.expires_at',
+        'po.order_ref', 'po.total_amount as amount_paid',
+        'p.id as plan_id', 'p.name as plan_name', 'p.speed_mbps',
+        'p.data_limit', 'p.validity_days', 'p.price',
       ])
       .where('s.user_id',    '=', BigInt(userId))
       .where('s.status',     '=', 'active')
@@ -409,11 +334,7 @@ async function getActiveSubscription(userId) {
   );
 }
 
-// ── Queued subscription (upcoming / not yet started) ─────────────────────────
-// FIX: This is a NEW function. It returns the nearest subscription whose
-// start_date is in the future. This is what the plans screen shows as
-// "Plan Queued". Without this, re-entering the screen always lost the queued
-// plan because it was only stored in Flutter's memory during the purchase call.
+// ── Queued subscription ───────────────────────────────────────────────────────
 
 async function getQueuedSubscription(userId) {
   return (
@@ -422,23 +343,15 @@ async function getQueuedSubscription(userId) {
       .innerJoin('dbo.broadband_plans as p',  'p.id',  's.plan_id')
       .innerJoin('dbo.payment_orders as po',  'po.id', 's.order_id')
       .select([
-        's.id as subscription_id',
-        's.status',
-        's.start_date',
-        's.expires_at',
-        'po.order_ref',
-        'po.total_amount as amount_paid',
-        'p.id as plan_id',
-        'p.name as plan_name',
-        'p.speed_mbps',
-        'p.data_limit',
-        'p.validity_days',
-        'p.price',
+        's.id as subscription_id', 's.status', 's.start_date', 's.expires_at',
+        'po.order_ref', 'po.total_amount as amount_paid',
+        'p.id as plan_id', 'p.name as plan_name', 'p.speed_mbps',
+        'p.data_limit', 'p.validity_days', 'p.price',
       ])
       .where('s.user_id',    '=', BigInt(userId))
       .where('s.status',     '=', 'active')
       .where('s.start_date', '>',  sql`CAST(SYSDATETIME() AS DATE)`)
-      .orderBy('s.start_date', 'asc')   // nearest upcoming first
+      .orderBy('s.start_date', 'asc')
       .top(1)
       .executeTakeFirst()) ?? null
   );
@@ -450,24 +363,17 @@ async function getSubscriptionHistory(userId, { page = 1, limit = 10 } = {}) {
   const offset = (page - 1) * limit;
   const [rows, countRow] = await Promise.all([
     sql`
-      SELECT
-        s.id, s.status, s.start_date, s.expires_at,
-        p.name  AS plan_name,
-        p.speed_mbps,
-        p.data_limit,
-        po.order_ref,
-        po.total_amount AS amount_paid
+      SELECT s.id, s.status, s.start_date, s.expires_at,
+             p.name AS plan_name, p.speed_mbps, p.data_limit,
+             po.order_ref, po.total_amount AS amount_paid
       FROM dbo.user_subscriptions s
       INNER JOIN dbo.broadband_plans p  ON p.id  = s.plan_id
       INNER JOIN dbo.payment_orders  po ON po.id = s.order_id
       WHERE s.user_id = ${BigInt(userId)}
       ORDER BY s.created_at DESC
       OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
-    `
-      .execute(db)
-      .then((r) => r.rows),
-    db
-      .selectFrom('dbo.user_subscriptions')
+    `.execute(db).then(r => r.rows),
+    db.selectFrom('dbo.user_subscriptions')
       .select(db.fn.count('id').as('total'))
       .where('user_id', '=', BigInt(userId))
       .executeTakeFirstOrThrow(),
@@ -481,20 +387,10 @@ async function getTransactionHistory(userId, { page = 1, limit = 10 } = {}) {
   const offset = (page - 1) * limit;
   const [rows, countRow] = await Promise.all([
     sql`
-      SELECT
-        wt.id,
-        wt.type,
-        wt.amount,
-        wt.balance_after,
-        wt.description,
-        wt.reference_id,
-        wt.reference_type,
-        wt.created_at,
-        po.order_ref,
-        po.payment_status,
-        po.discount_amount,
-        po.coupon_code,
-        p.name AS plan_name
+      SELECT wt.id, wt.type, wt.amount, wt.balance_after, wt.description,
+             wt.reference_id, wt.reference_type, wt.created_at,
+             po.order_ref, po.payment_status, po.discount_amount, po.coupon_code,
+             p.name AS plan_name
       FROM dbo.wallet_transactions wt
       LEFT JOIN dbo.payment_orders po
              ON po.id = TRY_CAST(wt.reference_id AS BIGINT)
@@ -503,11 +399,8 @@ async function getTransactionHistory(userId, { page = 1, limit = 10 } = {}) {
       WHERE wt.user_id = ${BigInt(userId)}
       ORDER BY wt.created_at DESC
       OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
-    `
-      .execute(db)
-      .then((r) => r.rows),
-    db
-      .selectFrom('dbo.wallet_transactions')
+    `.execute(db).then(r => r.rows),
+    db.selectFrom('dbo.wallet_transactions')
       .select(db.fn.count('id').as('total'))
       .where('user_id', '=', BigInt(userId))
       .executeTakeFirstOrThrow(),
@@ -521,7 +414,7 @@ module.exports = {
   purchasePlan,
   validateCouponForPlan,
   getActiveSubscription,
-  getQueuedSubscription,      // ← NEW export
+  getQueuedSubscription,
   getSubscriptionHistory,
   getTransactionHistory,
 };
