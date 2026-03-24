@@ -8,10 +8,11 @@ router.use('/wallet',     require('./wallet'));
 router.use('/tickets',    require('./tickets'));
 router.use('/payments',   require('./payments'));
 router.use('/carousels',  require('./carousels'));
-router.use('/pay', require('./payServices'));
-router.use('/admin/auth', require('./adminAuth'));   // ← admin login (public)
-router.use('/admin',      require('./admin'));        // ← admin dashboard (protected)
-router.use('/locations',  require('./locations'));    // ← location data (public)
+router.use('/pay',        require('./payServices'));
+router.use('/fcm',        require('./fcm'));           // ← NEW: FCM token registration
+router.use('/admin/auth', require('./adminAuth'));
+router.use('/admin',      require('./admin'));
+router.use('/locations',  require('./locations'));
 
 // Health check
 router.get('/health', (req, res) => {

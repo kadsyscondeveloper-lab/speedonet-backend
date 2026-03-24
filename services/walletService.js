@@ -1,6 +1,7 @@
 // services/walletService.js
-const { db, sql } = require('../config/db');
+const { db, sql }      = require('../config/db');
 const { generateOrderRef } = require('../utils/helpers');
+const notifyUser       = require('../utils/notifyUser');
 
 // ── Balance ───────────────────────────────────────────────────────────────────
 
@@ -47,24 +48,12 @@ async function getWalletTransactions(userId, { page = 1, limit = 20 } = {}) {
 
 // ── Recharge ──────────────────────────────────────────────────────────────────
 
-/**
- * Credit the wallet after a successful Atom payment.
- *
- * @param {number} userId
- * @param {object} opts
- * @param {number}  opts.amount
- * @param {string}  opts.paymentMethod
- * @param {string}  [opts.gatewayOrderId]
- * @param {string}  [opts.gatewayTxnId]
- * @param {string}  [opts.existingOrderRef]  — when set, skip creating a new payment_order
- *                                             (the order was already created by paymentController)
- */
 async function rechargeWallet(userId, {
   amount,
-  paymentMethod  = 'upi',
-  gatewayOrderId = null,
-  gatewayTxnId   = null,
-  existingOrderRef = null,   // ← NEW — prevents duplicate order creation
+  paymentMethod    = 'upi',
+  gatewayOrderId   = null,
+  gatewayTxnId     = null,
+  existingOrderRef = null,
 } = {}) {
   const amt = parseFloat(parseFloat(amount).toFixed(2));
 
@@ -76,11 +65,9 @@ async function rechargeWallet(userId, {
 
   return db.transaction().execute(async (trx) => {
 
-    let orderId;
-    let orderRef;
+    let orderId, orderRef;
 
     if (existingOrderRef) {
-      // ── Atom payment flow: order already exists, just look it up ──────────
       const existingOrder = await trx
         .selectFrom('dbo.payment_orders')
         .select(['id', 'order_ref'])
@@ -89,7 +76,6 @@ async function rechargeWallet(userId, {
         .executeTakeFirst();
 
       if (!existingOrder) {
-        // Fallback: shouldn't happen, but don't block the credit
         orderRef = existingOrderRef;
         orderId  = null;
       } else {
@@ -97,7 +83,6 @@ async function rechargeWallet(userId, {
         orderRef = existingOrder.order_ref;
       }
     } else {
-      // ── Direct recharge flow (manual / legacy): create a fresh order ──────
       orderRef = generateOrderRef();
 
       const orderRow = await trx
@@ -125,17 +110,14 @@ async function rechargeWallet(userId, {
       orderId = orderRow.id;
     }
 
-    // ── Credit wallet ────────────────────────────────────────────────────────
+    // Credit wallet
     await trx
       .updateTable('dbo.users')
-      .set({
-        wallet_balance: sql`wallet_balance + ${amt}`,
-        updated_at:     sql`SYSUTCDATETIME()`,
-      })
+      .set({ wallet_balance: sql`wallet_balance + ${amt}`, updated_at: sql`SYSUTCDATETIME()` })
       .where('id', '=', BigInt(userId))
       .execute();
 
-    // ── Record wallet credit transaction ─────────────────────────────────────
+    // Wallet credit transaction record
     await trx
       .insertInto('dbo.wallet_transactions')
       .values({
@@ -149,16 +131,13 @@ async function rechargeWallet(userId, {
       })
       .execute();
 
-    // ── Notification ─────────────────────────────────────────────────────────
-    await trx
-      .insertInto('dbo.notifications')
-      .values({
-        user_id: BigInt(userId),
-        type:    'wallet_recharge',
-        title:   'Wallet Recharged 💰',
-        body:    `₹${amt.toFixed(2)} added to your wallet. New balance: ₹${balanceAfter.toFixed(2)}.`,
-      })
-      .execute();
+    // Wallet recharge notification (DB + Push)
+    await notifyUser(trx, userId, {
+      type:  'wallet_recharge',
+      title: 'Wallet Recharged 💰',
+      body:  `₹${amt.toFixed(2)} added to your wallet. New balance: ₹${balanceAfter.toFixed(2)}.`,
+      data:  { amount: String(amt), balance_after: String(balanceAfter) },
+    });
 
     return {
       order_id:       orderId,
