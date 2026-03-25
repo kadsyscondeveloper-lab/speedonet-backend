@@ -5,6 +5,8 @@ const { authenticateAdmin } = require('../middleware/adminAuth');
 const R = require('../utils/response');
 const logger = require('../utils/logger');
 const payServicesCtrl = require('../controllers/payServicesController');
+const notifyUser = require('../utils/notifyUser');
+const { broadcast } = require('../services/fcmService');
 
 router.use(authenticateAdmin);
 const { adminLimiter } = require('../middleware/errorHandler');
@@ -204,6 +206,7 @@ router.patch('/kyc/:userId/:kycId', async (req, res, next) => {
       .where('user_id', '=', BigInt(userId))
       .execute();
 
+    // PATCH 1 — replaced raw db.insertInto('dbo.notifications') with notifyUser
     const notifMap = {
       approved:     { title: 'KYC Approved ✅', body: 'Your KYC verification is complete. You now have full access to all features.' },
       rejected:     { title: 'KYC Rejected ❌', body: rejection_reason ? `Your KYC was rejected: ${rejection_reason}. Please re-submit your documents.` : 'Your KYC was rejected. Please re-submit your documents.' },
@@ -212,9 +215,12 @@ router.patch('/kyc/:userId/:kycId', async (req, res, next) => {
 
     const notif = notifMap[status];
     if (notif) {
-      await db.insertInto('dbo.notifications').values({
-        user_id: BigInt(userId), type: 'kyc_status', title: notif.title, body: notif.body,
-      }).execute();
+      await notifyUser(db, userId, {
+        type:  'kyc',
+        title: notif.title,
+        body:  notif.body,
+        data:  { kyc_status: status },
+      });
     }
 
     logger.info(`[Admin] KYC ${kycId} → ${status} by admin ${req.admin.id}`);
@@ -362,12 +368,13 @@ router.post('/tickets/:id/reply', async (req, res, next) => {
       .set({ updated_at: sql`SYSUTCDATETIME()` })
       .where('id', '=', BigInt(ticketId)).execute();
 
-    await db.insertInto('dbo.notifications').values({
-      user_id: ticket.user_id,
-      type:    'support_ticket',
-      title:   'Support Reply Received 💬',
-      body:    'An agent has replied to your ticket. Check the app for details.',
-    }).execute();
+    // PATCH 2 — replaced raw db.insertInto('dbo.notifications') with notifyUser
+    await notifyUser(db, Number(ticket.user_id), {
+      type:  'support_ticket',
+      title: 'Support Reply Received 💬',
+      body:  'An agent has replied to your ticket. Check the app for details.',
+      data:  { ticket_id: String(ticketId) },
+    });
 
     logger.info(`[Admin] Ticket ${ticketId} reply by admin ${req.admin.id}`);
     return R.ok(res, null, 'Reply sent');
@@ -414,15 +421,19 @@ router.get('/notifications', async (req, res, next) => {
 // =============================================================================
 router.post('/notifications/send', async (req, res, next) => {
   try {
-    const { phone, broadcast, type = 'general', title, body } = req.body;
+    const { phone, broadcast: isBroadcast, type = 'general', title, body } = req.body;
     if (!title?.trim() || !body?.trim()) return R.badRequest(res, 'Title and body are required');
 
-    if (broadcast) {
+    if (isBroadcast) {
       const users  = await db.selectFrom('dbo.users').select('id').where('is_active', '=', true).execute();
       const values = users.map(u => ({ user_id: u.id, type, title, body }));
       for (let i = 0; i < values.length; i += 100) {
         await db.insertInto('dbo.notifications').values(values.slice(i, i + 100)).execute();
       }
+
+      // PATCH 3 — fire FCM broadcast after the DB insert loop
+      await broadcast({ title, body, data: { type } });
+
       logger.info(`[Admin] Broadcast sent to ${users.length} users by admin ${req.admin.id}`);
       return R.ok(res, { sent_to: users.length }, `Broadcast sent to ${users.length} users`);
     }
