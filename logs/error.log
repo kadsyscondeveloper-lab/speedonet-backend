@@ -738,3 +738,5 @@
     at async UpdateQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\update-query-builder.js:461:24)
     at async Object.updateBasicInfo (C:\Users\Developer\app\speedonet-backend\services\userService.js:53:3)
     at async updateProfile (C:\Users\Developer\app\speedonet-backend\controllers\userController.js:21:5)
+2026-03-26 14:49:48 [[31merror[39m]: [FCM] Token[0] user=1 error=messaging/mismatched-credential msg=SenderId mismatch
+2026-03-26 15:03:35 [[31merror[39m]: [FCM] Token[0] user=1 error=messaging/registration-token-not-registered msg=Requested entity was not found.

@@ -109,14 +109,14 @@ async function broadcast({ title, body, data = {} }) {
       .where('fcm_token', 'is not', null)
       .execute();
 
-    const tokens = rows.map(r => r.fcm_token).filter(Boolean);
-    if (tokens.length === 0) return;
+    if (rows.length === 0) return;
 
     // FCM multicast: max 500 tokens per call
-    for (let i = 0; i < tokens.length; i += 500) {
-      const chunk = tokens.slice(i, i + 500);
-      const msg   = {
-        tokens: chunk,
+    for (let i = 0; i < rows.length; i += 500) {
+      const chunk = rows.slice(i, i + 500);
+
+      const msg = {
+        tokens: chunk.map(r => r.fcm_token),
         notification: { title, body },
         data: Object.fromEntries(
           Object.entries(data).map(([k, v]) => [k, String(v)])
@@ -126,8 +126,36 @@ async function broadcast({ title, body, data = {} }) {
           priority: 'high',
         },
       };
-      const res = await admin.messaging().sendEachForMulticast(msg);
-      logger.info(`[FCM] Broadcast chunk: ${res.successCount} sent, ${res.failureCount} failed`);
+
+      const result = await admin.messaging().sendEachForMulticast(msg);
+      logger.info(`[FCM] Broadcast chunk: ${result.successCount} sent, ${result.failureCount} failed`);
+
+      // Log individual failures to identify error codes
+      result.responses.forEach((r, j) => {
+        if (!r.success) {
+          logger.error(`[FCM] Token[${j}] user=${chunk[j].id} error=${r.error?.code} msg=${r.error?.message}`);
+        }
+      });
+
+      // Clear stale/invalid tokens so they don't clog future broadcasts
+      if (result.failureCount > 0) {
+        const staleIds = result.responses
+          .map((r, j) => ({ ...r, userId: chunk[j].id }))
+          .filter(r => !r.success && [
+            'messaging/registration-token-not-registered',
+            'messaging/invalid-registration-token',
+            'messaging/invalid-argument',
+          ].includes(r.error?.code))
+          .map(r => r.userId);
+
+        if (staleIds.length > 0) {
+          await db.updateTable('dbo.users')
+            .set({ fcm_token: null })
+            .where('id', 'in', staleIds)
+            .execute();
+          logger.warn(`[FCM] Cleared ${staleIds.length} stale token(s)`);
+        }
+      }
     }
   } catch (err) {
     logger.error(`[FCM] Broadcast failed: ${err.message}`);
