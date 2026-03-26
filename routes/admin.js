@@ -442,7 +442,7 @@ router.post('/notifications/send', async (req, res, next) => {
     const user = await db.selectFrom('dbo.users').select(['id', 'name']).where('phone', '=', phone).executeTakeFirst();
     if (!user) return R.notFound(res, 'No user found with that phone number');
 
-    await db.insertInto('dbo.notifications').values({ user_id: user.id, type, title, body }).execute();
+    await notifyUser(db, Number(user.id), { type, title, body });
     logger.info(`[Admin] Notification sent to user ${user.id} by admin ${req.admin.id}`);
     return R.ok(res, null, `Notification sent to ${user.name}`);
   } catch (err) { next(err); }
