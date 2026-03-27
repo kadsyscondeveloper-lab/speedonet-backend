@@ -740,3 +740,4 @@
     at async updateProfile (C:\Users\Developer\app\speedonet-backend\controllers\userController.js:21:5)
 2026-03-26 14:49:48 [[31merror[39m]: [FCM] Token[0] user=1 error=messaging/mismatched-credential msg=SenderId mismatch
 2026-03-26 15:03:35 [[31merror[39m]: [FCM] Token[0] user=1 error=messaging/registration-token-not-registered msg=Requested entity was not found.
+2026-03-27 10:02:52 [[31merror[39m]: [FCM] Token[0] user=1 error=app/invalid-credential msg=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
