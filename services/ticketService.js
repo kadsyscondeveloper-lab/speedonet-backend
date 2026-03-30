@@ -37,7 +37,6 @@ async function createTicket(userId, {
              'inserted.priority', 'inserted.created_at'])
     .executeTakeFirstOrThrow();
 
-  // Ticket created notification (DB + Push)
   await notifyUser(db, userId, {
     type:  'support_ticket',
     title: 'Support Ticket Created 🎫',
@@ -87,7 +86,10 @@ async function getTicketById(userId, ticketId) {
 
   const replies = await db
     .selectFrom('dbo.ticket_replies')
-    .select(['id', 'sender_id', 'sender_type', 'message', 'attachment_url', 'created_at'])
+    .select([
+      'id', 'sender_id', 'sender_type', 'message',
+      'attachment_data', 'attachment_mime', 'attachment_url', 'created_at',
+    ])
     .where('ticket_id', '=', BigInt(ticketId))
     .orderBy('created_at', 'asc')
     .execute();
@@ -96,6 +98,8 @@ async function getTicketById(userId, ticketId) {
 }
 
 // ── Chat: get messages ────────────────────────────────────────────────────────
+// Returns full or incremental message list for the live chat screen.
+// Pass afterId to fetch only new messages since the last poll.
 
 async function getMessages(userId, ticketId, { afterId = null } = {}) {
   const ticket = await db
@@ -109,7 +113,10 @@ async function getMessages(userId, ticketId, { afterId = null } = {}) {
 
   let query = db
     .selectFrom('dbo.ticket_replies')
-    .select(['id', 'sender_id', 'sender_type', 'message', 'attachment_url', 'created_at'])
+    .select([
+      'id', 'sender_id', 'sender_type', 'message',
+      'attachment_data', 'attachment_mime', 'attachment_url', 'created_at',
+    ])
     .where('ticket_id', '=', BigInt(ticketId))
     .orderBy('created_at', 'asc');
 
@@ -129,7 +136,11 @@ async function getMessages(userId, ticketId, { afterId = null } = {}) {
 
 // ── Add a user reply ──────────────────────────────────────────────────────────
 
-async function addReply(userId, ticketId, { message, attachmentData = null }) {
+async function addReply(userId, ticketId, {
+  message,
+  attachmentData = null,
+  attachmentMime = null,
+}) {
   const ticket = await db
     .selectFrom('dbo.help_tickets')
     .select(['id', 'status'])
@@ -150,11 +161,13 @@ async function addReply(userId, ticketId, { message, attachmentData = null }) {
   const row = await db
     .insertInto('dbo.ticket_replies')
     .values({
-      ticket_id:      BigInt(ticketId),
-      sender_id:      BigInt(userId),
-      sender_type:    'user',
+      ticket_id:       BigInt(ticketId),
+      sender_id:       BigInt(userId),
+      sender_type:     'user',
       message,
-      attachment_url: attachmentData ?? null,
+      attachment_data: attachmentData ?? null,
+      attachment_mime: attachmentMime ?? null,
+      attachment_url:  null,  // legacy column kept, always null for new rows
     })
     .output(['inserted.id', 'inserted.created_at'])
     .executeTakeFirstOrThrow();

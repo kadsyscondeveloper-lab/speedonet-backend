@@ -1,6 +1,5 @@
 /**
  * controllers/ticketController.js
- * Added: getMessages (polling endpoint for chat)
  */
 
 const ticketService = require('../services/ticketService');
@@ -57,11 +56,12 @@ async function addReply(req, res, next) {
     const ticketId = parseInt(req.params.id);
     if (isNaN(ticketId)) return R.badRequest(res, 'Invalid ticket ID.');
 
-    const { message, attachment_data } = req.body;
+    const { message, attachment_data, attachment_mime } = req.body;
 
     const reply = await ticketService.addReply(req.user.id, ticketId, {
       message,
       attachmentData: attachment_data || null,
+      attachmentMime: attachment_mime || null,
     });
 
     return R.created(res, { reply }, 'Reply added.');
@@ -72,8 +72,6 @@ async function addReply(req, res, next) {
 }
 
 // GET /api/v1/tickets/:id/messages?after=<reply_id>
-// Polling endpoint — returns only messages newer than `after` (for incremental updates)
-// If `after` is omitted, returns full message history
 async function getMessages(req, res, next) {
   try {
     const ticketId = parseInt(req.params.id);

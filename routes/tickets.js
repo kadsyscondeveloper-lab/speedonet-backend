@@ -1,6 +1,5 @@
 /**
  * routes/tickets.js
- * Added: GET /:id/messages  — polling endpoint for chat
  */
 
 const router = require('express').Router();
@@ -35,7 +34,7 @@ const createRules = [
     .isString().withMessage('attachment_data must be a base64 string'),
   body('attachment_mime')
     .optional({ nullable: true })
-    .isIn(['image/jpeg', 'image/png', 'application/pdf'])
+    .isIn(['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'])
     .withMessage('Only JPG, PNG and PDF attachments are accepted'),
   validate,
 ];
@@ -46,7 +45,11 @@ const replyRules = [
     .notEmpty().withMessage('Message is required'),
   body('attachment_data')
     .optional({ nullable: true })
-    .isString(),
+    .isString().withMessage('attachment_data must be a base64 string'),
+  body('attachment_mime')
+    .optional({ nullable: true })
+    .isIn(['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'])
+    .withMessage('Only JPG, PNG and PDF attachments are accepted'),
   validate,
 ];
 
@@ -69,10 +72,10 @@ const messagesRules = [
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 
-router.post('/',                createRules,                          ctrl.createTicket);
-router.get('/',                 paginationRules,                      ctrl.getTickets);
-router.get('/:id',              ticketIdRule,                         ctrl.getTicket);
-router.post('/:id/replies',     [...ticketIdRule, ...replyRules],     ctrl.addReply);
-router.get('/:id/messages',     messagesRules,                        ctrl.getMessages);  // ← NEW
+router.post('/',            createRules,                          ctrl.createTicket);
+router.get('/',             paginationRules,                      ctrl.getTickets);
+router.get('/:id',          ticketIdRule,                         ctrl.getTicket);
+router.post('/:id/replies', [...ticketIdRule, ...replyRules],     ctrl.addReply);
+router.get('/:id/messages', messagesRules,                        ctrl.getMessages);
 
 module.exports = router;
