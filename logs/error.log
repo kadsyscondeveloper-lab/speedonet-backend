@@ -741,3 +741,6 @@
 2026-03-26 14:49:48 [[31merror[39m]: [FCM] Token[0] user=1 error=messaging/mismatched-credential msg=SenderId mismatch
 2026-03-26 15:03:35 [[31merror[39m]: [FCM] Token[0] user=1 error=messaging/registration-token-not-registered msg=Requested entity was not found.
 2026-03-27 10:02:52 [[31merror[39m]: [FCM] Token[0] user=1 error=app/invalid-credential msg=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-03-27 13:53:54 [[31merror[39m]: [FCM] Token[0] user=1 error=messaging/invalid-argument msg=Request contains an invalid argument.
+2026-03-28 08:25:46 [[31merror[39m]: [FCM] Failed for user 1: Request is missing required authentication credential. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+2026-03-30 10:20:13 [[31merror[39m]: [FCM] Failed for user 1: Request is missing required authentication credential. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
