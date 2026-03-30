@@ -1,16 +1,11 @@
 // services/fcmService.js
 //
-// Sends push notifications via Firebase Cloud Messaging (Admin SDK).
-//
-// Setup:
-//   1. Firebase Console → Project Settings → Service Accounts
-//   2. Generate new private key → save as firebase-service-account.json
-//      in your project root
-//   3. Add firebase-service-account.json to .gitignore
-//   4. npm install firebase-admin
+// Multi-device FCM support — one token per device, stored in dbo.fcm_tokens.
+// Previously a single fcm_token column on dbo.users meant only the last
+// logged-in device received pushes. Now every device gets notifications.
 
 const admin  = require('firebase-admin');
-const { db } = require('../config/db');
+const { db, sql } = require('../config/db');
 const logger = require('../utils/logger');
 
 // ── Initialise once ───────────────────────────────────────────────────────────
@@ -21,70 +16,111 @@ function _init() {
   if (_initialised) return;
   try {
     const serviceAccount = require('../firebase-service-account.json');
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
+
+    if (!serviceAccount.private_key || !serviceAccount.client_email) {
+      throw new Error('Service account JSON is missing private_key or client_email');
+    }
+
+    if (admin.apps.length === 0) {
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+      });
+    }
+
     _initialised = true;
     logger.info('[FCM] Firebase Admin SDK initialised ✓');
   } catch (err) {
-    logger.warn(
-      `[FCM] firebase-service-account.json not found — push disabled. ${err.message}`
-    );
+    logger.error(`[FCM] Init failed — push notifications disabled: ${err.message}`);
   }
 }
 
 _init();
 
-// ── Send to one user ──────────────────────────────────────────────────────────
+// ── Stale token error codes ───────────────────────────────────────────────────
+
+const STALE_TOKEN_CODES = new Set([
+  'messaging/registration-token-not-registered',
+  'messaging/invalid-registration-token',
+  'messaging/invalid-argument',
+  'messaging/invalid-recipient',
+  'messaging/third-party-auth-error',
+]);
+
+// ── Send to one user (all their devices) ─────────────────────────────────────
 
 async function sendToUser(userId, { title, body, data = {} }) {
-  if (!_initialised) return;
+  if (!_initialised) {
+    logger.warn('[FCM] SDK not initialised — skipping push');
+    return;
+  }
 
   try {
-    const row = await db
-      .selectFrom('dbo.users')
-      .select('fcm_token')
-      .where('id', '=', BigInt(userId))
-      .executeTakeFirst();
+    const rows = await db
+      .selectFrom('dbo.fcm_tokens')
+      .select(['id', 'token'])
+      .where('user_id', '=', BigInt(userId))
+      .execute();
 
-    const token = row?.fcm_token;
-    if (!token) {
-      logger.debug(`[FCM] No token for user ${userId} — skipping push`);
+    if (rows.length === 0) {
+      logger.debug(`[FCM] No tokens for user ${userId} — skipping push`);
       return;
     }
 
-    const message = {
-      token,
-      notification: { title, body },
-      data: Object.fromEntries(
-        Object.entries(data).map(([k, v]) => [k, String(v)])
-      ),
-      android: {
-        notification: {
-          channelId: 'speedonet_channel',
-          priority:  'high',
-          sound:     'default',
-        },
-        priority: 'high',
-      },
-      apns: {
-        payload: { aps: { sound: 'default', badge: 1 } },
-      },
-    };
+    logger.debug(`[FCM] Sending to user ${userId} on ${rows.length} device(s)`);
 
-    const response = await admin.messaging().send(message);
-    logger.info(`[FCM] Sent to user ${userId} | messageId=${response}`);
+    const dataStrings = Object.fromEntries(
+      Object.entries(data).map(([k, v]) => [k, String(v)])
+    );
+
+    const staleIds = [];
+
+    await Promise.allSettled(rows.map(async (row) => {
+      try {
+        const message = {
+          token: row.token,
+          notification: { title, body },
+          data: dataStrings,
+          android: {
+            notification: {
+              channelId: 'speedonet_channel',
+              priority:  'high',
+              sound:     'default',
+            },
+            priority: 'high',
+          },
+          apns: {
+            payload: {
+              aps: {
+                sound:            'default',
+                badge:            1,
+                contentAvailable: true,
+              },
+            },
+            headers: { 'apns-priority': '10' },
+          },
+        };
+
+        const response = await admin.messaging().send(message);
+        logger.info(`[FCM] Sent to user ${userId} device ${row.id} | messageId=${response}`);
+      } catch (err) {
+        if (STALE_TOKEN_CODES.has(err.code)) {
+          logger.warn(`[FCM] Stale token id=${row.id} user=${userId} (${err.code}) — queued for removal`);
+          staleIds.push(row.id);
+        } else {
+          logger.error(`[FCM] Failed for user ${userId} device ${row.id}: ${err.message}`);
+        }
+      }
+    }));
+
+    if (staleIds.length > 0) {
+      await db.deleteFrom('dbo.fcm_tokens')
+        .where('id', 'in', staleIds)
+        .execute();
+      logger.warn(`[FCM] Removed ${staleIds.length} stale token(s) for user ${userId}`);
+    }
 
   } catch (err) {
-    if (
-      err.code === 'messaging/registration-token-not-registered' ||
-      err.code === 'messaging/invalid-registration-token'
-    ) {
-      logger.warn(`[FCM] Stale token for user ${userId} — clearing`);
-      await _clearToken(userId).catch(() => {});
-    } else {
-      logger.error(`[FCM] Failed for user ${userId}: ${err.message}`);
-    }
+    logger.error(`[FCM] sendToUser failed for user ${userId}: ${err.message}`);
   }
 }
 
@@ -96,64 +132,76 @@ async function sendToUsers(userIds, { title, body, data = {} }) {
   );
 }
 
-// ── Broadcast to all active users ────────────────────────────────────────────
+// ── Broadcast to all active users ─────────────────────────────────────────────
 
 async function broadcast({ title, body, data = {} }) {
-  if (!_initialised) return;
+  if (!_initialised) {
+    logger.warn('[FCM] SDK not initialised — skipping broadcast');
+    return;
+  }
 
   try {
-    const rows = await db
-      .selectFrom('dbo.users')
-      .select(['id', 'fcm_token'])
-      .where('is_active',  '=', true)
-      .where('fcm_token', 'is not', null)
-      .execute();
+    const rows = await sql`
+      SELECT ft.id, ft.token, ft.user_id
+      FROM dbo.fcm_tokens ft
+      INNER JOIN dbo.users u ON u.id = ft.user_id
+      WHERE u.is_active = 1
+    `.execute(db).then(r => r.rows);
 
-    if (rows.length === 0) return;
+    if (rows.length === 0) {
+      logger.info('[FCM] Broadcast: no devices with FCM tokens');
+      return;
+    }
 
-    // FCM multicast: max 500 tokens per call
+    logger.info(`[FCM] Broadcasting to ${rows.length} device(s)`);
+
+    const dataStrings = Object.fromEntries(
+      Object.entries(data).map(([k, v]) => [k, String(v)])
+    );
+
     for (let i = 0; i < rows.length; i += 500) {
       const chunk = rows.slice(i, i + 500);
 
       const msg = {
-        tokens: chunk.map(r => r.fcm_token),
+        tokens: chunk.map(r => r.token),
         notification: { title, body },
-        data: Object.fromEntries(
-          Object.entries(data).map(([k, v]) => [k, String(v)])
-        ),
+        data: dataStrings,
         android: {
-          notification: { channelId: 'speedonet_channel', priority: 'high' },
+          notification: {
+            channelId: 'speedonet_channel',
+            priority:  'high',
+            sound:     'default',
+          },
           priority: 'high',
+        },
+        apns: {
+          payload: {
+            aps: { sound: 'default', badge: 1, contentAvailable: true },
+          },
+          headers: { 'apns-priority': '10' },
         },
       };
 
       const result = await admin.messaging().sendEachForMulticast(msg);
-      logger.info(`[FCM] Broadcast chunk: ${result.successCount} sent, ${result.failureCount} failed`);
+      logger.info(`[FCM] Broadcast chunk ${Math.floor(i / 500) + 1}: ${result.successCount} sent, ${result.failureCount} failed`);
 
-      // Log individual failures to identify error codes
       result.responses.forEach((r, j) => {
         if (!r.success) {
-          logger.error(`[FCM] Token[${j}] user=${chunk[j].id} error=${r.error?.code} msg=${r.error?.message}`);
+          logger.warn(`[FCM] Broadcast fail | user=${chunk[j].user_id} device=${chunk[j].id} code=${r.error?.code}`);
         }
       });
 
-      // Clear stale/invalid tokens so they don't clog future broadcasts
       if (result.failureCount > 0) {
         const staleIds = result.responses
-          .map((r, j) => ({ ...r, userId: chunk[j].id }))
-          .filter(r => !r.success && [
-            'messaging/registration-token-not-registered',
-            'messaging/invalid-registration-token',
-            'messaging/invalid-argument',
-          ].includes(r.error?.code))
-          .map(r => r.userId);
+          .map((r, j) => ({ ...r, id: chunk[j].id }))
+          .filter(r => !r.success && STALE_TOKEN_CODES.has(r.error?.code))
+          .map(r => r.id);
 
         if (staleIds.length > 0) {
-          await db.updateTable('dbo.users')
-            .set({ fcm_token: null })
+          await db.deleteFrom('dbo.fcm_tokens')
             .where('id', 'in', staleIds)
             .execute();
-          logger.warn(`[FCM] Cleared ${staleIds.length} stale token(s)`);
+          logger.warn(`[FCM] Broadcast: removed ${staleIds.length} stale token(s)`);
         }
       }
     }
@@ -165,24 +213,61 @@ async function broadcast({ title, body, data = {} }) {
 // ── Token helpers ─────────────────────────────────────────────────────────────
 
 async function saveToken(userId, token) {
+  if (!token || typeof token !== 'string' || token.trim().length === 0) {
+    logger.warn(`[FCM] saveToken called with invalid token for user ${userId}`);
+    return;
+  }
+
   try {
-    await db
-      .updateTable('dbo.users')
-      .set({ fcm_token: token || null, updated_at: new Date() })
-      .where('id', '=', BigInt(userId))
-      .execute();
-    logger.debug(`[FCM] Token saved for user ${userId}`);
+    const existing = await db
+      .selectFrom('dbo.fcm_tokens')
+      .select(['id', 'user_id'])
+      .where('token', '=', token)
+      .executeTakeFirst();
+
+    if (existing) {
+      if (Number(existing.user_id) === Number(userId)) {
+        logger.debug(`[FCM] Token already registered for user ${userId}`);
+        return;
+      }
+      // Shared device — reassign token to new user
+      await db
+        .updateTable('dbo.fcm_tokens')
+        .set({ user_id: BigInt(userId), updated_at: new Date() })
+        .where('id', '=', existing.id)
+        .execute();
+      logger.info(`[FCM] Token reassigned from user ${existing.user_id} to user ${userId}`);
+    } else {
+      await db
+        .insertInto('dbo.fcm_tokens')
+        .values({ user_id: BigInt(userId), token })
+        .execute();
+      logger.info(`[FCM] New token registered for user ${userId}`);
+    }
   } catch (err) {
-    logger.error(`[FCM] saveToken failed: ${err.message}`);
+    logger.error(`[FCM] saveToken failed for user ${userId}: ${err.message}`);
   }
 }
 
-async function _clearToken(userId) {
-  await db
-    .updateTable('dbo.users')
-    .set({ fcm_token: null })
-    .where('id', '=', BigInt(userId))
-    .execute();
+async function clearToken(userId, token) {
+  try {
+    if (token) {
+      await db
+        .deleteFrom('dbo.fcm_tokens')
+        .where('user_id', '=', BigInt(userId))
+        .where('token', '=', token)
+        .execute();
+      logger.info(`[FCM] Token cleared for user ${userId} (this device only)`);
+    } else {
+      await db
+        .deleteFrom('dbo.fcm_tokens')
+        .where('user_id', '=', BigInt(userId))
+        .execute();
+      logger.info(`[FCM] All tokens cleared for user ${userId}`);
+    }
+  } catch (err) {
+    logger.error(`[FCM] clearToken failed for user ${userId}: ${err.message}`);
+  }
 }
 
-module.exports = { sendToUser, sendToUsers, broadcast, saveToken };
+module.exports = { sendToUser, sendToUsers, broadcast, saveToken, clearToken };
