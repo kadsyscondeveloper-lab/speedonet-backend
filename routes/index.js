@@ -13,6 +13,8 @@ router.use('/fcm',        require('./fcm'));           // ← NEW: FCM token reg
 router.use('/admin/auth', require('./adminAuth'));
 router.use('/admin',      require('./admin'));
 router.use('/locations',  require('./locations'));
+router.use('/availability',   require('./availability'));
+router.use('/installations',  require('./installations'));
 
 // Health check
 router.get('/health', (req, res) => {

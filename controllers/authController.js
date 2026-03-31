@@ -87,6 +87,7 @@ async function signup(req, res, next) {
           referral_code:    refCode,
           // ── ADDED: null if no referral code was used, otherwise "REF00XXXXX"
           referral_coupon:  referralCouponCode,
+          availability_confirmed:  user.availability_confirmed ?? false,
         },
         tokens: { access_token: accessToken, refresh_token: refreshToken },
       },
@@ -137,6 +138,7 @@ async function loginWithPassword(req, res, next) {
           phone:          user.phone,
           email:          user.email,
           wallet_balance: user.wallet_balance,
+          availability_confirmed:  user.availability_confirmed ?? false,
         },
         tokens: { access_token: accessToken, refresh_token: refreshToken },
       },
@@ -221,6 +223,7 @@ async function verifyOtp(req, res, next) {
           phone:          user.phone,
           email:          user.email,
           wallet_balance: user.wallet_balance,
+          availability_confirmed:  user.availability_confirmed ?? false,
         },
         tokens: { access_token: accessToken, refresh_token: refreshToken },
       },
