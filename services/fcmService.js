@@ -100,15 +100,33 @@ async function sendToUser(userId, { title, body, data = {} }) {
           },
         };
 
-        const response = await admin.messaging().send(message);
-        logger.info(`[FCM] Sent to user ${userId} device ${row.id} | messageId=${response}`);
-      } catch (err) {
-        if (STALE_TOKEN_CODES.has(err.code)) {
-          logger.warn(`[FCM] Stale token id=${row.id} user=${userId} (${err.code}) — queued for removal`);
-          staleIds.push(row.id);
-        } else {
-          logger.error(`[FCM] Failed for user ${userId} device ${row.id}: ${err.message}`);
-        }
+        const result = await admin.messaging().sendEachForMulticast({
+        tokens: [row.token],
+        notification: { title, body },
+        data: dataStrings,
+        android: message.android,
+        apns: message.apns,
+      });
+
+      const r = result.responses[0];
+
+      if (!r.success) {
+        logger.error(`[FCM FAIL] user=${userId} device=${row.id}`);
+        logger.error(`code=${r.error?.code}`);
+        logger.error(`message=${r.error?.message}`);
+      } else {
+        logger.info(`[FCM OK] user=${userId} device=${row.id} messageId=${r.messageId}`);
+      }
+            } catch (err) {
+        logger.error(`[FCM ERROR] user=${userId} device=${row.id}`);
+  logger.error(`code=${err.code}`);
+  logger.error(`message=${err.message}`);
+  logger.error(`full=`, err);
+
+  if (STALE_TOKEN_CODES.has(err.code)) {
+    logger.warn(`[FCM] Stale token id=${row.id} user=${userId} (${err.code}) — queued for removal`);
+    staleIds.push(row.id);
+  }
       }
     }));
 
