@@ -17,7 +17,7 @@ async function findUserByPhone(phone) {
     .select([
       'id', 'name', 'phone', 'email',
       'password_hash', 'profile_image',
-      'wallet_balance', 'is_active',
+      'wallet_balance', 'is_active','availability_confirmed', 
     ])
     .where('phone', '=', phone)
     .executeTakeFirst();
@@ -29,7 +29,7 @@ async function findUserById(id) {
     .selectFrom('dbo.users')
     .select([
       'id', 'name', 'phone', 'email',
-      'profile_image', 'wallet_balance', 'is_active',
+      'profile_image', 'wallet_balance', 'is_active','availability_confirmed',
     ])
     .where('id', '=', BigInt(id))
     .executeTakeFirst();

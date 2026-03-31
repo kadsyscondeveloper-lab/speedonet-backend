@@ -23,6 +23,7 @@ async function getFullProfile(userId) {
     .select([
       'u.id', 'u.name', 'u.phone', 'u.email', 'u.profile_image',
       'u.wallet_balance', 'u.is_active', 'u.created_at',
+      'u.availability_confirmed',
       'a.house_no', 'a.address', 'a.city', 'a.state', 'a.pin_code',
       'rc.code as referral_code',
       'rc.referral_url as referral_url',

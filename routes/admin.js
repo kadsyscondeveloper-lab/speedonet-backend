@@ -494,6 +494,155 @@ router.patch('/carousel/:id', async (req, res, next) => {
 
 
 
+// ── Service Areas ─────────────────────────────────────────────────────────────
+router.get('/service-areas', async (req, res, next) => {
+  try {
+    const rows = await db.selectFrom('dbo.service_areas').selectAll()
+      .orderBy('created_at', 'desc').execute();
+    return R.ok(res, { areas: rows });
+  } catch (err) { next(err); }
+});
+
+router.post('/service-areas', async (req, res, next) => {
+  try {
+    const { pin_code, area_name, city, state } = req.body;
+    if (!pin_code?.trim()) return R.badRequest(res, 'pin_code is required.');
+    const row = await db.insertInto('dbo.service_areas')
+      .values({ pin_code: pin_code.trim(), area_name, city, state })
+      .output(['inserted.id', 'inserted.pin_code', 'inserted.area_name', 'inserted.city'])
+      .executeTakeFirstOrThrow();
+    return R.created(res, { area: row }, 'Service area added.');
+  } catch (err) {
+    if (err.number === 2627) return R.conflict(res, 'This PIN code already exists.');
+    next(err);
+  }
+});
+
+router.patch('/service-areas/:id', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    const allowed = {};
+    if (req.body.area_name != null)              allowed.area_name = req.body.area_name;
+    if (req.body.city      != null)              allowed.city      = req.body.city;
+    if (typeof req.body.is_active === 'boolean') allowed.is_active = req.body.is_active;
+    if (!Object.keys(allowed).length) return R.badRequest(res, 'Nothing to update.');
+    allowed.updated_at = sql`SYSUTCDATETIME()`;
+    await db.updateTable('dbo.service_areas').set(allowed).where('id', '=', id).execute();
+    return R.ok(res, null, 'Service area updated.');
+  } catch (err) { next(err); }
+});
+
+router.delete('/service-areas/:id', async (req, res, next) => {
+  try {
+    await db.deleteFrom('dbo.service_areas').where('id', '=', parseInt(req.params.id)).execute();
+    return R.ok(res, null, 'Service area deleted.');
+  } catch (err) { next(err); }
+});
+
+// ── Availability Inquiries ────────────────────────────────────────────────────
+
+router.get('/availability-inquiries', async (req, res, next) => {
+  try {
+    const page   = Math.max(1, parseInt(req.query.page   || '1'));
+    const limit  = Math.max(1, parseInt(req.query.limit  || '15'));
+    const status = req.query.status || '';  // filter: pending / available / unavailable
+    const offset = (page - 1) * limit;
+
+    const [rows, countRow] = await Promise.all([
+      sql`
+        SELECT *
+        FROM dbo.availability_inquiries
+        ${status ? sql`WHERE status = ${status}` : sql``}
+        ORDER BY created_at DESC
+        OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
+      `.execute(db).then(r => r.rows),
+
+      status
+        ? sql`SELECT COUNT(id) AS total FROM dbo.availability_inquiries
+              WHERE status = ${status}`.execute(db).then(r => r.rows[0])
+        : db.selectFrom('dbo.availability_inquiries')
+            .select(db.fn.count('id').as('total'))
+            .executeTakeFirstOrThrow(),
+    ]);
+
+    const total = Number(countRow.total);
+    return R.ok(res, { inquiries: rows }, 'OK', 200,
+      { page, limit, total, total_pages: Math.ceil(total / limit) });
+  } catch (err) { next(err); }
+});
+
+// PATCH /admin/availability-inquiries/:id
+// Admin responds: { status: 'available' | 'unavailable', admin_notes?: string }
+router.patch('/availability-inquiries/:id', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return R.badRequest(res, 'Invalid inquiry ID.');
+
+    const { status, admin_notes } = req.body;
+    const VALID = ['available', 'unavailable'];
+    if (!VALID.includes(status))
+      return R.badRequest(res, "status must be 'available' or 'unavailable'.");
+
+    const inquiry = await db
+      .selectFrom('dbo.availability_inquiries')
+      .select(['id', 'phone', 'name', 'status'])
+      .where('id', '=', id)
+      .executeTakeFirst();
+
+    if (!inquiry) return R.notFound(res, 'Inquiry not found.');
+    if (inquiry.status !== 'pending')
+      return R.badRequest(res, 'This inquiry has already been responded to.');
+
+    await db
+      .updateTable('dbo.availability_inquiries')
+      .set({
+        status,
+        admin_notes:  admin_notes?.trim() || null,
+        responded_at: new Date(),
+        responded_by: req.admin.id,
+      })
+      .where('id', '=', id)
+      .execute();
+
+
+    if (status === 'available') {
+        await db
+          .updateTable('dbo.users')
+          .set({ availability_confirmed: true, updated_at: sql`SYSUTCDATETIME()` })
+          .where('phone', '=', inquiry.phone)
+          .execute();
+}
+
+    // Notify the user if they have an account with this phone number
+    // Notify if they have an account
+  const user = await db
+    .selectFrom('dbo.users')
+    .select('id')
+    .where('phone', '=', inquiry.phone)
+    .executeTakeFirst();
+
+  if (user) {
+    const isAvailable = status === 'available';
+    await notifyUser(db, Number(user.id), {
+      type:  'availability',
+      title: isAvailable
+        ? 'Great News! Service Available 🎉'
+        : 'Service Availability Update',
+      body: isAvailable
+        ? `Speedonet is now available in your area! Open the app to complete your profile and get started.`
+        : `Unfortunately, service is not yet available in your area. ${admin_notes || "We'll keep expanding and notify you!"}`,
+      data: { inquiry_status: status },
+    });
+  }
+
+    logger.info(
+      `[Admin] Inquiry ${id} responded: ${status} by admin ${req.admin.id}`
+    );
+    return R.ok(res, null,
+      `Inquiry marked as '${status}'${user ? ' and user notified.' : '.'}`);
+  } catch (err) { next(err); }
+});
+
 router.get   ('/pay-services',     payServicesCtrl.getAllServices);
 router.post  ('/pay-services',     payServicesCtrl.createService);
 router.patch ('/pay-services/:id', payServicesCtrl.updateService);
