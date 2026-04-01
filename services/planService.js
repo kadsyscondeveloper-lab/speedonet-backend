@@ -44,6 +44,54 @@ async function purchasePlan(userId, planId, paymentMode = 'wallet', couponCode =
   if (!userRow)
     throw Object.assign(new Error('User not found.'), { statusCode: 404 });
 
+  // ── Guard 1: block if a plan is already queued (starts in the future) ─────
+  // We only allow one queued plan at a time.
+  const queuedSub = await db
+    .selectFrom('dbo.user_subscriptions')
+    .select('id')
+    .where('user_id',    '=', BigInt(userId))
+    .where('status',     '=', 'active')
+    .where('start_date', '>',  sql`CAST(SYSDATETIME() AS DATE)`)
+    .top(1)
+    .executeTakeFirst();
+
+  if (queuedSub)
+    throw Object.assign(
+      new Error('You already have a plan queued for your next cycle. You can only queue one plan at a time.'),
+      { statusCode: 400 }
+    );
+
+  // ── Guard 2: enforce the 2-day renewal window ──────────────────────────────
+  // If the user has an active plan, they may only purchase a new one when
+  // there are ≤ 2 days left (so it queues right after) or it has already expired.
+  const activeSub = await db
+    .selectFrom('dbo.user_subscriptions')
+    .select('expires_at')
+    .where('user_id',    '=', BigInt(userId))
+    .where('status',     '=', 'active')
+    .where('expires_at', '>=', sql`CAST(SYSDATETIME() AS DATE)`)
+    .orderBy('expires_at', 'desc')
+    .top(1)
+    .executeTakeFirst();
+
+  if (activeSub) {
+    const now           = new Date();
+    const expiry        = new Date(activeSub.expires_at);
+    const daysRemaining = (expiry - now) / (1000 * 60 * 60 * 24);
+
+    if (daysRemaining > 2) {
+      const expiryStr = expiry.toDateString();
+      throw Object.assign(
+        new Error(
+          `Your current plan is active until ${expiryStr}. ` +
+          `You can purchase your next plan within 2 days of expiry.`
+        ),
+        { statusCode: 400 }
+      );
+    }
+  }
+
+  // ── Pricing ───────────────────────────────────────────────────────────────
   const baseAmount = parseFloat(plan.price);
   const gstAmount  = parseFloat((baseAmount * 0.18).toFixed(2));
   const subtotal   = parseFloat((baseAmount + gstAmount).toFixed(2));
@@ -71,16 +119,7 @@ async function purchasePlan(userId, planId, paymentMode = 'wallet', couponCode =
 
   const orderRef = generateOrderRef();
 
-  const activeSub = await db
-    .selectFrom('dbo.user_subscriptions')
-    .select('expires_at')
-    .where('user_id',    '=', BigInt(userId))
-    .where('status',     '=', 'active')
-    .where('expires_at', '>=', sql`CAST(SYSDATETIME() AS DATE)`)
-    .orderBy('expires_at', 'desc')
-    .top(1)
-    .executeTakeFirst();
-
+  // activeSub is already fetched above — re-use it to set the start date
   const startDate    = activeSub ? new Date(activeSub.expires_at) : new Date();
   const expiresAt    = new Date(startDate.getTime() + plan.validity_days * 86_400_000);
   const toDate       = (d) => d.toISOString().slice(0, 10);
