@@ -31,7 +31,20 @@ async function createRequest(req, res, next) {
     if (!house_no?.trim() || !address?.trim() || !city?.trim() || !state?.trim() || !pin_code?.trim())
       return R.badRequest(res, 'house_no, address, city, state and pin_code are required.');
 
-    // Only one active request at a time
+    // ── Block if router already installed — installations happen only once ────
+    const completed = await db
+      .selectFrom('dbo.installation_requests')
+      .select('id')
+      .where('user_id', '=', BigInt(req.user.id))
+      .where('status',  '=', 'completed')
+      .executeTakeFirst();
+
+    if (completed)
+      return R.conflict(res,
+        'Your router has already been installed. Installations are done only once. ' +
+        'If you need assistance, please raise a support ticket.');
+
+    // ── Block if there is already a pending / in-progress request ─────────────
     const existing = await db
       .selectFrom('dbo.installation_requests')
       .select('id')
