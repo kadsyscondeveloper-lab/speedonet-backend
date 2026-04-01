@@ -746,3 +746,14 @@
 2026-03-30 10:20:13 [[31merror[39m]: [FCM] Failed for user 1: Request is missing required authentication credential. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
 2026-03-30 10:46:52 [[31merror[39m]: [FCM] Failed for user 17: Request is missing required authentication credential. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
 2026-03-30 10:51:36 [[31merror[39m]: [FCM] Failed for user 1: Request is missing required authentication credential. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+2026-04-01 15:12:33 [[31merror[39m]: ReferenceError: bcryptForTech is not defined
+    at C:\Users\Developer\app\speedonet-backend\routes\admin.js:731:18
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:280:10)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express-rate-limit\dist\index.cjs:807:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

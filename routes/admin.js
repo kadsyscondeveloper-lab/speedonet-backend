@@ -7,6 +7,7 @@ const logger = require('../utils/logger');
 const payServicesCtrl = require('../controllers/payServicesController');
 const notifyUser = require('../utils/notifyUser');
 const { broadcast } = require('../services/fcmService');
+const bcryptForTech = require('bcryptjs');
 
 router.use(authenticateAdmin);
 const { adminLimiter } = require('../middleware/errorHandler');
@@ -642,6 +643,389 @@ router.patch('/availability-inquiries/:id', async (req, res, next) => {
       `Inquiry marked as '${status}'${user ? ' and user notified.' : '.'}`);
   } catch (err) { next(err); }
 });
+
+
+// ── GET /admin/technicians  — paginated list ──────────────────────────────────
+router.get('/technicians', async (req, res, next) => {
+  try {
+    const page   = Math.max(1, parseInt(req.query.page  || '1'));
+    const limit  = Math.max(1, parseInt(req.query.limit || '15'));
+    const search = req.query.search?.trim() || '';
+    const offset = (page - 1) * limit;
+ 
+    const [techs, countRow] = await Promise.all([
+      sql`
+        SELECT
+          t.id, t.name, t.phone, t.employee_id, t.email,
+          t.is_active, t.current_load, t.created_at,
+          COUNT(ir.id) AS total_jobs,
+          SUM(CASE WHEN ir.status = 'completed' THEN 1 ELSE 0 END) AS completed_jobs
+        FROM dbo.technicians t
+        LEFT JOIN dbo.installation_requests ir ON ir.assigned_technician_id = t.id
+        ${search
+          ? sql`WHERE t.name LIKE ${'%'+search+'%'} OR t.phone LIKE ${'%'+search+'%'} OR t.employee_id LIKE ${'%'+search+'%'}`
+          : sql``}
+        GROUP BY t.id, t.name, t.phone, t.employee_id, t.email, t.is_active, t.current_load, t.created_at
+        ORDER BY t.created_at DESC
+        OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
+      `.execute(db).then(r => r.rows),
+ 
+      search
+        ? sql`SELECT COUNT(id) AS total FROM dbo.technicians
+              WHERE name LIKE ${'%'+search+'%'} OR phone LIKE ${'%'+search+'%'} OR employee_id LIKE ${'%'+search+'%'}`.execute(db).then(r => r.rows[0])
+        : db.selectFrom('dbo.technicians').select(db.fn.count('id').as('total')).executeTakeFirstOrThrow(),
+    ]);
+ 
+    const total = Number(countRow.total);
+    return R.ok(res, { technicians: techs }, 'OK', 200,
+      { page, limit, total, total_pages: Math.ceil(total / limit) });
+  } catch (err) { next(err); }
+});
+ 
+// ── GET /admin/technicians/:id ────────────────────────────────────────────────
+router.get('/technicians/:id', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return R.badRequest(res, 'Invalid technician ID.');
+ 
+    const tech = await sql`
+      SELECT
+        t.id, t.name, t.phone, t.employee_id, t.email,
+        t.is_active, t.current_load, t.created_at,
+        COUNT(ir.id) AS total_jobs,
+        SUM(CASE WHEN ir.status = 'completed'   THEN 1 ELSE 0 END) AS completed_jobs,
+        SUM(CASE WHEN ir.status = 'in_progress' THEN 1 ELSE 0 END) AS active_jobs
+      FROM dbo.technicians t
+      LEFT JOIN dbo.installation_requests ir ON ir.assigned_technician_id = t.id
+      WHERE t.id = ${BigInt(id)}
+      GROUP BY t.id, t.name, t.phone, t.employee_id, t.email, t.is_active, t.current_load, t.created_at
+    `.execute(db).then(r => r.rows[0]);
+ 
+    if (!tech) return R.notFound(res, 'Technician not found.');
+ 
+    // Recent assignments
+    const recentJobs = await sql`
+      SELECT TOP 10
+        ir.id, ir.request_number, ir.status, ir.city,
+        ir.assigned_at, ir.completed_at,
+        u.name AS customer_name
+      FROM dbo.installation_requests ir
+      INNER JOIN dbo.users u ON u.id = ir.user_id
+      WHERE ir.assigned_technician_id = ${BigInt(id)}
+      ORDER BY ir.assigned_at DESC
+    `.execute(db).then(r => r.rows);
+ 
+    return R.ok(res, { technician: { ...tech, recent_jobs: recentJobs } });
+  } catch (err) { next(err); }
+});
+ 
+// ── POST /admin/technicians  — create technician ──────────────────────────────
+router.post('/technicians', async (req, res, next) => {
+  try {
+    const { name, phone, employee_id, email, password } = req.body;
+ 
+    if (!name?.trim() || !phone?.trim() || !employee_id?.trim() || !password)
+      return R.badRequest(res, 'name, phone, employee_id and password are required.');
+    if (password.length < 8)
+      return R.badRequest(res, 'Password must be at least 8 characters.');
+ 
+    const hash = await bcryptForTech.hash(
+      password, parseInt(process.env.BCRYPT_ROUNDS || '12')
+    );
+ 
+    const row = await db
+      .insertInto('dbo.technicians')
+      .values({
+        name:          name.trim(),
+        phone:         phone.trim(),
+        employee_id:   employee_id.trim(),
+        email:         email?.trim() || null,
+        password_hash: hash,
+      })
+      .output(['inserted.id', 'inserted.name', 'inserted.phone',
+               'inserted.employee_id', 'inserted.email', 'inserted.is_active'])
+      .executeTakeFirstOrThrow();
+ 
+    logger.info(`[Admin] Technician created: ${row.phone} by admin ${req.admin.id}`);
+    return R.created(res,
+      { technician: { ...row, id: Number(row.id) } },
+      'Technician account created.');
+  } catch (err) {
+    if (err.number === 2627 || err.number === 2601)
+      return R.conflict(res, 'Phone or employee ID already exists.');
+    next(err);
+  }
+});
+ 
+// ── PATCH /admin/technicians/:id  — update details / toggle active ────────────
+router.patch('/technicians/:id', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return R.badRequest(res, 'Invalid technician ID.');
+ 
+    const allowed = {};
+    if (req.body.name        != null) allowed.name        = req.body.name.trim();
+    if (req.body.phone       != null) allowed.phone       = req.body.phone.trim();
+    if (req.body.employee_id != null) allowed.employee_id = req.body.employee_id.trim();
+    if (req.body.email       != null) allowed.email       = req.body.email.trim();
+    if (typeof req.body.is_active === 'boolean') allowed.is_active = req.body.is_active;
+ 
+    // Allow admin to reset password
+    if (req.body.new_password) {
+      if (req.body.new_password.length < 8)
+        return R.badRequest(res, 'Password must be at least 8 characters.');
+      allowed.password_hash = await bcryptForTech.hash(
+        req.body.new_password, parseInt(process.env.BCRYPT_ROUNDS || '12')
+      );
+    }
+ 
+    if (!Object.keys(allowed).length) return R.badRequest(res, 'Nothing to update.');
+    allowed.updated_at = sql`SYSUTCDATETIME()`;
+ 
+    await db.updateTable('dbo.technicians')
+      .set(allowed)
+      .where('id', '=', BigInt(id))
+      .execute();
+ 
+    logger.info(`[Admin] Technician ${id} updated by admin ${req.admin.id}`);
+    return R.ok(res, null, 'Technician updated.');
+  } catch (err) {
+    if (err.number === 2627 || err.number === 2601)
+      return R.conflict(res, 'Phone or employee ID already in use.');
+    next(err);
+  }
+});
+ 
+// ── DELETE /admin/technicians/:id  — soft-deactivate only ────────────────────
+router.delete('/technicians/:id', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return R.badRequest(res, 'Invalid technician ID.');
+ 
+    // Safety: don't deactivate if they have active jobs
+    const activeJobs = await db
+      .selectFrom('dbo.installation_requests')
+      .select(db.fn.count('id').as('n'))
+      .where('assigned_technician_id', '=', BigInt(id))
+      .where('status', 'in', ['assigned', 'in_progress'])
+      .executeTakeFirstOrThrow();
+ 
+    if (Number(activeJobs.n) > 0)
+      return R.badRequest(res,
+        `Cannot deactivate — technician has ${activeJobs.n} active job(s). Reassign them first.`);
+ 
+    await db.updateTable('dbo.technicians')
+      .set({ is_active: false, updated_at: sql`SYSUTCDATETIME()` })
+      .where('id', '=', BigInt(id))
+      .execute();
+ 
+    logger.info(`[Admin] Technician ${id} deactivated by admin ${req.admin.id}`);
+    return R.ok(res, null, 'Technician deactivated.');
+  } catch (err) { next(err); }
+});
+ 
+// =============================================================================
+// INSTALLATION REQUEST MANAGEMENT (enhanced with technician assignment)
+// =============================================================================
+ 
+// ── GET /admin/installations  — all requests with filters ────────────────────
+router.get('/installations', async (req, res, next) => {
+  try {
+    const page   = Math.max(1, parseInt(req.query.page  || '1'));
+    const limit  = Math.max(1, parseInt(req.query.limit || '15'));
+    const status = req.query.status || '';
+    const offset = (page - 1) * limit;
+ 
+    const [rows, countRow] = await Promise.all([
+      sql`
+        SELECT
+          ir.id, ir.request_number, ir.status,
+          ir.city, ir.pin_code, ir.scheduled_at,
+          ir.assigned_at, ir.assigned_by, ir.completed_at, ir.created_at,
+          u.name  AS customer_name,
+          u.phone AS customer_phone,
+          t.name  AS technician_name,
+          t.phone AS technician_phone,
+          t.employee_id AS technician_employee_id
+        FROM dbo.installation_requests ir
+        INNER JOIN dbo.users u ON u.id = ir.user_id
+        LEFT JOIN dbo.technicians t ON t.id = ir.assigned_technician_id
+        ${status ? sql`WHERE ir.status = ${status}` : sql``}
+        ORDER BY ir.created_at DESC
+        OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
+      `.execute(db).then(r => r.rows),
+ 
+      status
+        ? sql`SELECT COUNT(id) AS total FROM dbo.installation_requests WHERE status = ${status}`.execute(db).then(r => r.rows[0])
+        : db.selectFrom('dbo.installation_requests').select(db.fn.count('id').as('total')).executeTakeFirstOrThrow(),
+    ]);
+ 
+    const total = Number(countRow.total);
+    return R.ok(res, { installations: rows }, 'OK', 200,
+      { page, limit, total, total_pages: Math.ceil(total / limit) });
+  } catch (err) { next(err); }
+});
+ 
+// ── GET /admin/installations/:id ──────────────────────────────────────────────
+router.get('/installations/:id', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return R.badRequest(res, 'Invalid installation ID.');
+ 
+    const row = await sql`
+      SELECT
+        ir.*,
+        u.name  AS customer_name,  u.phone AS customer_phone,
+        t.id    AS technician_id,  t.name  AS technician_name,
+        t.phone AS technician_phone, t.employee_id AS technician_employee_id
+      FROM dbo.installation_requests ir
+      INNER JOIN dbo.users u     ON u.id = ir.user_id
+      LEFT  JOIN dbo.technicians t ON t.id = ir.assigned_technician_id
+      WHERE ir.id = ${BigInt(id)}
+    `.execute(db).then(r => r.rows[0]);
+ 
+    if (!row) return R.notFound(res, 'Installation request not found.');
+ 
+    // Assignment history
+    const history = await sql`
+      SELECT
+        ta.created_at AS assigned_at, ta.assigned_by_type,
+        ta.unassigned_at, ta.unassigned_reason,
+        t.name AS technician_name, t.employee_id
+      FROM dbo.technician_assignments ta
+      INNER JOIN dbo.technicians t ON t.id = ta.technician_id
+      WHERE ta.installation_id = ${BigInt(id)}
+      ORDER BY ta.created_at ASC
+    `.execute(db).then(r => r.rows);
+ 
+    return R.ok(res, { installation: { ...row, assignment_history: history } });
+  } catch (err) { next(err); }
+});
+ 
+// ── POST /admin/installations/:id/assign  — admin assigns a technician ────────
+router.post('/installations/:id/assign', async (req, res, next) => {
+  try {
+    const id           = parseInt(req.params.id);
+    const technicianId = parseInt(req.body.technician_id);
+    if (isNaN(id) || isNaN(technicianId))
+      return R.badRequest(res, 'installation id and technician_id are required.');
+ 
+    const [request, tech] = await Promise.all([
+      db.selectFrom('dbo.installation_requests')
+        .select(['id', 'status', 'assigned_technician_id', 'user_id', 'request_number'])
+        .where('id', '=', BigInt(id))
+        .executeTakeFirst(),
+ 
+      db.selectFrom('dbo.technicians')
+        .select(['id', 'name', 'is_active'])
+        .where('id', '=', BigInt(technicianId))
+        .executeTakeFirst(),
+    ]);
+ 
+    if (!request) return R.notFound(res, 'Installation request not found.');
+    if (!tech || !tech.is_active) return R.notFound(res, 'Technician not found or inactive.');
+    if (['completed', 'cancelled'].includes(request.status))
+      return R.badRequest(res, 'Cannot assign a completed or cancelled request.');
+ 
+    const now = new Date();
+ 
+    // If previously assigned, close out old assignment record
+    if (request.assigned_technician_id) {
+      await db.updateTable('dbo.technician_assignments')
+        .set({
+          unassigned_at:     now,
+          unassigned_reason: 'Reassigned by admin',
+        })
+        .where('installation_id', '=', BigInt(id))
+        .where('unassigned_at',   'is', null)
+        .execute();
+ 
+      // Decrement old technician's load
+      await db.updateTable('dbo.technicians')
+        .set({ current_load: sql`CASE WHEN current_load > 0 THEN current_load - 1 ELSE 0 END` })
+        .where('id', '=', request.assigned_technician_id)
+        .execute();
+    }
+ 
+    // Assign
+    await db.updateTable('dbo.installation_requests')
+      .set({
+        assigned_technician_id: BigInt(technicianId),
+        assigned_at:            now,
+        assigned_by:            'admin',
+        status:                 'assigned',
+      })
+      .where('id', '=', BigInt(id))
+      .execute();
+ 
+    await db.insertInto('dbo.technician_assignments').values({
+      installation_id:  BigInt(id),
+      technician_id:    BigInt(technicianId),
+      assigned_by_type: 'admin',
+      assigned_by_id:   BigInt(req.admin.id),
+    }).execute();
+ 
+    // Increment new technician's load
+    await db.updateTable('dbo.technicians')
+      .set({ current_load: sql`current_load + 1` })
+      .where('id', '=', BigInt(technicianId))
+      .execute();
+ 
+    // Notify customer
+    await notifyUser(db, Number(request.user_id), {
+      type:  'installation',
+      title: 'Technician Assigned 🔧',
+      body:  `A technician has been assigned to your installation request ${request.request_number}. They will contact you shortly.`,
+      data:  { request_number: request.request_number },
+    });
+ 
+    logger.info(`[Admin] Install ${id} → tech ${technicianId} by admin ${req.admin.id}`);
+    return R.ok(res, null, `Installation assigned to ${tech.name}.`);
+  } catch (err) { next(err); }
+});
+ 
+// ── PATCH /admin/installations/:id/status  — override status ─────────────────
+router.patch('/installations/:id/status', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return R.badRequest(res, 'Invalid ID.');
+ 
+    const { status, notes } = req.body;
+    const VALID = ['pending', 'assigned', 'in_progress', 'completed', 'cancelled'];
+    if (!VALID.includes(status))
+      return R.badRequest(res, `Status must be one of: ${VALID.join(', ')}`);
+ 
+    const updates = { status };
+    if (notes?.trim()) updates.notes = notes.trim();
+    if (status === 'completed') updates.completed_at = new Date();
+ 
+    await db.updateTable('dbo.installation_requests')
+      .set(updates)
+      .where('id', '=', BigInt(id))
+      .execute();
+ 
+    // If cancelled, decrement tech load
+    if (status === 'cancelled') {
+      const row = await db.selectFrom('dbo.installation_requests')
+        .select('assigned_technician_id')
+        .where('id', '=', BigInt(id))
+        .executeTakeFirst();
+ 
+      if (row?.assigned_technician_id) {
+        await db.updateTable('dbo.technicians')
+          .set({ current_load: sql`CASE WHEN current_load > 0 THEN current_load - 1 ELSE 0 END` })
+          .where('id', '=', row.assigned_technician_id)
+          .execute();
+      }
+    }
+ 
+    logger.info(`[Admin] Installation ${id} → ${status} by admin ${req.admin.id}`);
+    return R.ok(res, null, `Installation marked as '${status}'.`);
+  } catch (err) { next(err); }
+});
+
+
+
 
 router.get   ('/pay-services',     payServicesCtrl.getAllServices);
 router.post  ('/pay-services',     payServicesCtrl.createService);
