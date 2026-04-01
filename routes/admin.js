@@ -629,7 +629,7 @@ router.patch('/availability-inquiries/:id', async (req, res, next) => {
         ? 'Great News! Service Available 🎉'
         : 'Service Availability Update',
       body: isAvailable
-        ? `Speedonet is now available in your area! Open the app to complete your profile and get started.`
+        ? `Speedonet is available in your area! Open the app to complete your profile and get started.`
         : `Unfortunately, service is not yet available in your area. ${admin_notes || "We'll keep expanding and notify you!"}`,
       data: { inquiry_status: status },
     });
