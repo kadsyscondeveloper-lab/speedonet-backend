@@ -14,6 +14,7 @@ const { authenticateTechnician } = require('../middleware/technicianAuth');
 const notifyUser = require('../utils/notifyUser');
 const R          = require('../utils/response');
 const logger     = require('../utils/logger');
+const { _onInstallationCompleted } = require('../controllers/installationController');
 
 router.use(authenticateTechnician);
 
@@ -277,11 +278,17 @@ router.patch('/jobs/:id/status', async (req, res, next) => {
       },
     };
 
+    
+
     await notifyUser(db, Number(request.user_id), {
       type:  'installation',
       ...notifMap[status],
       data:  { request_number: request.request_number, status },
     });
+
+    if (status === 'completed') {
+      await _onInstallationCompleted(Number(request.user_id), request.request_number);
+    }
 
     logger.info(`[Tech] Status update: tech=${req.technician.id} request=${id} → ${status}`);
     return R.ok(res, null, `Job marked as '${status}'.`);

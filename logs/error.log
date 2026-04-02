@@ -757,3 +757,99 @@
     at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:280:10)
     at C:\Users\Developer\app\speedonet-backend\node_modules\express-rate-limit\dist\index.cjs:807:7
     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-02 13:22:53 [[31merror[39m]: [SQL ERROR] Error: Cannot insert the value NULL into column 'start_date', table 'broadbanddb.dbo.user_subscriptions'; column does not allow nulls. INSERT fails.
+2026-04-02 13:22:53 [[31merror[39m]: Error: Cannot insert the value NULL into column 'start_date', table 'broadbanddb.dbo.user_subscriptions'; column does not allow nulls. INSERT fails.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:538:3)
+    at Readable.push (node:internal/streams/readable:393:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async #run (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\single-connection-provider.js:26:16)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
+    at async InsertQueryBuilder.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1124:26)
+    at async InsertQueryBuilder.executeTakeFirstOrThrow (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1136:24)
+    at async C:\Users\Developer\app\speedonet-backend\services\planService.js:270:20
+2026-04-02 13:25:35 [[31merror[39m]: [SQL ERROR] Error: Cannot insert the value NULL into column 'billing_period_start', table 'broadbanddb.dbo.bills'; column does not allow nulls. INSERT fails.
+2026-04-02 13:25:35 [[31merror[39m]: Error: Cannot insert the value NULL into column 'billing_period_start', table 'broadbanddb.dbo.bills'; column does not allow nulls. INSERT fails.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:538:3)
+    at Readable.push (node:internal/streams/readable:393:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async #run (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\single-connection-provider.js:26:16)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
+    at async C:\Users\Developer\app\speedonet-backend\services\planService.js:292:5
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\kysely.js:578:32
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+2026-04-02 13:25:54 [[31merror[39m]: [SQL ERROR] Error: Cannot insert the value NULL into column 'billing_period_start', table 'broadbanddb.dbo.bills'; column does not allow nulls. INSERT fails.
+2026-04-02 13:25:54 [[31merror[39m]: Error: Cannot insert the value NULL into column 'billing_period_start', table 'broadbanddb.dbo.bills'; column does not allow nulls. INSERT fails.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:538:3)
+    at Readable.push (node:internal/streams/readable:393:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async #run (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\single-connection-provider.js:26:16)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
+    at async C:\Users\Developer\app\speedonet-backend\services\planService.js:292:5
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\kysely.js:578:32
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+2026-04-02 18:49:14 [[31merror[39m]: [FCM FAIL] user=18 device=14
+2026-04-02 18:49:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-02 18:49:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-02 18:50:34 [[31merror[39m]: [FCM FAIL] user=18 device=14
+2026-04-02 18:50:34 [[31merror[39m]: code=app/invalid-credential
+2026-04-02 18:50:34 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-02 18:53:44 [[31merror[39m]: [FCM FAIL] user=18 device=14
+2026-04-02 18:53:44 [[31merror[39m]: code=app/invalid-credential
+2026-04-02 18:53:44 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-02 18:58:39 [[31merror[39m]: [FCM FAIL] user=18 device=14
+2026-04-02 18:58:39 [[31merror[39m]: code=app/invalid-credential
+2026-04-02 18:58:39 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-02 19:02:41 [[31merror[39m]: [FCM FAIL] user=18 device=14
+2026-04-02 19:02:41 [[31merror[39m]: code=app/invalid-credential
+2026-04-02 19:02:41 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-02 19:02:51 [[31merror[39m]: [FCM FAIL] user=18 device=14
+2026-04-02 19:02:51 [[31merror[39m]: code=app/invalid-credential
+2026-04-02 19:02:51 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-02 19:08:29 [[31merror[39m]: [FCM FAIL] user=18 device=14
+2026-04-02 19:08:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-02 19:08:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-02 19:08:50 [[31merror[39m]: [FCM FAIL] user=18 device=14
+2026-04-02 19:08:50 [[31merror[39m]: code=app/invalid-credential
+2026-04-02 19:08:50 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-02 19:20:28 [[31merror[39m]: [FCM FAIL] user=18 device=11
+2026-04-02 19:20:28 [[31merror[39m]: code=app/invalid-credential
+2026-04-02 19:20:28 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-02 19:20:28 [[31merror[39m]: [FCM FAIL] user=18 device=14
+2026-04-02 19:20:28 [[31merror[39m]: code=app/invalid-credential
+2026-04-02 19:20:28 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-02 19:20:29 [[31merror[39m]: [FCM FAIL] user=18 device=11
+2026-04-02 19:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-02 19:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-02 19:20:29 [[31merror[39m]: [FCM FAIL] user=18 device=14
+2026-04-02 19:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-02 19:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
