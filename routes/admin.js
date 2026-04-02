@@ -8,6 +8,7 @@ const payServicesCtrl = require('../controllers/payServicesController');
 const notifyUser = require('../utils/notifyUser');
 const { broadcast } = require('../services/fcmService');
 const bcryptForTech = require('bcryptjs');
+const { _onInstallationCompleted } = require('../controllers/installationController');
 
 router.use(authenticateAdmin);
 const { adminLimiter } = require('../middleware/errorHandler');
@@ -995,6 +996,15 @@ router.patch('/installations/:id/status', async (req, res, next) => {
     if (!VALID.includes(status))
       return R.badRequest(res, `Status must be one of: ${VALID.join(', ')}`);
  
+    // Fetch request before updating so we have user_id + request_number
+    const request = await db
+      .selectFrom('dbo.installation_requests')
+      .select(['id', 'user_id', 'request_number', 'assigned_technician_id'])
+      .where('id', '=', BigInt(id))
+      .executeTakeFirst();
+ 
+    if (!request) return R.notFound(res, 'Installation request not found.');
+ 
     const updates = { status };
     if (notes?.trim()) updates.notes = notes.trim();
     if (status === 'completed') updates.completed_at = new Date();
@@ -1004,19 +1014,17 @@ router.patch('/installations/:id/status', async (req, res, next) => {
       .where('id', '=', BigInt(id))
       .execute();
  
-    // If cancelled, decrement tech load
-    if (status === 'cancelled') {
-      const row = await db.selectFrom('dbo.installation_requests')
-        .select('assigned_technician_id')
-        .where('id', '=', BigInt(id))
-        .executeTakeFirst();
+    // Decrement tech load on cancel
+    if (status === 'cancelled' && request.assigned_technician_id) {
+      await db.updateTable('dbo.technicians')
+        .set({ current_load: sql`CASE WHEN current_load > 0 THEN current_load - 1 ELSE 0 END` })
+        .where('id', '=', request.assigned_technician_id)
+        .execute();
+    }
  
-      if (row?.assigned_technician_id) {
-        await db.updateTable('dbo.technicians')
-          .set({ current_load: sql`CASE WHEN current_load > 0 THEN current_load - 1 ELSE 0 END` })
-          .where('id', '=', row.assigned_technician_id)
-          .execute();
-      }
+    // ── NEW: activate pending plan when installation is marked completed ──
+    if (status === 'completed') {
+      await _onInstallationCompleted(Number(request.user_id), request.request_number);
     }
  
     logger.info(`[Admin] Installation ${id} → ${status} by admin ${req.admin.id}`);
