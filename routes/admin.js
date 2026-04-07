@@ -9,6 +9,7 @@ const notifyUser = require('../utils/notifyUser');
 const { broadcast } = require('../services/fcmService');
 const bcryptForTech = require('bcryptjs');
 const { _onInstallationCompleted } = require('../controllers/installationController');
+const ticketJobCtrl = require('../controllers/ticketJobController');
 
 router.use(authenticateAdmin);
 const { adminLimiter } = require('../middleware/errorHandler');
@@ -398,6 +399,27 @@ router.patch('/tickets/:id/status', async (req, res, next) => {
     return R.ok(res, null, `Ticket marked ${status}`);
   } catch (err) { next(err); }
 });
+
+
+router.patch(
+  '/tickets/:id/publish-job',
+  [
+    param('id').isInt({ min: 1 }).withMessage('Ticket ID must be a positive integer'),
+    validate,
+  ],
+  ticketJobCtrl.adminPublishJob,
+);
+ 
+// PATCH /api/v1/admin/tickets/:id/unpublish-job
+//   → Retracts the job (only works if not yet grabbed by a technician)
+router.patch(
+  '/tickets/:id/unpublish-job',
+  [
+    param('id').isInt({ min: 1 }).withMessage('Ticket ID must be a positive integer'),
+    validate,
+  ],
+  ticketJobCtrl.adminUnpublishJob,
+);
 
 // =============================================================================
 // GET /admin/notifications
