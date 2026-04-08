@@ -55,7 +55,7 @@ async function getUserTickets(userId, { page = 1, limit = 10 } = {}) {
   const [rows, countRow] = await Promise.all([
     sql`
       SELECT id, ticket_number, category, subject,
-             status, priority, created_at, updated_at
+             status, priority, tech_job_status, created_at, updated_at
       FROM dbo.help_tickets
       WHERE user_id = ${BigInt(userId)}
       ORDER BY created_at DESC
@@ -76,8 +76,11 @@ async function getUserTickets(userId, { page = 1, limit = 10 } = {}) {
 async function getTicketById(userId, ticketId) {
   const ticket = await db
     .selectFrom('dbo.help_tickets')
-    .select(['id', 'ticket_number', 'category', 'subject', 'description',
-             'status', 'priority', 'resolved_at', 'created_at', 'updated_at'])
+    .select([
+      'id', 'ticket_number', 'category', 'subject', 'description',
+      'status', 'priority', 'tech_job_status',   // ← ADDED
+      'resolved_at', 'created_at', 'updated_at',
+    ])
     .where('id',      '=', BigInt(ticketId))
     .where('user_id', '=', BigInt(userId))
     .executeTakeFirst();
@@ -98,8 +101,6 @@ async function getTicketById(userId, ticketId) {
 }
 
 // ── Chat: get messages ────────────────────────────────────────────────────────
-// Returns full or incremental message list for the live chat screen.
-// Pass afterId to fetch only new messages since the last poll.
 
 async function getMessages(userId, ticketId, { afterId = null } = {}) {
   const ticket = await db
@@ -167,7 +168,7 @@ async function addReply(userId, ticketId, {
       message,
       attachment_data: attachmentData ?? null,
       attachment_mime: attachmentMime ?? null,
-      attachment_url:  null,  // legacy column kept, always null for new rows
+      attachment_url:  null,
     })
     .output(['inserted.id', 'inserted.created_at'])
     .executeTakeFirstOrThrow();

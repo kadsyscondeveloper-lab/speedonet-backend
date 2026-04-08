@@ -1,41 +1,132 @@
 /**
  * controllers/ticketJobController.js
  *
- * Handles the "ticket → technician support job" lifecycle:
- *   Admin   → publishes a ticket as a technician job (makes it grabbable)
- *   Tech    → browses open jobs, self-assigns, resolves
- *   User    → checks job status + latest technician location
+ * Handles all support-job lifecycle actions:
+ *
+ *  User-facing
+ *    getUserJobStatus   — GET  /tickets/:id/job-status
+ *
+ *  Technician-facing
+ *    getOpenSupportJobs — GET  /technician/support-jobs/open
+ *    getMySupportJobs   — GET  /technician/support-jobs/mine
+ *    grabSupportJob     — POST /technician/support-jobs/:ticketId/grab
+ *    resolveSupportJob  — PATCH /technician/support-jobs/:ticketId/resolve
+ *
+ *  Admin-facing
+ *    adminPublishJob    — PATCH /admin/tickets/:id/publish-job
+ *    adminUnpublishJob  — PATCH /admin/tickets/:id/unpublish-job
  */
 
 const { db, sql } = require('../config/db');
-const R            = require('../utils/response');
-const notifyUser   = require('../utils/notifyUser');
-const logger       = require('../utils/logger');
+const R           = require('../utils/response');
+const notifyUser  = require('../utils/notifyUser');
+const logger      = require('../utils/logger');
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ADMIN  —  PATCH /admin/tickets/:id/publish-job
-// Makes a support ticket visible in the technician's job list.
+// USER: GET /api/v1/tickets/:id/job-status
+//
+// Returns job status + technician info + last known location snapshot.
+// Flutter's TicketJobService.getJobStatus() calls this.
+//
+// Response shape (mirrors TicketJobStatus.fromJson):
+// {
+//   data: {
+//     requires_technician: bool,
+//     tech_job_status:     'open' | 'assigned' | 'completed' | null,
+//     job_opened_at:       ISO string | null,
+//     job_assigned_at:     ISO string | null,
+//     job_completed_at:    ISO string | null,
+//     technician: { id, name, phone } | null,
+//     location:   { lat, lng, updated_at } | null,
+//   }
+// }
 // ─────────────────────────────────────────────────────────────────────────────
-async function adminPublishJob(req, res, next) {
+async function getUserJobStatus(req, res, next) {
   try {
     const ticketId = parseInt(req.params.id);
-    if (isNaN(ticketId)) return R.badRequest(res, 'Invalid ticket ID.');
+    const userId   = req.user.id;
 
-    // Fetch the ticket
     const ticket = await db
-      .selectFrom('dbo.help_tickets')
-      .select(['id', 'user_id', 'status', 'subject', 'tech_job_status'])
-      .where('id', '=', ticketId)
+      .selectFrom('dbo.help_tickets as t')
+      .leftJoin('dbo.technicians as tech', 'tech.id', 't.assigned_technician_id')
+      .select([
+        't.id',
+        't.requires_technician',
+        't.tech_job_status',
+        't.job_opened_at',
+        't.job_assigned_at',
+        't.job_completed_at',
+        't.assigned_technician_id',
+        'tech.id as tech_id',
+        'tech.name as tech_name',
+        'tech.phone as tech_phone',
+      ])
+      .where('t.id',      '=', BigInt(ticketId))
+      .where('t.user_id', '=', BigInt(userId))
       .executeTakeFirst();
 
     if (!ticket) return R.notFound(res, 'Ticket not found.');
 
-    if (ticket.tech_job_status === 'open' || ticket.tech_job_status === 'assigned') {
-      return R.conflict(res, 'This ticket is already published as a technician job.');
+    // Fetch last known live location if a technician is assigned
+    let location = null;
+    if (ticket.assigned_technician_id) {
+      const loc = await db
+        .selectFrom('dbo.technician_live_locations')
+        .select(['lat', 'lng', 'updated_at'])
+        .where('technician_id', '=', ticket.assigned_technician_id)
+        .where('ticket_id',     '=', BigInt(ticketId))
+        .executeTakeFirst();
+
+      if (loc) {
+        location = {
+          lat:        parseFloat(loc.lat),
+          lng:        parseFloat(loc.lng),
+          updated_at: loc.updated_at,
+        };
+      }
     }
 
+    return R.ok(res, {
+      requires_technician: ticket.requires_technician ?? false,
+      tech_job_status:     ticket.tech_job_status ?? null,
+      job_opened_at:       ticket.job_opened_at   ?? null,
+      job_assigned_at:     ticket.job_assigned_at  ?? null,
+      job_completed_at:    ticket.job_completed_at ?? null,
+      technician: ticket.tech_id
+        ? {
+            id:    Number(ticket.tech_id),
+            name:  ticket.tech_name,
+            phone: ticket.tech_phone,
+          }
+        : null,
+      location,
+    });
+  } catch (err) { next(err); }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADMIN: PATCH /admin/tickets/:id/publish-job
+//
+// Marks a ticket as requiring a technician and opens the job board listing.
+// Sets: requires_technician=true, tech_job_status='open', job_opened_at=now
+// ─────────────────────────────────────────────────────────────────────────────
+async function adminPublishJob(req, res, next) {
+  try {
+    const ticketId = parseInt(req.params.id);
+
+    const ticket = await db
+      .selectFrom('dbo.help_tickets')
+      .select(['id', 'tech_job_status', 'requires_technician', 'user_id'])
+      .where('id', '=', BigInt(ticketId))
+      .executeTakeFirst();
+
+    if (!ticket) return R.notFound(res, 'Ticket not found.');
+
+    if (ticket.tech_job_status === 'assigned') {
+      return R.badRequest(res, 'Job is already assigned to a technician.');
+    }
     if (ticket.tech_job_status === 'completed') {
-      return R.conflict(res, 'This job is already completed.');
+      return R.badRequest(res, 'Job is already completed.');
     }
 
     await db
@@ -44,43 +135,46 @@ async function adminPublishJob(req, res, next) {
         requires_technician: true,
         tech_job_status:     'open',
         job_opened_at:       new Date(),
+        updated_at:          sql`SYSUTCDATETIME()`,
       })
-      .where('id', '=', ticketId)
+      .where('id', '=', BigInt(ticketId))
       .execute();
 
-    // Notify the user their ticket now has a technician dispatched
-    try {
-      await notifyUser(ticket.user_id, {
-        title: '🔧 Technician Dispatched',
-        body:  `Your ticket "${ticket.subject}" has been queued for a technician visit.`,
-        data:  { type: 'ticket_job_open', ticket_id: String(ticketId) },
-      });
-    } catch (notifyErr) {
-      logger.warn('FCM notify failed for ticket job publish:', notifyErr.message);
-    }
+    // Notify the user that a technician is being dispatched
+    await notifyUser(db, Number(ticket.user_id), {
+      type:  'support_ticket',
+      title: 'Technician Being Dispatched 🔧',
+      body:  'A technician has been assigned to your ticket and will contact you soon.',
+      data:  { ticket_id: String(ticketId) },
+    });
 
-    return R.ok(res, { ticket_id: ticketId, tech_job_status: 'open' }, 'Ticket published as technician job.');
+    logger.info(`[Admin] Ticket ${ticketId} published as support job by admin ${req.admin.id}`);
+    return R.ok(res, null, 'Support job published. Technicians can now see and grab this job.');
   } catch (err) { next(err); }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ADMIN  —  PATCH /admin/tickets/:id/unpublish-job
-// Retracts the job (e.g. admin resolves it themselves)
+// ADMIN: PATCH /admin/tickets/:id/unpublish-job
+//
+// Retracts the job listing. Only works while still 'open' (not yet grabbed).
 // ─────────────────────────────────────────────────────────────────────────────
 async function adminUnpublishJob(req, res, next) {
   try {
     const ticketId = parseInt(req.params.id);
-    if (isNaN(ticketId)) return R.badRequest(res, 'Invalid ticket ID.');
 
     const ticket = await db
       .selectFrom('dbo.help_tickets')
       .select(['id', 'tech_job_status'])
-      .where('id', '=', ticketId)
+      .where('id', '=', BigInt(ticketId))
       .executeTakeFirst();
 
     if (!ticket) return R.notFound(res, 'Ticket not found.');
-    if (ticket.tech_job_status !== 'open') {
-      return R.conflict(res, 'Only open (unassigned) jobs can be unpublished.');
+
+    if (ticket.tech_job_status === 'assigned') {
+      return R.badRequest(res, 'Cannot unpublish — a technician has already grabbed this job. Use the ticket status update instead.');
+    }
+    if (ticket.tech_job_status === 'completed') {
+      return R.badRequest(res, 'Cannot unpublish a completed job.');
     }
 
     await db
@@ -89,38 +183,43 @@ async function adminUnpublishJob(req, res, next) {
         requires_technician:    false,
         tech_job_status:        null,
         job_opened_at:          null,
+        assigned_technician_id: null,
+        updated_at:             sql`SYSUTCDATETIME()`,
       })
-      .where('id', '=', ticketId)
+      .where('id', '=', BigInt(ticketId))
       .execute();
 
-    return R.ok(res, null, 'Technician job retracted.');
+    logger.info(`[Admin] Ticket ${ticketId} unpublished by admin ${req.admin.id}`);
+    return R.ok(res, null, 'Support job unpublished.');
   } catch (err) { next(err); }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TECHNICIAN  —  GET /technician/support-jobs/open
-// List all support tickets awaiting a technician (status = 'open')
+// TECHNICIAN: GET /technician/support-jobs/open
+//
+// Lists all tickets with tech_job_status='open' (no technician yet).
 // ─────────────────────────────────────────────────────────────────────────────
 async function getOpenSupportJobs(req, res, next) {
   try {
     const page   = Math.max(1, parseInt(req.query.page  || '1'));
-    const limit  = Math.min(50, Math.max(1, parseInt(req.query.limit || '20')));
+    const limit  = Math.max(1, parseInt(req.query.limit || '20'));
     const offset = (page - 1) * limit;
 
     const [rows, countRow] = await Promise.all([
       sql`
         SELECT
-          t.id, t.subject, t.category, t.priority, t.status,
-          t.job_opened_at, t.created_at,
+          t.id, t.ticket_number, t.category, t.subject,
+          t.priority, t.job_opened_at, t.created_at,
           u.name  AS customer_name,
           u.phone AS customer_phone,
-          u.id    AS customer_id
+          a.house_no, a.address, a.city, a.state, a.pin_code
         FROM dbo.help_tickets t
         INNER JOIN dbo.users u ON u.id = t.user_id
+        LEFT JOIN dbo.user_addresses a
+          ON a.user_id = t.user_id AND a.is_primary = 1
         WHERE t.tech_job_status = 'open'
-        ORDER BY
-          CASE t.priority WHEN 'high' THEN 1 WHEN 'medium' THEN 2 ELSE 3 END,
-          t.job_opened_at ASC
+          AND t.assigned_technician_id IS NULL
+        ORDER BY t.job_opened_at ASC
         OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
       `.execute(db).then(r => r.rows),
 
@@ -128,250 +227,225 @@ async function getOpenSupportJobs(req, res, next) {
         SELECT COUNT(id) AS total
         FROM dbo.help_tickets
         WHERE tech_job_status = 'open'
+          AND assigned_technician_id IS NULL
       `.execute(db).then(r => r.rows[0]),
     ]);
 
-    return R.ok(res, {
-      jobs:  rows.map(formatSupportJob),
-      total: Number(countRow.total),
-      page,
-      limit,
-    });
+    const total = Number(countRow.total);
+    return R.ok(res, { jobs: rows.map(formatSupportJob) }, 'OK', 200,
+      { page, limit, total, total_pages: Math.ceil(total / limit) });
   } catch (err) { next(err); }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TECHNICIAN  —  POST /technician/support-jobs/:ticketId/grab
-// Self-assign an open support job
-// ─────────────────────────────────────────────────────────────────────────────
-async function grabSupportJob(req, res, next) {
-  try {
-    const ticketId     = parseInt(req.params.ticketId);
-    const technicianId = req.technician.id;
-
-    if (isNaN(ticketId)) return R.badRequest(res, 'Invalid ticket ID.');
-
-    // Optimistic lock — only grab if still 'open'
-    const result = await sql`
-      UPDATE dbo.help_tickets
-      SET
-        tech_job_status       = 'assigned',
-        assigned_technician_id = ${technicianId},
-        job_assigned_at        = GETUTCDATE()
-      OUTPUT
-        inserted.id,
-        inserted.user_id,
-        inserted.subject,
-        inserted.tech_job_status
-      WHERE id = ${ticketId}
-        AND tech_job_status = 'open'
-    `.execute(db);
-
-    if (!result.rows.length) {
-      // Either doesn't exist or was grabbed by another technician
-      const ticket = await db
-        .selectFrom('dbo.help_tickets')
-        .select(['tech_job_status'])
-        .where('id', '=', ticketId)
-        .executeTakeFirst();
-
-      if (!ticket) return R.notFound(res, 'Ticket not found.');
-      return R.conflict(res, 'This job was already grabbed by another technician.');
-    }
-
-    const grabbed = result.rows[0];
-
-    // Notify the user their technician is on the way
-    try {
-      await notifyUser(grabbed.user_id, {
-        title: '🚗 Technician On the Way',
-        body:  `A technician has accepted your ticket "${grabbed.subject}" and is heading to you.`,
-        data:  { type: 'tech_job_assigned', ticket_id: String(ticketId) },
-      });
-    } catch (notifyErr) {
-      logger.warn('FCM notify failed on job grab:', notifyErr.message);
-    }
-
-    return R.ok(res, { ticket_id: ticketId, tech_job_status: 'assigned' }, 'Job grabbed successfully.');
-  } catch (err) { next(err); }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// TECHNICIAN  —  GET /technician/support-jobs/mine
-// Technician's own assigned support jobs
+// TECHNICIAN: GET /technician/support-jobs/mine
+//
+// Lists this technician's own support jobs.
+// Optional ?status=assigned|completed
 // ─────────────────────────────────────────────────────────────────────────────
 async function getMySupportJobs(req, res, next) {
   try {
-    const technicianId = req.technician.id;
-    const { status = 'assigned' } = req.query; // 'assigned' | 'completed'
+    const techId = req.technician.id;
+    const status = req.query.status || '';   // 'assigned' | 'completed' | ''
 
-    const validStatuses = ['assigned', 'completed'];
-    if (!validStatuses.includes(status)) {
-      return R.badRequest(res, `status must be one of: ${validStatuses.join(', ')}`);
-    }
-
-    const rows = await sql`
-      SELECT
-        t.id, t.subject, t.category, t.priority, t.status,
-        t.tech_job_status, t.job_assigned_at, t.job_completed_at, t.created_at,
-        u.name  AS customer_name,
-        u.phone AS customer_phone
-      FROM dbo.help_tickets t
-      INNER JOIN dbo.users u ON u.id = t.user_id
-      WHERE t.assigned_technician_id = ${technicianId}
-        AND t.tech_job_status = ${status}
-      ORDER BY t.job_assigned_at DESC
-    `.execute(db).then(r => r.rows);
+    const [rows] = await Promise.all([
+      sql`
+        SELECT
+          t.id, t.ticket_number, t.category, t.subject,
+          t.priority, t.tech_job_status,
+          t.job_opened_at, t.job_assigned_at, t.job_completed_at,
+          u.name  AS customer_name,
+          u.phone AS customer_phone,
+          a.house_no, a.address, a.city, a.state, a.pin_code
+        FROM dbo.help_tickets t
+        INNER JOIN dbo.users u ON u.id = t.user_id
+        LEFT JOIN dbo.user_addresses a
+          ON a.user_id = t.user_id AND a.is_primary = 1
+        WHERE t.assigned_technician_id = ${BigInt(techId)}
+          ${status ? sql`AND t.tech_job_status = ${status}` : sql``}
+        ORDER BY
+          CASE t.tech_job_status
+            WHEN 'assigned'  THEN 1
+            WHEN 'completed' THEN 2
+            ELSE 3
+          END,
+          t.job_assigned_at DESC
+      `.execute(db).then(r => r.rows),
+    ]);
 
     return R.ok(res, { jobs: rows.map(formatSupportJob) });
   } catch (err) { next(err); }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TECHNICIAN  —  PATCH /technician/support-jobs/:ticketId/resolve
-// Mark a support job as completed
+// TECHNICIAN: POST /technician/support-jobs/:ticketId/grab
+//
+// Technician self-assigns an open support job.
+// ─────────────────────────────────────────────────────────────────────────────
+async function grabSupportJob(req, res, next) {
+  try {
+    const ticketId = parseInt(req.params.ticketId);
+    const techId   = req.technician.id;
+
+    const ticket = await db
+      .selectFrom('dbo.help_tickets')
+      .select(['id', 'tech_job_status', 'assigned_technician_id', 'user_id', 'ticket_number'])
+      .where('id', '=', BigInt(ticketId))
+      .executeTakeFirst();
+
+    if (!ticket) return R.notFound(res, 'Ticket not found.');
+
+    if (ticket.tech_job_status !== 'open') {
+      return R.badRequest(res, `Job is not open for grabbing (current status: ${ticket.tech_job_status ?? 'none'}).`);
+    }
+    if (ticket.assigned_technician_id) {
+      return R.conflict(res, 'Another technician has already grabbed this job.');
+    }
+
+    const now = new Date();
+
+    await db
+      .updateTable('dbo.help_tickets')
+      .set({
+        assigned_technician_id: BigInt(techId),
+        tech_job_status:        'assigned',
+        job_assigned_at:        now,
+        updated_at:             sql`SYSUTCDATETIME()`,
+      })
+      .where('id', '=', BigInt(ticketId))
+      // Optimistic lock: only grab if still open
+      .where('tech_job_status',        '=', 'open')
+      .where('assigned_technician_id', 'is', null)
+      .execute();
+
+    // Re-check it was actually grabbed (race condition guard)
+    const updated = await db
+      .selectFrom('dbo.help_tickets')
+      .select(['assigned_technician_id', 'tech_job_status'])
+      .where('id', '=', BigInt(ticketId))
+      .executeTakeFirst();
+
+    if (Number(updated?.assigned_technician_id) !== techId) {
+      return R.conflict(res, 'Another technician grabbed this job just now. Please try another.');
+    }
+
+    // Notify user
+    await notifyUser(db, Number(ticket.user_id), {
+      type:  'support_ticket',
+      title: 'Technician On The Way 🚗',
+      body:  `A technician has been assigned to your ticket ${ticket.ticket_number} and is on the way.`,
+      data:  { ticket_id: String(ticketId), tech_job_status: 'assigned' },
+    });
+
+    logger.info(`[Tech] Grabbed support job: tech=${techId} ticket=${ticketId}`);
+    return R.ok(res, null, 'Job grabbed successfully. The customer has been notified.');
+  } catch (err) { next(err); }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TECHNICIAN: PATCH /technician/support-jobs/:ticketId/resolve
+//
+// Marks the job as completed. Clears live location.
 // ─────────────────────────────────────────────────────────────────────────────
 async function resolveSupportJob(req, res, next) {
   try {
-    const ticketId     = parseInt(req.params.ticketId);
-    const technicianId = req.technician.id;
-    const { resolution_note } = req.body;
+    const ticketId      = parseInt(req.params.ticketId);
+    const techId        = req.technician.id;
+    const resolutionNote = req.body.resolution_note?.trim() || null;
 
-    if (isNaN(ticketId)) return R.badRequest(res, 'Invalid ticket ID.');
+    const ticket = await db
+      .selectFrom('dbo.help_tickets')
+      .select(['id', 'tech_job_status', 'assigned_technician_id', 'user_id', 'ticket_number'])
+      .where('id', '=', BigInt(ticketId))
+      .where('assigned_technician_id', '=', BigInt(techId))
+      .executeTakeFirst();
 
-    const result = await sql`
-      UPDATE dbo.help_tickets
-      SET
-        tech_job_status  = 'completed',
-        job_completed_at = GETUTCDATE(),
-        status           = 'resolved'
-      OUTPUT
-        inserted.id,
-        inserted.user_id,
-        inserted.subject
-      WHERE id                    = ${ticketId}
-        AND assigned_technician_id = ${technicianId}
-        AND tech_job_status        = 'assigned'
-    `.execute(db);
+    if (!ticket) return R.notFound(res, 'Job not found or not assigned to you.');
 
-    if (!result.rows.length) {
-      return R.notFound(res, 'No active job found for this ticket assigned to you.');
+    if (ticket.tech_job_status !== 'assigned') {
+      return R.badRequest(res, `Cannot resolve — job status is '${ticket.tech_job_status}'.`);
     }
 
-    const resolved = result.rows[0];
+    const now = new Date();
 
-    // Clear technician's live location for this ticket
-    await sql`
-      UPDATE dbo.technician_live_locations
-      SET ticket_id = NULL
-      WHERE technician_id = ${technicianId}
-        AND ticket_id     = ${ticketId}
-    `.execute(db);
+    await db
+      .updateTable('dbo.help_tickets')
+      .set({
+        tech_job_status:  'completed',
+        job_completed_at: now,
+        updated_at:       sql`SYSUTCDATETIME()`,
+        // Optionally store resolution note in the status field or a separate column
+        // If your schema has a resolution_note column, add it here:
+        // resolution_note: resolutionNote,
+      })
+      .where('id', '=', BigInt(ticketId))
+      .execute();
+
+    // Add a system reply with the resolution note if provided
+    if (resolutionNote) {
+      await db.insertInto('dbo.ticket_replies').values({
+        ticket_id:   BigInt(ticketId),
+        sender_id:   BigInt(techId),
+        sender_type: 'agent',
+        message:     `[Technician Note] ${resolutionNote}`,
+      }).execute();
+    }
+
+    // Clean up live location
+    await db
+      .deleteFrom('dbo.technician_live_locations')
+      .where('technician_id', '=', BigInt(techId))
+      .where('ticket_id',     '=', BigInt(ticketId))
+      .execute();
 
     // Notify user
-    try {
-      await notifyUser(resolved.user_id, {
-        title: '✅ Ticket Resolved',
-        body:  `Your ticket "${resolved.subject}" has been resolved by the technician.`,
-        data:  { type: 'tech_job_completed', ticket_id: String(ticketId) },
-      });
-    } catch (notifyErr) {
-      logger.warn('FCM notify failed on job resolve:', notifyErr.message);
-    }
-
-    return R.ok(res, { ticket_id: ticketId, tech_job_status: 'completed' }, 'Job marked as resolved.');
-  } catch (err) { next(err); }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// USER  —  GET /tickets/:id/job-status
-// User checks their ticket's technician job + last known location
-// ─────────────────────────────────────────────────────────────────────────────
-async function getUserJobStatus(req, res, next) {
-  try {
-    const ticketId = parseInt(req.params.id);
-    const userId   = req.user.id;
-
-    if (isNaN(ticketId)) return R.badRequest(res, 'Invalid ticket ID.');
-
-    const row = await sql`
-      SELECT
-        t.id              AS ticket_id,
-        t.subject,
-        t.tech_job_status,
-        t.job_opened_at,
-        t.job_assigned_at,
-        t.job_completed_at,
-        tech.id           AS technician_id,
-        tech.name         AS technician_name,
-        tech.phone        AS technician_phone,
-        loc.lat,
-        loc.lng,
-        loc.updated_at    AS location_updated_at
-      FROM dbo.help_tickets t
-      LEFT JOIN dbo.technicians tech ON tech.id = t.assigned_technician_id
-      LEFT JOIN dbo.technician_live_locations loc ON loc.technician_id = t.assigned_technician_id
-        AND loc.ticket_id = t.id
-      WHERE t.id      = ${ticketId}
-        AND t.user_id = ${userId}
-    `.execute(db).then(r => r.rows[0]);
-
-    if (!row) return R.notFound(res, 'Ticket not found.');
-
-    if (!row.tech_job_status) {
-      return R.ok(res, { requires_technician: false });
-    }
-
-    return R.ok(res, {
-      requires_technician: true,
-      tech_job_status:     row.tech_job_status,
-      job_opened_at:       row.job_opened_at,
-      job_assigned_at:     row.job_assigned_at,
-      job_completed_at:    row.job_completed_at,
-      technician: row.technician_id ? {
-        id:    Number(row.technician_id),
-        name:  row.technician_name,
-        phone: row.technician_phone,
-      } : null,
-      // Latest location snapshot — frontend also gets live updates via Socket.io
-      location: (row.lat != null && row.lng != null) ? {
-        lat:        parseFloat(row.lat),
-        lng:        parseFloat(row.lng),
-        updated_at: row.location_updated_at,
-      } : null,
+    await notifyUser(db, Number(ticket.user_id), {
+      type:  'support_ticket',
+      title: 'Issue Resolved ✅',
+      body:  `Your ticket ${ticket.ticket_number} has been resolved by the technician.${resolutionNote ? ' Note: ' + resolutionNote : ''}`,
+      data:  { ticket_id: String(ticketId), tech_job_status: 'completed' },
     });
+
+    logger.info(`[Tech] Resolved support job: tech=${techId} ticket=${ticketId}`);
+    return R.ok(res, null, 'Job marked as resolved. Customer has been notified.');
   } catch (err) { next(err); }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Helpers
+// Shared formatter for support job rows
 // ─────────────────────────────────────────────────────────────────────────────
 function formatSupportJob(row) {
   return {
-    ticket_id:       Number(row.id),
-    subject:         row.subject,
+    id:              Number(row.id),
+    ticket_number:   row.ticket_number,
     category:        row.category,
+    subject:         row.subject,
     priority:        row.priority,
-    status:          row.status,
-    tech_job_status: row.tech_job_status,
-    job_opened_at:   row.job_opened_at,
-    job_assigned_at: row.job_assigned_at ?? null,
-    job_completed_at:row.job_completed_at ?? null,
+    tech_job_status: row.tech_job_status ?? null,
+    job_opened_at:   row.job_opened_at   ?? null,
+    job_assigned_at: row.job_assigned_at  ?? null,
+    job_completed_at: row.job_completed_at ?? null,
     created_at:      row.created_at,
-    customer: row.customer_name ? {
-      id:    row.customer_id ? Number(row.customer_id) : undefined,
+    customer: {
       name:  row.customer_name,
       phone: row.customer_phone,
-    } : undefined,
+    },
+    address: {
+      house_no: row.house_no ?? null,
+      address:  row.address  ?? null,
+      city:     row.city     ?? null,
+      state:    row.state    ?? null,
+      pin_code: row.pin_code ?? null,
+    },
   };
 }
 
 module.exports = {
+  getUserJobStatus,
   adminPublishJob,
   adminUnpublishJob,
   getOpenSupportJobs,
-  grabSupportJob,
   getMySupportJobs,
+  grabSupportJob,
   resolveSupportJob,
-  getUserJobStatus,
 };
