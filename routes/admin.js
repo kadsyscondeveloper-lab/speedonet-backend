@@ -10,6 +10,8 @@ const { broadcast } = require('../services/fcmService');
 const bcryptForTech = require('bcryptjs');
 const { _onInstallationCompleted } = require('../controllers/installationController');
 const ticketJobCtrl = require('../controllers/ticketJobController');
+const { param } = require('express-validator');
+const { validate } = require('../middleware/validators');
 
 router.use(authenticateAdmin);
 const { adminLimiter } = require('../middleware/errorHandler');
@@ -20,18 +22,20 @@ router.use(adminLimiter);
 // =============================================================================
 router.get('/stats', async (req, res, next) => {
   try {
-    const [userCount, kycPending, activeSubs, revenueToday] = await Promise.all([
+    const [userCount, kycPending, activeSubs, revenueToday, techJobsActive] = await Promise.all([
       db.selectFrom('dbo.users').select(db.fn.count('id').as('n')).executeTakeFirstOrThrow(),
       db.selectFrom('dbo.kyc_submissions').select(db.fn.count('id').as('n')).where('status', '=', 'pending').executeTakeFirstOrThrow(),
       db.selectFrom('dbo.user_subscriptions').select(db.fn.count('id').as('n')).where('status', '=', 'active').where('expires_at', '>=', sql`CAST(SYSDATETIME() AS DATE)`).executeTakeFirstOrThrow(),
       sql`SELECT ISNULL(SUM(CAST(total_amount AS DECIMAL(12,2))),0) AS n FROM dbo.payment_orders WHERE payment_status='success' AND CAST(paid_at AS DATE)=CAST(SYSDATETIME() AS DATE)`.execute(db).then(r => r.rows[0]),
+      sql`SELECT COUNT(id) AS n FROM dbo.help_tickets WHERE tech_job_status IN ('open', 'assigned')`.execute(db).then(r => r.rows[0]),
     ]);
 
     return R.ok(res, {
-      total_users:   Number(userCount.n),
-      pending_kyc:   Number(kycPending.n),
-      active_subs:   Number(activeSubs.n),
-      revenue_today: Number(revenueToday.n || 0).toFixed(2),
+      total_users:       Number(userCount.n),
+      pending_kyc:       Number(kycPending.n),
+      active_subs:       Number(activeSubs.n),
+      revenue_today:     Number(revenueToday.n || 0).toFixed(2),
+      tech_jobs_active:  Number(techJobsActive.n || 0),
     });
   } catch (err) { next(err); }
 });
@@ -300,9 +304,14 @@ router.get('/tickets', async (req, res, next) => {
         SELECT
           t.id, t.ticket_number, t.category, t.subject,
           t.status, t.priority, t.created_at, t.updated_at,
-          u.name AS user_name, u.phone AS user_phone
+          t.tech_job_status, t.requires_technician,
+          t.job_opened_at, t.job_assigned_at, t.job_completed_at,
+          u.name AS user_name, u.phone AS user_phone,
+          tech.name  AS technician_name,
+          tech.phone AS technician_phone
         FROM dbo.help_tickets t
         INNER JOIN dbo.users u ON u.id = t.user_id
+        LEFT JOIN dbo.technicians tech ON tech.id = t.assigned_technician_id
         ${status ? sql`WHERE t.status = ${status}` : sql``}
         ORDER BY t.created_at DESC
         OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
@@ -328,9 +337,15 @@ router.get('/tickets/:id', async (req, res, next) => {
       SELECT
         t.id, t.ticket_number, t.category, t.subject, t.description,
         t.status, t.priority, t.resolved_at, t.created_at, t.updated_at,
-        u.name AS user_name, u.phone AS user_phone
+        t.tech_job_status, t.requires_technician,
+        t.job_opened_at, t.job_assigned_at, t.job_completed_at,
+        u.name AS user_name, u.phone AS user_phone,
+        tech.name  AS technician_name,
+        tech.phone AS technician_phone,
+        tech.employee_id AS technician_employee_id
       FROM dbo.help_tickets t
       INNER JOIN dbo.users u ON u.id = t.user_id
+      LEFT JOIN dbo.technicians tech ON tech.id = t.assigned_technician_id
       WHERE t.id = ${BigInt(ticketId)}
     `.execute(db).then(r => r.rows[0]);
 

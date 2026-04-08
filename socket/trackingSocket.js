@@ -109,7 +109,7 @@ function attachTrackingSocket(httpServer) {
 
         // Verify user owns this ticket AND it has an assigned technician
         const ticket = await db
-          .selectFrom('dbo.tickets')
+          .selectFrom('dbo.help_tickets')
           .select(['id', 'user_id', 'tech_job_status', 'assigned_technician_id'])
           .where('id',      '=', parseInt(ticket_id))
           .where('user_id', '=', BigInt(userId))

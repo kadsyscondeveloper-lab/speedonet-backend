@@ -853,3 +853,6 @@
 2026-04-02 19:20:29 [[31merror[39m]: [FCM FAIL] user=18 device=14
 2026-04-02 19:20:29 [[31merror[39m]: code=app/invalid-credential
 2026-04-02 19:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-07 17:55:59 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-07 17:55:59 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-07 17:55:59 [[31merror[39m]: message=Requested entity was not found.
