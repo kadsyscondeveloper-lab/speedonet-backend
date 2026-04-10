@@ -1369,3 +1369,10 @@
 2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=10015
 2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
 2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-10 11:34:41 [[31merror[39m]: Error: 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011CZuawnzK3bL4DSdUCbvD3"}
+    at APIError.generate (C:\Users\Developer\app\speedonet-backend\node_modules\@anthropic-ai\sdk\core\error.js:43:20)
+    at Anthropic.makeStatusError (C:\Users\Developer\app\speedonet-backend\node_modules\@anthropic-ai\sdk\client.js:148:32)
+    at Anthropic.makeRequest (C:\Users\Developer\app\speedonet-backend\node_modules\@anthropic-ai\sdk\client.js:303:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.processMessage (C:\Users\Developer\app\speedonet-backend\services\aiSupportService.js:143:20)
+    at async sendMessage (C:\Users\Developer\app\speedonet-backend\controllers\aiSupportController.js:23:20)
