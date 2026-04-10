@@ -67,7 +67,15 @@ async function getUserJobStatus(req, res, next) {
 
     if (!ticket) return R.notFound(res, 'Ticket not found.');
 
-    // Fetch last known live location if a technician is assigned
+    // ── Fetch user's primary address ─────────────────────────────────────────
+    const address = await db
+      .selectFrom('dbo.user_addresses')
+      .select(['house_no', 'address', 'city', 'state', 'pin_code'])
+      .where('user_id',    '=', BigInt(userId))
+      .where('is_primary', '=', true)
+      .executeTakeFirst();
+
+    // ── Fetch last known live location if a technician is assigned ───────────
     let location = null;
     if (ticket.assigned_technician_id) {
       const loc = await db
@@ -100,6 +108,15 @@ async function getUserJobStatus(req, res, next) {
           }
         : null,
       location,
+      address: address
+        ? {
+            house_no: address.house_no ?? null,
+            address:  address.address  ?? null,
+            city:     address.city     ?? null,
+            state:    address.state    ?? null,
+            pin_code: address.pin_code ?? null,
+          }
+        : null,
     });
   } catch (err) { next(err); }
 }

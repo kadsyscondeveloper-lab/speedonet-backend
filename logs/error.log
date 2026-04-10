@@ -856,3 +856,516 @@
 2026-04-07 17:55:59 [[31merror[39m]: [FCM FAIL] user=1 device=5
 2026-04-07 17:55:59 [[31merror[39m]: code=messaging/registration-token-not-registered
 2026-04-07 17:55:59 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 16:39:41 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-08 16:39:41 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 16:39:41 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 16:39:41 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-08 16:39:41 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 16:39:41 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 16:40:16 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-08 16:40:16 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 16:40:16 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 16:40:16 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-08 16:40:16 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 16:40:16 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 16:45:23 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-08 16:45:23 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 16:45:23 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 16:45:24 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-08 16:45:24 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 16:45:24 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 17:44:10 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-08 17:44:10 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 17:44:10 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 17:44:10 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-08 17:44:10 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 17:44:10 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 18:17:37 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-08 18:17:37 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 18:17:37 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 18:17:37 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-08 18:17:37 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 18:17:37 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 18:42:59 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-08 18:42:59 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 18:42:59 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 18:42:59 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-08 18:42:59 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 18:42:59 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 18:43:18 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-08 18:43:18 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 18:43:18 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 18:43:18 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-08 18:43:18 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-04-08 18:43:18 [[31merror[39m]: message=Requested entity was not found.
+2026-04-08 19:25:49 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-08 19:25:49 [[31merror[39m]: code=app/invalid-credential
+2026-04-08 19:25:49 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-08 19:25:49 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-08 19:25:49 [[31merror[39m]: code=app/invalid-credential
+2026-04-08 19:25:49 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-08 19:25:49 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-08 19:25:49 [[31merror[39m]: code=app/invalid-credential
+2026-04-08 19:25:49 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-08 19:25:49 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-08 19:25:49 [[31merror[39m]: code=app/invalid-credential
+2026-04-08 19:25:49 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-08 19:25:49 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-08 19:25:49 [[31merror[39m]: code=app/invalid-credential
+2026-04-08 19:25:49 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-08 19:25:49 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-08 19:25:49 [[31merror[39m]: code=app/invalid-credential
+2026-04-08 19:25:49 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-08 19:25:49 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-08 19:25:49 [[31merror[39m]: code=app/invalid-credential
+2026-04-08 19:25:49 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-08 19:25:49 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-08 19:25:49 [[31merror[39m]: code=app/invalid-credential
+2026-04-08 19:25:49 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-08 19:25:49 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-08 19:25:49 [[31merror[39m]: code=app/invalid-credential
+2026-04-08 19:25:49 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-08 19:25:49 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-08 19:25:49 [[31merror[39m]: code=app/invalid-credential
+2026-04-08 19:25:49 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-08 19:25:49 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-08 19:25:49 [[31merror[39m]: code=app/invalid-credential
+2026-04-08 19:25:49 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-08 19:25:49 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-08 19:25:49 [[31merror[39m]: code=app/invalid-credential
+2026-04-08 19:25:49 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:29 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-09 12:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:29 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-09 12:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:29 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-09 12:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:29 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-09 12:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:29 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-09 12:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:29 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-09 12:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:29 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-09 12:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:29 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-09 12:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:29 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-09 12:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:29 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-09 12:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:29 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-09 12:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:29 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-09 12:20:29 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:29 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:45 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-09 12:20:45 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:45 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:45 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-09 12:20:45 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:45 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:45 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-09 12:20:45 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:45 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:45 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-09 12:20:45 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:45 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:45 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-09 12:20:45 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:45 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:45 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-09 12:20:45 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:45 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:45 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-09 12:20:45 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:45 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:45 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-09 12:20:45 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:45 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:45 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-09 12:20:45 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:45 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:45 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-09 12:20:45 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:45 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:45 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-09 12:20:45 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:45 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:20:45 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-09 12:20:45 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:20:45 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:22:42 [[31merror[39m]: [FCM FAIL] user=18 device=14
+2026-04-09 12:22:42 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:22:42 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:03 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-09 12:23:03 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:03 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:03 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-09 12:23:03 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:03 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:03 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-09 12:23:03 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:03 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:03 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-09 12:23:03 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:03 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:03 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-09 12:23:03 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:03 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:03 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-09 12:23:03 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:03 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:03 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-09 12:23:03 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:03 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:03 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-09 12:23:03 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:03 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:03 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-09 12:23:03 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:03 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:03 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-09 12:23:03 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:03 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:03 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-09 12:23:03 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:03 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:03 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-09 12:23:03 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:03 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:14 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-09 12:23:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:14 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-09 12:23:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:14 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-09 12:23:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:14 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-09 12:23:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:14 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-09 12:23:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:14 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-09 12:23:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:14 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-09 12:23:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:14 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-09 12:23:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:14 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-09 12:23:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:14 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-09 12:23:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:14 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-09 12:23:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:14 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-09 12:23:14 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:14 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:30 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-09 12:23:30 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:30 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:30 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-09 12:23:30 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:30 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:30 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-09 12:23:30 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:30 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:30 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-09 12:23:30 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:30 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:30 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-09 12:23:30 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:30 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:30 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-09 12:23:30 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:30 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:30 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-09 12:23:30 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:30 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:30 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-09 12:23:30 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:30 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:30 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-09 12:23:30 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:30 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:30 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-09 12:23:30 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:30 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:30 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-09 12:23:30 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:30 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:30 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-09 12:23:30 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:30 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:37 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-09 12:23:37 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:37 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:37 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-09 12:23:37 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:37 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:37 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-09 12:23:37 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:37 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:37 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-09 12:23:37 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:37 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:37 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-09 12:23:37 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:37 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:37 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-09 12:23:37 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:37 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:37 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-09 12:23:37 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:37 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:37 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-09 12:23:37 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:37 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:37 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-09 12:23:37 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:37 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:37 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-09 12:23:37 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:37 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:37 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-09 12:23:37 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:37 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:37 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-09 12:23:37 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:37 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:43 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-09 12:23:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:43 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-09 12:23:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:43 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-09 12:23:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:43 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-09 12:23:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:43 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-09 12:23:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:43 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-09 12:23:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:43 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-09 12:23:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:43 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-09 12:23:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:43 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-09 12:23:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:43 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-09 12:23:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:43 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-09 12:23:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:23:43 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-09 12:23:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:23:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:27 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-09 12:25:27 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:27 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:27 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-09 12:25:27 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:27 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:27 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-09 12:25:27 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:27 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:27 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-09 12:25:27 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:27 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:27 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-09 12:25:27 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:27 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:27 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-09 12:25:27 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:27 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:27 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-09 12:25:27 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:27 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:27 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-09 12:25:27 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:27 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:27 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-09 12:25:27 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:27 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:27 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-09 12:25:27 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:27 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:27 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-09 12:25:27 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:27 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:27 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-09 12:25:27 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:27 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:43 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-09 12:25:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:43 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-09 12:25:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:43 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-09 12:25:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:43 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-09 12:25:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:43 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-09 12:25:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:43 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-09 12:25:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:43 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-09 12:25:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:43 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-09 12:25:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:43 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-09 12:25:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:43 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-09 12:25:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:43 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-09 12:25:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:43 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-09 12:25:43 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:43 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:54 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-09 12:25:54 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:54 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:54 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-09 12:25:54 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:54 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:54 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-09 12:25:54 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:54 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:54 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-09 12:25:54 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:54 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:54 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-09 12:25:54 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:54 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:54 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-09 12:25:54 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:54 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:54 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-09 12:25:54 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:54 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:54 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-09 12:25:54 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:54 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:54 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-09 12:25:54 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:54 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:54 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-09 12:25:54 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:54 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:54 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-09 12:25:54 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:54 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:25:54 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-09 12:25:54 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:25:54 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:27:19 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-09 12:27:19 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:27:19 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:27:19 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-09 12:27:19 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:27:19 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:27:19 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-09 12:27:19 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:27:19 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:27:19 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-09 12:27:19 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:27:19 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:27:19 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-09 12:27:19 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:27:19 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:27:19 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-09 12:27:19 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:27:19 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:27:19 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-09 12:27:19 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:27:19 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:27:19 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-09 12:27:19 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:27:19 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:27:19 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-09 12:27:19 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:27:19 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:27:19 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-09 12:27:19 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:27:19 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:27:19 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-09 12:27:19 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:27:19 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:27:19 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-09 12:27:19 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:27:19 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=1
+2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=5
+2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=6
+2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=7
+2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=8
+2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=9
+2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=10
+2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=12
+2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=13
+2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=15
+2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=16
+2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
+2026-04-09 12:28:07 [[31merror[39m]: [FCM FAIL] user=1 device=10015
+2026-04-09 12:28:07 [[31merror[39m]: code=app/invalid-credential
+2026-04-09 12:28:07 [[31merror[39m]: message=Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Headers is not defined".
