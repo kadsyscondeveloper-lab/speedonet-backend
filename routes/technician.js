@@ -295,4 +295,44 @@ router.patch('/jobs/:id/status', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+
+
+// POST /technician/location  — push current GPS location
+router.post('/location', async (req, res, next) => {
+  try {
+    const { latitude, longitude, accuracy, speed, heading, ticket_id } = req.body;
+
+    if (!latitude || !longitude || isNaN(parseFloat(latitude)) || isNaN(parseFloat(longitude)))
+      return R.badRequest(res, 'latitude and longitude are required.');
+
+    const techId = BigInt(req.technician.id);
+
+    await sql`
+      MERGE dbo.technician_live_locations AS target
+      USING (VALUES (
+        ${techId},
+        ${ticket_id ? BigInt(ticket_id) : null},
+        ${parseFloat(latitude)},
+        ${parseFloat(longitude)},
+        ${accuracy   ? parseFloat(accuracy)  : null},
+        ${speed      ? parseFloat(speed)     : null},
+        ${heading    ? parseFloat(heading)   : null},
+        SYSUTCDATETIME()
+      )) AS source (technician_id, ticket_id, lat, lng, accuracy, speed, heading, updated_at)
+      ON target.technician_id = source.technician_id
+      WHEN MATCHED THEN UPDATE SET
+        ticket_id  = source.ticket_id,
+        lat        = source.lat,
+        lng        = source.lng,
+        updated_at = source.updated_at
+      WHEN NOT MATCHED THEN INSERT
+        (technician_id, ticket_id, lat, lng, updated_at)
+      VALUES
+        (source.technician_id, source.ticket_id, source.lat, source.lng, source.updated_at);
+    `.execute(db);
+
+    return R.ok(res, null, 'Location updated.');
+  } catch (err) { next(err); }
+});
+
 module.exports = router;

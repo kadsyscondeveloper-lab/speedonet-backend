@@ -1070,6 +1070,33 @@ router.patch('/installations/:id/status', async (req, res, next) => {
 });
 
 
+// GET /admin/technicians/:id/location
+router.get('/technicians/:id/location', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return R.badRequest(res, 'Invalid technician ID.');
+
+    const loc = await sql`
+      SELECT
+        tll.lat        AS latitude,
+        tll.lng        AS longitude,
+        tll.updated_at,
+        tll.ticket_id,
+        -- is_on_job: true if they have any assigned/in-progress ticket right now
+        CASE WHEN ht.id IS NOT NULL THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS is_on_job
+      FROM dbo.technician_live_locations tll
+      LEFT JOIN dbo.help_tickets ht
+        ON ht.id = tll.ticket_id
+       AND ht.tech_job_status = 'assigned'
+      WHERE tll.technician_id = ${BigInt(id)}
+      ORDER BY tll.updated_at DESC
+      OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
+    `.execute(db).then(r => r.rows[0]);
+
+    return R.ok(res, { location: loc || null });
+  } catch (err) { next(err); }
+});
+
 
 
 router.get   ('/pay-services',     payServicesCtrl.getAllServices);
