@@ -1376,3 +1376,21 @@
     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
     at async Object.processMessage (C:\Users\Developer\app\speedonet-backend\services\aiSupportService.js:143:20)
     at async sendMessage (C:\Users\Developer\app\speedonet-backend\controllers\aiSupportController.js:23:20)
+2026-04-15 11:41:31 [[31merror[39m]: Error: Failed to connect to 103.88.81.5:1433 in 15000ms
+    at C:\Users\Developer\app\speedonet-backend\node_modules\tarn\dist\PendingOperation.js:14:27
+    at async MssqlDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:40:16)
+    at async RuntimeDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:46:28)
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:10:28)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
+    at async connectDb (C:\Users\Developer\app\speedonet-backend\config\db.js:60:3)
+    at async start (C:\Users\Developer\app\speedonet-backend\server.js:23:5)
+2026-04-17 10:28:32 [[31merror[39m]: Error: Failed to connect to 103.88.81.5:1433 in 15000ms
+    at C:\Users\Developer\app\speedonet-backend\node_modules\tarn\dist\PendingOperation.js:14:27
+    at async MssqlDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:40:16)
+    at async RuntimeDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:46:28)
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:10:28)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
+    at async connectDb (C:\Users\Developer\app\speedonet-backend\config\db.js:60:3)
+    at async start (C:\Users\Developer\app\speedonet-backend\server.js:23:5)

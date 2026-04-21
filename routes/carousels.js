@@ -1,31 +1,25 @@
 // routes/carousels.js
-// Public GET (used by the Flutter app) and POST (for uploading banners).
-// DELETE is handled by /admin/carousel/:id in routes/admin.js.
-
-const router          = require('express').Router();
-const carouselService = require('../services/carouselService');
+const router              = require('express').Router();
+const { db }              = require('../config/db');
 const { authenticateAdmin } = require('../middleware/adminAuth');
-const R = require('../utils/response');
+const carouselService     = require('../services/carouselService');
+const ctrl                = require('../controllers/carouselController');
+const R                   = require('../utils/response');
 
 // =============================================================================
 // GET /api/v1/carousels  — public, used by Flutter app
 // =============================================================================
 router.get('/', async (req, res, next) => {
   try {
-    const { db } = require('../config/db');
-
-    // Query directly to guarantee image_data is included.
-    // carouselService.getActiveCarousels() may omit the binary column.
     const rows = await db
       .selectFrom('dbo.carousel_banners')
       .select(['id', 'title', 'subtitle', 'description',
-               'image_data', 'image_mime', 'order', 'is_active'])
+               'image_data', 'image_mime', 'order', 'is_active',
+               'click_url', 'click_count'])
       .where('is_active', '=', true)
       .orderBy('order', 'asc')
       .execute();
 
-    // SQL Server returns binary/varbinary columns as Buffer objects.
-    // Convert to base64 so Flutter can render a data: URI.
     const toB64 = (val) => {
       if (!val) return null;
       if (Buffer.isBuffer(val))    return val.toString('base64');
@@ -43,9 +37,11 @@ router.get('/', async (req, res, next) => {
           subtitle:    c.subtitle    || '',
           description: c.description || '',
           image_url:   b64 ? `data:${c.image_mime || 'image/jpeg'};base64,${b64}` : null,
+          click_url:   c.click_url   || null,
+          click_count: Number(c.click_count) || 0,
         };
       })
-      .filter(c => c.image_url);  // drop rows with no valid image
+      .filter(c => c.image_url);
 
     return R.ok(res, { carousels });
   } catch (err) {
@@ -54,14 +50,28 @@ router.get('/', async (req, res, next) => {
 });
 
 // =============================================================================
+// POST /api/v1/carousels/:id/click  — public, called by Flutter on ad tap
+// =============================================================================
+router.post('/:id/click', ctrl.trackClick);
+
+// =============================================================================
+// GET /api/v1/carousels/stats  — admin only
+// =============================================================================
+router.get('/stats', authenticateAdmin, ctrl.getAdStats);
+
+// =============================================================================
 // POST /api/v1/carousels  — admin only, upload a new banner
 // =============================================================================
 router.post('/', authenticateAdmin, async (req, res, next) => {
   try {
-    const { title, subtitle, image_data, image_mime, description, order } = req.body;
+    const {
+      title, subtitle, image_data, image_mime,
+      description, order, click_url,
+    } = req.body;
 
     const carousel = await carouselService.createCarousel(req.admin.id, {
-      title, subtitle, image_data, image_mime, description, order,
+      title, subtitle, image_data, image_mime,
+      description, order, click_url,
     });
 
     return R.created(res, carousel, 'Carousel banner added successfully');
