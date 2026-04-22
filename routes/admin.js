@@ -40,6 +40,33 @@ router.get('/stats', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+
+router.get('/users/deactivated', async (req, res, next) => {
+  try {
+    const limit  = Math.max(1, Math.min(50, parseInt(req.query.limit || '20')));
+    const offset = (Math.max(1, parseInt(req.query.page || '1')) - 1) * limit;
+ 
+    const [users, countRow] = await Promise.all([
+      sql`
+        SELECT
+          u.id, u.name, u.phone, u.email,
+          u.is_active, u.deletion_requested_at, u.updated_at, u.created_at
+        FROM dbo.users u
+        WHERE u.is_active = 0
+        ORDER BY u.updated_at DESC
+        OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
+      `.execute(db).then(r => r.rows),
+ 
+      sql`SELECT COUNT(id) AS total FROM dbo.users WHERE is_active = 0`
+        .execute(db).then(r => r.rows[0]),
+    ]);
+ 
+    const total = Number(countRow.total);
+    return R.ok(res, { users }, 'OK', 200,
+      { limit, total, total_pages: Math.ceil(total / limit) });
+  } catch (err) { next(err); }
+});
+
 // =============================================================================
 // GET /admin/users  — paginated user list with search
 // SQL Server does not support LIMIT — use OFFSET/FETCH via raw sql``
@@ -120,6 +147,42 @@ router.patch('/users/:id/status', async (req, res, next) => {
 
     logger.info(`[Admin] User ${userId} ${is_active ? 'activated' : 'deactivated'} by admin ${req.admin.id}`);
     return R.ok(res, null, `User ${is_active ? 'activated' : 'deactivated'} successfully`);
+  } catch (err) { next(err); }
+});
+
+
+// =============================================================================
+// PATCH /admin/users/:id/reactivate
+// Restores a deactivated / pending-deletion account back to active.
+// Also clears deletion_requested_at so the app's pending-deletion banner
+// does not reappear on the user's next login attempt.
+// =============================================================================
+router.patch('/users/:id/reactivate', async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.id);
+    if (isNaN(userId)) return R.badRequest(res, 'Invalid user ID.');
+
+    const user = await db
+      .selectFrom('dbo.users')
+      .select(['id', 'is_active'])
+      .where('id', '=', BigInt(userId))
+      .executeTakeFirst();
+
+    if (!user)       return R.notFound(res,  'User not found.');
+    if (user.is_active) return R.badRequest(res, 'Account is already active.');
+
+    await db
+      .updateTable('dbo.users')
+      .set({
+        is_active:             true,
+        deletion_requested_at: null,   // clear the pending-deletion timestamp
+        updated_at:            sql`SYSUTCDATETIME()`,
+      })
+      .where('id', '=', BigInt(userId))
+      .execute();
+
+    logger.info(`[Admin] User ${userId} reactivated by admin ${req.admin.id}`);
+    return R.ok(res, null, 'Account reactivated successfully.');
   } catch (err) { next(err); }
 });
 
@@ -1098,31 +1161,7 @@ router.get('/technicians/:id/location', async (req, res, next) => {
 });
 
 
-router.get('/users/deactivated', async (req, res, next) => {
-  try {
-    const limit  = Math.max(1, Math.min(50, parseInt(req.query.limit || '20')));
-    const offset = (Math.max(1, parseInt(req.query.page || '1')) - 1) * limit;
- 
-    const [users, countRow] = await Promise.all([
-      sql`
-        SELECT
-          u.id, u.name, u.phone, u.email,
-          u.is_active, u.deletion_requested_at, u.updated_at, u.created_at
-        FROM dbo.users u
-        WHERE u.is_active = 0
-        ORDER BY u.updated_at DESC
-        OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
-      `.execute(db).then(r => r.rows),
- 
-      sql`SELECT COUNT(id) AS total FROM dbo.users WHERE is_active = 0`
-        .execute(db).then(r => r.rows[0]),
-    ]);
- 
-    const total = Number(countRow.total);
-    return R.ok(res, { users }, 'OK', 200,
-      { limit, total, total_pages: Math.ceil(total / limit) });
-  } catch (err) { next(err); }
-});
+
 
 
 
