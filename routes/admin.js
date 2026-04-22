@@ -1098,6 +1098,33 @@ router.get('/technicians/:id/location', async (req, res, next) => {
 });
 
 
+router.get('/users/deactivated', async (req, res, next) => {
+  try {
+    const limit  = Math.max(1, Math.min(50, parseInt(req.query.limit || '20')));
+    const offset = (Math.max(1, parseInt(req.query.page || '1')) - 1) * limit;
+ 
+    const [users, countRow] = await Promise.all([
+      sql`
+        SELECT
+          u.id, u.name, u.phone, u.email,
+          u.is_active, u.deletion_requested_at, u.updated_at, u.created_at
+        FROM dbo.users u
+        WHERE u.is_active = 0
+        ORDER BY u.updated_at DESC
+        OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
+      `.execute(db).then(r => r.rows),
+ 
+      sql`SELECT COUNT(id) AS total FROM dbo.users WHERE is_active = 0`
+        .execute(db).then(r => r.rows[0]),
+    ]);
+ 
+    const total = Number(countRow.total);
+    return R.ok(res, { users }, 'OK', 200,
+      { limit, total, total_pages: Math.ceil(total / limit) });
+  } catch (err) { next(err); }
+});
+
+
 
 router.get   ('/pay-services',     payServicesCtrl.getAllServices);
 router.post  ('/pay-services',     payServicesCtrl.createService);

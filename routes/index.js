@@ -18,7 +18,8 @@ router.use('/technician/auth', require('./technicianAuth'));
 router.use('/technician',     require('./technician'));
 router.use('/technician',     require('./ticketJobs'));
 router.use('/tickets',        require('./ticketJobStatus'));
-router.use('/ai-support',     require('./aiSupport')); 
+router.use('/ai-support',     require('./aiSupport'));
+router.use('/contact',        require('./contact'));   // ← NEW
 
 router.get('/health', (req, res) => {
   res.json({
