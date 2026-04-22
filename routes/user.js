@@ -5,6 +5,7 @@ const { authenticate }       = require('../middleware/auth');
 const { validate }           = require('../middleware/validators');
 const ctrl                   = require('../controllers/userController');
 const billCtrl = require('../controllers/billController');
+const videoKycCtrl = require('../controllers/videoKycController');
 
 // All user routes require authentication
 router.use(authenticate);
@@ -171,6 +172,23 @@ const deletionRules = [
   validate,
 ];
 
+const videoKycRules = [
+  body('preferred_date')
+    .notEmpty().withMessage('preferred_date is required')
+    .isISO8601().withMessage('preferred_date must be YYYY-MM-DD'),
+  body('preferred_slot')
+    .notEmpty().withMessage('preferred_slot is required')
+    .isIn(['morning', 'afternoon', 'evening'])
+    .withMessage('preferred_slot must be morning, afternoon or evening'),
+  body('call_phone')
+    .notEmpty().withMessage('call_phone is required')
+    .matches(/^[6-9]\d{9}$/).withMessage('Enter a valid 10-digit mobile number'),
+  validate,
+];
+
+
+
+
 // =============================================================================
 // PROFILE
 // =============================================================================
@@ -191,6 +209,12 @@ router.delete('/addresses/:id',      addressParamRule, ctrl.deleteAddress);
 // =============================================================================
 router.get ('/kyc', ctrl.getKycStatus);
 router.post('/kyc', kycRules, ctrl.submitKyc);
+
+
+// Video KYC
+router.get   ('/kyc/video', videoKycCtrl.getVideoKycStatus);
+router.post  ('/kyc/video', videoKycRules, videoKycCtrl.scheduleVideoKyc);
+router.delete('/kyc/video', videoKycCtrl.cancelVideoKyc);
 
 // =============================================================================
 // NOTIFICATIONS

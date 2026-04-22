@@ -12,6 +12,7 @@ const { _onInstallationCompleted } = require('../controllers/installationControl
 const ticketJobCtrl = require('../controllers/ticketJobController');
 const { param } = require('express-validator');
 const { validate } = require('../middleware/validators');
+const videoKycCtrl = require('../controllers/videoKycController');
 
 router.use(authenticateAdmin);
 const { adminLimiter } = require('../middleware/errorHandler');
@@ -219,6 +220,9 @@ router.get('/kyc', async (req, res, next) => {
     return R.ok(res, { submissions }, 'OK', 200, { page, limit, total, total_pages: Math.ceil(total / limit) });
   } catch (err) { next(err); }
 });
+
+router.get('/kyc/video', videoKycCtrl.adminGetVideoKycRequests);
+router.patch('/kyc/video/:id', videoKycCtrl.adminUpdateVideoKyc);
 
 // =============================================================================
 // GET /admin/kyc/:kycId
@@ -1172,6 +1176,7 @@ router.delete('/pay-services/:id', payServicesCtrl.deleteService);
 router.patch ('/pay-services/providers/:providerId', payServicesCtrl.updateProvider);
 router.delete('/pay-services/providers/:providerId', payServicesCtrl.deleteProvider);
 router.post  ('/pay-services/:id/providers',         payServicesCtrl.addProvider);
+
 
 
 module.exports = router;

@@ -1482,3 +1482,124 @@
     at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:365:14)
     at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:376:14)
     at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:421:3)
+2026-04-22 15:46:59 [[31merror[39m]: RangeError: The number NaN cannot be converted to a BigInt because it is not an integer
+    at BigInt (<anonymous>)
+    at C:\Users\Developer\app\speedonet-backend\routes\admin.js:238:22
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:421:3)
+2026-04-22 15:46:59 [[31merror[39m]: RangeError: The number NaN cannot be converted to a BigInt because it is not an integer
+    at BigInt (<anonymous>)
+    at C:\Users\Developer\app\speedonet-backend\routes\admin.js:238:22
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:421:3)
+2026-04-22 15:47:49 [[31merror[39m]: RangeError: The number NaN cannot be converted to a BigInt because it is not an integer
+    at BigInt (<anonymous>)
+    at C:\Users\Developer\app\speedonet-backend\routes\admin.js:238:22
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:421:3)
+2026-04-22 15:47:49 [[31merror[39m]: RangeError: The number NaN cannot be converted to a BigInt because it is not an integer
+    at BigInt (<anonymous>)
+    at C:\Users\Developer\app\speedonet-backend\routes\admin.js:238:22
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:421:3)
+2026-04-22 16:04:16 [[31merror[39m]: RangeError: The number NaN cannot be converted to a BigInt because it is not an integer
+    at BigInt (<anonymous>)
+    at C:\Users\Developer\app\speedonet-backend\routes\admin.js:239:22
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:421:3)
+2026-04-22 16:04:16 [[31merror[39m]: RangeError: The number NaN cannot be converted to a BigInt because it is not an integer
+    at BigInt (<anonymous>)
+    at C:\Users\Developer\app\speedonet-backend\routes\admin.js:239:22
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:421:3)
+2026-04-22 16:04:20 [[31merror[39m]: RangeError: The number NaN cannot be converted to a BigInt because it is not an integer
+    at BigInt (<anonymous>)
+    at C:\Users\Developer\app\speedonet-backend\routes\admin.js:239:22
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:421:3)
+2026-04-22 16:05:58 [[31merror[39m]: RangeError: The number NaN cannot be converted to a BigInt because it is not an integer
+    at BigInt (<anonymous>)
+    at C:\Users\Developer\app\speedonet-backend\routes\admin.js:239:22
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:421:3)
+2026-04-22 16:05:58 [[31merror[39m]: RangeError: The number NaN cannot be converted to a BigInt because it is not an integer
+    at BigInt (<anonymous>)
+    at C:\Users\Developer\app\speedonet-backend\routes\admin.js:239:22
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:421:3)
+2026-04-22 16:08:31 [[31merror[39m]: RangeError: The number NaN cannot be converted to a BigInt because it is not an integer
+    at BigInt (<anonymous>)
+    at C:\Users\Developer\app\speedonet-backend\routes\admin.js:239:22
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:421:3)
+2026-04-22 16:08:31 [[31merror[39m]: RangeError: The number NaN cannot be converted to a BigInt because it is not an integer
+    at BigInt (<anonymous>)
+    at C:\Users\Developer\app\speedonet-backend\routes\admin.js:239:22
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:421:3)
