@@ -15,10 +15,17 @@ async function findUserByPhone(phone) {
   const row = await db
     .selectFrom('dbo.users')
     .select([
-      'id', 'name', 'phone', 'email',
-      'password_hash', 'profile_image',
-      'wallet_balance', 'is_active','availability_confirmed', 
-    ])
+  'id',
+  'name',
+  'phone',
+  'email',
+  'password_hash',
+  'profile_image',
+  'wallet_balance',
+  'is_active',
+  'availability_confirmed',
+  'deletion_requested_at',
+])
     .where('phone', '=', phone)
     .executeTakeFirst();
   return row ?? null;
@@ -28,7 +35,7 @@ async function findUserById(id) {
   const row = await db
     .selectFrom('dbo.users')
     .select([
-      'id', 'name', 'phone', 'email',
+      'id', 'name', 'phone', 'email', 
       'profile_image', 'wallet_balance', 'is_active','availability_confirmed',
     ])
     .where('id', '=', BigInt(id))

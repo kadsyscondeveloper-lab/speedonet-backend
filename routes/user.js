@@ -162,6 +162,15 @@ const addressParamRule = [
   validate,
 ];
 
+// ── Account deletion ───────────────────────────────────────────────────────
+const deletionRules = [
+  // password is optional — only validated if provided
+  body('password')
+    .optional({ nullable: true })
+    .isString().withMessage('Password must be a string'),
+  validate,
+];
+
 // =============================================================================
 // PROFILE
 // =============================================================================
@@ -201,5 +210,8 @@ router.get('/coupons', ctrl.getMyCoupons);
 // =============================================================================
 router.get('/bills',     paginationRules, billCtrl.getBills);
 router.get('/bills/:id', param('id').isInt({ min: 1 }), validate, billCtrl.getBill);
+
+
+router.delete('/account', deletionRules, ctrl.requestAccountDeletion);
 
 module.exports = router;

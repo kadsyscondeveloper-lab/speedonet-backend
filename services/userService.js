@@ -302,6 +302,24 @@ async function getMyCoupons(userId) {
     .execute();
 }
 
+
+async function requestAccountDeletion(userId) {
+  const DELETION_DAYS = 3;
+  const scheduledAt   = new Date(Date.now() + DELETION_DAYS * 24 * 60 * 60 * 1000);
+ 
+  await db
+    .updateTable('dbo.users')
+    .set({
+      is_active:              false,
+      deletion_requested_at:  scheduledAt,
+      updated_at:             sql`SYSUTCDATETIME()`,
+    })
+    .where('id', '=', BigInt(userId))
+    .execute();
+ 
+  return scheduledAt; // ISO date returned to controller → sent to client
+}
+
 module.exports = {
   getFullProfile,
   updateBasicInfo,
@@ -316,4 +334,5 @@ module.exports = {
   markNotificationsRead,
   getReferralStats,
   getMyCoupons,
+  requestAccountDeletion,
 };

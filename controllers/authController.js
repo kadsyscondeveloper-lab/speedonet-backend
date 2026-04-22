@@ -20,6 +20,27 @@ function getClientInfo(req) {
   };
 }
 
+function buildInactiveResponse(res, user, R) {
+  if (!user.is_active) {
+    if (user.deletion_requested_at) {
+      const deletionDate = new Date(user.deletion_requested_at);
+
+      return R.unauthorized(
+        res,
+        `PENDING_DELETION:${deletionDate.toISOString()}`
+      );
+    }
+
+    return R.unauthorized(
+      res,
+      'Your account has been deactivated. Please contact support.'
+    );
+  }
+
+  return null;
+}
+
+
 // ── POST /api/auth/signup ─────────────────────────────────────────────────────
 async function signup(req, res, next) {
   try {
@@ -98,6 +119,9 @@ async function signup(req, res, next) {
   }
 }
 
+
+
+
 // ── POST /api/auth/login ──────────────────────────────────────────────────────
 async function loginWithPassword(req, res, next) {
   try {
@@ -106,10 +130,8 @@ async function loginWithPassword(req, res, next) {
     const user = await authService.findUserByPhone(phone);
     if (!user)
       return R.unauthorized(res, 'Invalid mobile number or password.');
-    if (!user.is_active)
-      return R.unauthorized(
-        res, 'Your account has been deactivated. Contact support.'
-      );
+    const inactiveResp = buildInactiveResponse(res, user, R);
+    if (inactiveResp) return inactiveResp;
 
     const valid = await authService.verifyPassword(password, user.password_hash);
     if (!valid)
@@ -197,8 +219,12 @@ async function verifyOtp(req, res, next) {
       return R.unauthorized(res, 'Incorrect or expired OTP. Please try again.');
 
     const user = await authService.findUserByPhone(phone);
-    if (!user || !user.is_active)
-      return R.unauthorized(res, 'Account not found or deactivated.');
+
+    if (!user)
+      return R.unauthorized(res, 'Account not found.');
+
+    const inactiveResp = buildInactiveResponse(res, user, R);
+    if (inactiveResp) return inactiveResp;
 
     const accessToken  = tokenService.signAccessToken({
       sub: user.id, phone: user.phone, role: 'user',

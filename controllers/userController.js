@@ -179,6 +179,38 @@ async function getMyCoupons(req, res, next) {
 }
 
 
+async function requestAccountDeletion(req, res, next) {
+  try {
+    const { password } = req.body; // optional confirmation password
+ 
+    // If your app sends a password confirmation, verify it here
+    if (password) {
+      const authService = require('../services/authService');
+      const user = await authService.findUserByPhone(req.user.phone);
+      const valid = user ? await authService.verifyPassword(password, user.password_hash) : false;
+      if (!valid) {
+        return require('../utils/response').unauthorized(res, 'Incorrect password. Account not deleted.');
+      }
+    }
+ 
+    const userService = require('../services/userService');
+    const scheduledAt = await userService.requestAccountDeletion(req.user.id);
+ 
+    // Revoke all sessions so the user is logged out immediately
+    const authService = require('../services/authService');
+    await authService.revokeAllUserSessions(req.user.id);
+ 
+    const R = require('../utils/response');
+    return R.ok(res, {
+      deletion_scheduled_at: scheduledAt.toISOString(),
+      message: `Your account has been scheduled for deletion on ${scheduledAt.toDateString()}. Contact support before that date to cancel.`,
+    }, 'Account deletion scheduled.');
+  } catch (err) {
+    next(err);
+  }
+}
+
+
 module.exports = {
   getProfile,
   updateProfile,
@@ -193,4 +225,5 @@ module.exports = {
   markRead,
   getReferralStats,
   getMyCoupons,
+  requestAccountDeletion,
 };
