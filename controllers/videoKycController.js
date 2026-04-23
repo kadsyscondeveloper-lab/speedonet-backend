@@ -1,23 +1,42 @@
-// controllers/videoKycController.js
-//
-// Video KYC — user schedules a call slot; admin confirms, calls, then marks complete.
-// All routes are in routes/user.js (user-facing) and routes/admin.js (admin-facing).
+// controllers/videoKycController.js  (UPDATED — only new/changed functions shown below;
+// keep all existing exports and add the two new ones at the bottom)
 
 const { db, sql } = require('../config/db');
 const R           = require('../utils/response');
 const notifyUser  = require('../utils/notifyUser');
 const logger      = require('../utils/logger');
 
-const VALID_SLOTS = ['morning', 'afternoon', 'evening'];
+// npm i agora-access-token
+const { RtcTokenBuilder, RtcRole } = require('agora-access-token');
 
+const VALID_SLOTS = ['morning', 'afternoon', 'evening'];
 const SLOT_LABELS = {
   morning:   '9:00 AM – 12:00 PM',
   afternoon: '12:00 PM – 4:00 PM',
   evening:   '4:00 PM – 7:00 PM',
 };
 
-// ── GET /user/kyc/video  ──────────────────────────────────────────────────────
-// Returns the latest video KYC request for the logged-in user.
+// ── Agora helpers ─────────────────────────────────────────────────────────────
+
+function _buildAgoraToken(channelName, uid) {
+  const appId      = process.env.AGORA_APP_ID;
+  const appCert    = process.env.AGORA_APP_CERTIFICATE;
+  if (!appId || !appCert) throw new Error('Agora credentials not configured.');
+
+  // Token valid for 2 hours
+  const expireTs = Math.floor(Date.now() / 1000) + 7200;
+  return RtcTokenBuilder.buildTokenWithUid(
+    appId, appCert, channelName, uid, RtcRole.PUBLISHER, expireTs
+  );
+}
+
+function _randomUid() {
+  // Agora UIDs are 32-bit unsigned ints
+  return Math.floor(Math.random() * 2_000_000) + 1;
+}
+
+// ── EXISTING FUNCTIONS (unchanged) ───────────────────────────────────────────
+
 async function getVideoKycStatus(req, res, next) {
   try {
     const row = await db
@@ -28,6 +47,8 @@ async function getVideoKycStatus(req, res, next) {
         'confirmed_at', 'confirmed_slot',
         'completed_at', 'rejection_reason', 'agent_notes',
         'created_at',
+        // NEW fields
+        'call_channel', 'call_uid_user', 'call_token_user', 'call_started_at',
       ])
       .where('user_id', '=', BigInt(req.user.id))
       .orderBy('created_at', 'desc')
@@ -38,14 +59,10 @@ async function getVideoKycStatus(req, res, next) {
   } catch (err) { next(err); }
 }
 
-// ── POST /user/kyc/video  ─────────────────────────────────────────────────────
-// Schedule a new video KYC call.
-// Body: { preferred_date: "YYYY-MM-DD", preferred_slot: "morning"|..., call_phone: "10-digit" }
 async function scheduleVideoKyc(req, res, next) {
   try {
     const { preferred_date, preferred_slot, call_phone } = req.body;
 
-    // Validation
     if (!preferred_date || !preferred_slot || !call_phone?.trim())
       return R.badRequest(res, 'preferred_date, preferred_slot and call_phone are required.');
 
@@ -59,13 +76,11 @@ async function scheduleVideoKyc(req, res, next) {
     if (isNaN(date.getTime()))
       return R.badRequest(res, 'Invalid preferred_date. Use YYYY-MM-DD format.');
 
-    // Must be a future date (within 30 days)
-    const today    = new Date(); today.setHours(0, 0, 0, 0);
-    const maxDate  = new Date(today); maxDate.setDate(maxDate.getDate() + 30);
-    if (date < today)    return R.badRequest(res, 'Preferred date must be today or in the future.');
-    if (date > maxDate)  return R.badRequest(res, 'Preferred date must be within 30 days.');
+    const today   = new Date(); today.setHours(0, 0, 0, 0);
+    const maxDate = new Date(today); maxDate.setDate(maxDate.getDate() + 30);
+    if (date < today)   return R.badRequest(res, 'Preferred date must be today or in the future.');
+    if (date > maxDate) return R.badRequest(res, 'Preferred date must be within 30 days.');
 
-    // Block if a non-cancelled request already exists
     const existing = await db
       .selectFrom('dbo.video_kyc_requests')
       .select(['id', 'status'])
@@ -77,8 +92,7 @@ async function scheduleVideoKyc(req, res, next) {
       if (existing.status === 'completed')
         return R.conflict(res, 'Your video KYC has already been completed.');
       return R.conflict(res,
-        'You already have a video KYC call scheduled. ' +
-        'Cancel the existing request before scheduling a new one.');
+        'You already have a video KYC call scheduled. Cancel before scheduling a new one.');
     }
 
     const row = await db
@@ -99,7 +113,7 @@ async function scheduleVideoKyc(req, res, next) {
     await notifyUser(db, req.user.id, {
       type:  'kyc',
       title: 'Video KYC Scheduled 📹',
-      body:  `Your video KYC call is scheduled for ${preferred_date} (${SLOT_LABELS[preferred_slot]}). We'll call you at ${call_phone.trim()}.`,
+      body:  `Your video KYC call is scheduled for ${preferred_date} (${SLOT_LABELS[preferred_slot]}). We'll start the call from the app.`,
       data:  { reference_id: row.reference_id },
     });
 
@@ -109,15 +123,13 @@ async function scheduleVideoKyc(req, res, next) {
   } catch (err) { next(err); }
 }
 
-// ── DELETE /user/kyc/video  ───────────────────────────────────────────────────
-// Cancel the latest scheduled/confirmed video KYC request.
 async function cancelVideoKyc(req, res, next) {
   try {
     const row = await db
       .selectFrom('dbo.video_kyc_requests')
       .select(['id', 'status'])
       .where('user_id', '=', BigInt(req.user.id))
-      .where('status', 'in', ['scheduled', 'confirmed'])
+      .where('status', 'in', ['scheduled', 'confirmed', 'call_ready'])
       .orderBy('created_at', 'desc')
       .top(1)
       .executeTakeFirst();
@@ -134,7 +146,116 @@ async function cancelVideoKyc(req, res, next) {
   } catch (err) { next(err); }
 }
 
-// ── ADMIN: GET /admin/kyc/video  ──────────────────────────────────────────────
+// ── NEW: Admin starts the live call ──────────────────────────────────────────
+//
+// POST /admin/kyc/video/:id/start-call
+//
+// 1. Creates a unique Agora channel for this request
+// 2. Mints RTC tokens for both the user and the admin
+// 3. Saves everything in the DB + marks status = 'call_ready'
+// 4. Sends a push notification to the user so they can tap "Join"
+//
+async function adminStartVideoCall(req, res, next) {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return R.badRequest(res, 'Invalid ID.');
+
+    const request = await db
+      .selectFrom('dbo.video_kyc_requests')
+      .select(['id', 'user_id', 'status', 'reference_id'])
+      .where('id', '=', id)
+      .executeTakeFirst();
+
+    if (!request) return R.notFound(res, 'Video KYC request not found.');
+
+    const allowedStatuses = ['scheduled', 'confirmed', 'call_ready'];
+
+    if (!allowedStatuses.includes(request.status))
+      return R.badRequest(res,
+        `Cannot start a call for a request with status '${request.status}'.`);
+
+    // Generate channel + UIDs + tokens
+    const channel      = `vkyc_${request.reference_id}`.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+    const uidUser      = _randomUid();
+    const uidAdmin     = _randomUid();
+    const tokenUser    = _buildAgoraToken(channel, uidUser);
+    const tokenAdmin   = _buildAgoraToken(channel, uidAdmin);
+
+    await db
+      .updateTable('dbo.video_kyc_requests')
+      .set({
+        status:           'call_ready',
+        call_channel:     channel,
+        call_uid_user:    uidUser,
+        call_uid_admin:   uidAdmin,
+        call_token_user:  tokenUser,
+        call_token_admin: tokenAdmin,
+        call_started_at:  new Date(),
+        confirmed_at:     new Date(),
+        reviewed_by:      req.admin.id,
+        updated_at:       sql`SYSUTCDATETIME()`,
+      })
+      .where('id', '=', id)
+      .execute();
+
+    // Deep-link notification — user taps this to open the call screen
+    await notifyUser(db, Number(request.user_id), {
+      type:  'kyc',
+      title: '📹 Your Video KYC Call is Starting!',
+      body:  'An agent is ready. Open the app and tap "Join Call" now.',
+      data:  {
+        action:      'video_kyc_call',
+        screen:      'video_kyc',
+        call_ready:  'true',
+      },
+    });
+
+    logger.info(`[VideoKYC] Call started: request=${id} channel=${channel} admin=${req.admin.id}`);
+
+    return R.ok(res, {
+      channel,
+      agora_app_id: process.env.AGORA_APP_ID,
+      uid:          uidAdmin,
+      token:        tokenAdmin,
+    }, 'Call started. User has been notified.');
+  } catch (err) { next(err); }
+}
+
+// ── NEW: User fetches their call token ────────────────────────────────────────
+//
+// GET /user/kyc/video/call-token
+//
+// Called by the Flutter app when the user taps "Join Call".
+// Returns the channel + token only if the request is in 'call_ready' state.
+//
+async function getUserCallToken(req, res, next) {
+  try {
+    const row = await db
+      .selectFrom('dbo.video_kyc_requests')
+      .select([
+        'id', 'status', 'reference_id',
+        'call_channel', 'call_uid_user', 'call_token_user',
+      ])
+      .where('user_id', '=', BigInt(req.user.id))
+      .where('status', '=', 'call_ready')
+      .orderBy('created_at', 'desc')
+      .top(1)
+      .executeTakeFirst();
+
+    if (!row) return R.notFound(res, 'No active call found. The agent may not have started yet.');
+
+    return R.ok(res, {
+      channel:      row.call_channel,
+      agora_app_id: process.env.AGORA_APP_ID,
+      uid:          row.call_uid_user,
+      token:        row.call_token_user,
+      request_id:   row.id,
+    });
+  } catch (err) { next(err); }
+}
+
+// ── Existing admin list + update functions (unchanged) ────────────────────────
+
 async function adminGetVideoKycRequests(req, res, next) {
   try {
     const page   = Math.max(1, parseInt(req.query.page  || '1'));
@@ -149,7 +270,7 @@ async function adminGetVideoKycRequests(req, res, next) {
           vk.preferred_date, vk.preferred_slot, vk.call_phone,
           vk.confirmed_at, vk.confirmed_slot,
           vk.completed_at, vk.rejection_reason, vk.agent_notes,
-          vk.created_at,
+          vk.created_at, vk.call_started_at,
           u.name  AS user_name,
           u.phone AS user_phone,
           u.email AS user_email
@@ -174,9 +295,6 @@ async function adminGetVideoKycRequests(req, res, next) {
   } catch (err) { next(err); }
 }
 
-// ── ADMIN: PATCH /admin/kyc/video/:id  ───────────────────────────────────────
-// Update video KYC status (confirmed → completed / failed / cancelled).
-// Body: { status, agent_notes?, rejection_reason?, confirmed_slot? }
 async function adminUpdateVideoKyc(req, res, next) {
   try {
     const id = parseInt(req.params.id);
@@ -200,29 +318,28 @@ async function adminUpdateVideoKyc(req, res, next) {
     if (request.status === 'completed')
       return R.badRequest(res, 'This request is already completed.');
 
-    const updates = {
-      status,
-      updated_at: sql`SYSUTCDATETIME()`,
-    };
+    const updates = { status, updated_at: sql`SYSUTCDATETIME()` };
     if (agent_notes)      updates.agent_notes      = agent_notes.trim();
     if (rejection_reason) updates.rejection_reason = rejection_reason.trim();
     if (status === 'confirmed') {
-      updates.confirmed_at   = new Date();
+      updates.confirmed_at = new Date();
       if (confirmed_slot) updates.confirmed_slot = new Date(confirmed_slot);
     }
-    if (status === 'completed') updates.completed_at = new Date();
-    if (status === 'confirmed' || status === 'completed')
+    if (status === 'completed') {
+      updates.completed_at  = new Date();
+      updates.call_ended_at = new Date();
+    }
+    if (['confirmed', 'completed'].includes(status))
       updates.reviewed_by = req.admin.id;
 
     await db.updateTable('dbo.video_kyc_requests').set(updates).where('id', '=', id).execute();
 
-    // Notify user
     const notifMap = {
       confirmed: {
         title: 'Video KYC Confirmed 📅',
         body:  confirmed_slot
-          ? `Your video KYC call is confirmed for ${new Date(confirmed_slot).toLocaleString('en-IN')}. We'll call you then!`
-          : 'Your video KYC slot is confirmed. Our agent will call you at the scheduled time.',
+          ? `Your video KYC call is confirmed for ${new Date(confirmed_slot).toLocaleString('en-IN')}.`
+          : 'Your video KYC slot is confirmed. Our agent will start the call from the app.',
       },
       completed: {
         title: 'Video KYC Completed ✅',
@@ -255,4 +372,6 @@ module.exports = {
   cancelVideoKyc,
   adminGetVideoKycRequests,
   adminUpdateVideoKyc,
+  adminStartVideoCall,   // NEW
+  getUserCallToken,      // NEW
 };

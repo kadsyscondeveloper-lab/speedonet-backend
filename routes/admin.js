@@ -223,6 +223,7 @@ router.get('/kyc', async (req, res, next) => {
 
 router.get('/kyc/video', videoKycCtrl.adminGetVideoKycRequests);
 router.patch('/kyc/video/:id', videoKycCtrl.adminUpdateVideoKyc);
+router.post('/kyc/video/:id/start-call', videoKycCtrl.adminStartVideoCall);
 
 // =============================================================================
 // GET /admin/kyc/:kycId

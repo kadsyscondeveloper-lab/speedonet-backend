@@ -215,6 +215,7 @@ router.post('/kyc', kycRules, ctrl.submitKyc);
 router.get   ('/kyc/video', videoKycCtrl.getVideoKycStatus);
 router.post  ('/kyc/video', videoKycRules, videoKycCtrl.scheduleVideoKyc);
 router.delete('/kyc/video', videoKycCtrl.cancelVideoKyc);
+router.get('/kyc/video/call-token', videoKycCtrl.getUserCallToken);
 
 // =============================================================================
 // NOTIFICATIONS
