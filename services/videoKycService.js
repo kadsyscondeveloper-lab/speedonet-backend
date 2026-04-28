@@ -9,6 +9,8 @@ const notifyUser  = require('../utils/notifyUser');
 const logger      = require('../utils/logger');
 const crypto      = require('crypto');
 
+const { analyzeVideoKyc }  = require('./videoKycAiService');
+const { resolveVideoPath } = require('../middleware/videoUpload');
 // ── Reference ID generator ────────────────────────────────────────────────────
 
 function generateReferenceId() {
@@ -67,7 +69,6 @@ async function submitVideoKyc(userId, file) {
 
   const referenceId = generateReferenceId();
 
-  // Store a relative path so the app still works if the server root moves
   const relativePath = path.relative(process.cwd(), file.path);
 
   const row = await db
@@ -96,6 +97,86 @@ async function submitVideoKyc(userId, file) {
   });
 
   logger.info(`[VideoKYC] Submitted: user=${userId} ref=${referenceId} size=${file.size}B`);
+
+  // ── AI verification ───────────────────────────────────────────────────────
+  // Runs in background via setImmediate so the user gets an instant 201 response.
+  // The AI takes 5–30 seconds depending on video length and server CPU.
+  // If AI crashes for any reason the submission stays 'pending' for manual review.
+
+  setImmediate(async () => {
+    try {
+      const absPath = resolveVideoPath(relativePath);
+      const ai      = await analyzeVideoKyc(absPath);
+
+      logger.info(`[VideoKYC] AI decision for ref=${referenceId}: ${ai.decision} (score=${ai.score})`);
+
+      // Re-check status — an admin might have already acted while AI was running
+      const current = await db
+        .selectFrom('dbo.video_kyc_requests')
+        .select(['status'])
+        .where('reference_id', '=', referenceId)
+        .executeTakeFirst();
+
+      if (!current || current.status !== 'pending') {
+        logger.info(`[VideoKYC] AI skipping update — status already changed to '${current?.status}' for ref=${referenceId}`);
+        return;
+      }
+
+      // Build the update payload
+      const updates = {
+        status:      ai.decision,
+        agent_notes: ai.agent_notes,
+        updated_at:  sql`SYSUTCDATETIME()`,
+      };
+
+      if (ai.rejection_reason) {
+        updates.rejection_reason = ai.rejection_reason;
+      }
+
+      if (['completed', 'rejected', 'failed'].includes(ai.decision)) {
+        updates.reviewed_at = new Date();
+      }
+
+      await db
+        .updateTable('dbo.video_kyc_requests')
+        .set(updates)
+        .where('reference_id', '=', referenceId)
+        .execute();
+
+      // Notify user of the AI decision
+      const notifMap = {
+        completed: {
+          title: 'Video KYC Approved ✅',
+          body:  'Your Video KYC was automatically verified and is now complete!',
+        },
+        rejected: {
+          title: 'Video KYC Rejected ❌',
+          body:  ai.rejection_reason || 'Please re-record your video and try again.',
+        },
+        under_review: {
+          title: 'Video KYC Under Review 🔍',
+          body:  'Your video is being reviewed by our team. We\'ll notify you soon.',
+        },
+      };
+
+      const notif = notifMap[ai.decision];
+      if (notif) {
+        await notifyUser(db, userId, {
+          type:  'kyc',
+          title: notif.title,
+          body:  notif.body,
+          data:  { video_kyc_status: ai.decision, reference_id: referenceId },
+        });
+      }
+
+      logger.info(`[VideoKYC] AI update complete for ref=${referenceId} → ${ai.decision}`);
+
+    } catch (aiErr) {
+      // AI failure is non-fatal — submission stays as 'pending' for manual review
+      logger.error(`[VideoKYC] AI verification error for ref=${referenceId}: ${aiErr.message}`);
+    }
+  });
+  // ── End AI verification ───────────────────────────────────────────────────
 
   return row;
 }

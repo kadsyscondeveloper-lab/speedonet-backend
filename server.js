@@ -21,7 +21,15 @@ const PORT = parseInt(process.env.PORT || '3000');
 async function start() {
   try {
     await connectDb();
+    // Warm up AI models at startup so the first submission doesn't wait for loading
+    
     logger.info('Database connection established ✓');
+    try {
+      const { loadModels } = require('./services/videoKycAiService');
+      await loadModels();
+    } catch (aiErr) {
+      logger.warn(`[AI] Model preload failed — will retry on first use: ${aiErr.message}`);
+    }
 
     // ── Create HTTP server (required for Socket.io) ──────────────────────────
     const httpServer = http.createServer(app);

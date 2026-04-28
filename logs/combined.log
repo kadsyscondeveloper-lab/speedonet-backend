@@ -9634,3 +9634,20 @@
 2026-04-28 12:25:57 [[34mdebug[39m]: [SQL] select "id", "email", "role", "is_active" from "dbo"."admin_users" where "id" = @1
 2026-04-28 12:25:57 [[34mdebug[39m]: [SQL] select "vk"."id", "vk"."reference_id", "vk"."status", "vk"."video_path", "vk"."video_mime", "vk"."video_size_bytes", "vk"."rejection_reason", "vk"."agent_notes", "vk"."reviewed_by", "vk"."reviewed_at", "vk"."created_at", "u"."id" as "user_id", "u"."name" as "user_name", "u"."phone" as "user_phone", "u"."email" as "user_email" from "dbo"."video_kyc_requests" as "vk" inner join "dbo"."users" as "u" on "u"."id" = "vk"."user_id" where "vk"."id" = @1
 2026-04-28 12:25:57 [[32mhttp[39m]: [0mGET /api/v1/admin/kyc/video/1010/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoiYWRtaW5Ac3BlZWRvbmV0LmluIiwicm9sZSI6InN1cGVyYWRtaW4iLCJ0eXBlIjoiYWRtaW4iLCJpYXQiOjE3NzczNTUzMjAsImV4cCI6MTc3NzM4NDEyMCwiYXVkIjoic3BlZWRvbmV0LWFwcCIsImlzcyI6InNwZWVkb25ldCJ9.B8dyC5Y730Q0ScInmwRcVFWrvCN7aPf8EbZ439DRHgc [32m206[0m 6.055 ms - 7524571[0m
+2026-04-28 13:34:22 [[32mhttp[39m]: [0mGET / [33m404[0m 1.071 ms - 51[0m
+2026-04-28 13:37:04 [[32mhttp[39m]: [0mGET / [33m404[0m 1.107 ms - 51[0m
+2026-04-28 13:37:10 [[32mhttp[39m]: [0mGET /favicon.ico [33m404[0m 1.064 ms - 62[0m
+2026-04-28 13:37:11 [[32mhttp[39m]: [0mGET /robots.txt [33m404[0m 1.147 ms - 61[0m
+2026-04-28 13:37:11 [[32mhttp[39m]: [0mGET /sitemap.xml [33m404[0m 1.189 ms - 62[0m
+2026-04-28 14:16:51 [[32minfo[39m]: [FCM] Firebase Admin SDK initialised ✓
+2026-04-28 14:16:51 [[32minfo[39m]: [VideoUpload] Root directory ready: C:\Users\Developer\app\speedonet-backend\uploads\video-kyc
+2026-04-28 14:16:51 [[34mdebug[39m]: [SQL] select top(1) "id" from "dbo"."users"
+2026-04-28 14:16:51 [[32minfo[39m]: Kysely — SQL Server connection pool ready ✓
+2026-04-28 14:16:51 [[32minfo[39m]: [VideoKycAI] Using Hugging Face Inference API — no local models needed.
+2026-04-28 14:16:51 [[32minfo[39m]: Database connection established ✓
+2026-04-28 14:16:51 [[32minfo[39m]: [Socket.io] Tracking socket attached ✓
+2026-04-28 14:16:51 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-04-28 14:16:51 [[32minfo[39m]: Local:  http://localhost:3000/api/v1/health
+2026-04-28 14:16:51 [[32minfo[39m]: Public: http://103.88.81.7:3000/api/v1/health
+2026-04-28 14:16:51 [[32minfo[39m]: Socket: ws://103.88.81.7:3000/tracking/technician
+2026-04-28 14:16:51 [[32minfo[39m]: Socket: ws://103.88.81.7:3000/tracking/user
