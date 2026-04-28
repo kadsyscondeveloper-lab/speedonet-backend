@@ -1712,3 +1712,194 @@
     at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:346:12)
     at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:280:10)
     at logger (C:\Users\Developer\app\speedonet-backend\node_modules\morgan\index.js:144:5)
+2026-04-28 10:43:10 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'video_path'.,Error: Invalid column name 'video_mime'.,Error: Invalid column name 'video_size_bytes'.,Error: Invalid column name 'reviewed_at'.
+2026-04-28 10:43:10 [[31merror[39m]: Error: Invalid column name 'video_path'.,Error: Invalid column name 'video_mime'.,Error: Invalid column name 'video_size_bytes'.,Error: Invalid column name 'reviewed_at'.
+2026-04-28 10:43:10 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'video_path'.,Error: Invalid column name 'video_mime'.,Error: Invalid column name 'video_size_bytes'.,Error: Invalid column name 'reviewed_at'.
+2026-04-28 10:43:10 [[31merror[39m]: Error: Invalid column name 'video_path'.,Error: Invalid column name 'video_mime'.,Error: Invalid column name 'video_size_bytes'.,Error: Invalid column name 'reviewed_at'.
+2026-04-28 11:08:06 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'video_path'.,Error: Invalid column name 'video_mime'.,Error: Invalid column name 'video_size_bytes'.,Error: Invalid column name 'reviewed_at'.
+2026-04-28 11:08:06 [[31merror[39m]: Error: Invalid column name 'video_path'.,Error: Invalid column name 'video_mime'.,Error: Invalid column name 'video_size_bytes'.,Error: Invalid column name 'reviewed_at'.
+2026-04-28 11:08:06 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'video_path'.,Error: Invalid column name 'video_mime'.,Error: Invalid column name 'video_size_bytes'.,Error: Invalid column name 'reviewed_at'.
+2026-04-28 11:08:06 [[31merror[39m]: Error: Invalid column name 'video_path'.,Error: Invalid column name 'video_mime'.,Error: Invalid column name 'video_size_bytes'.,Error: Invalid column name 'reviewed_at'.
+2026-04-28 11:08:44 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'video_path'.,Error: Invalid column name 'video_mime'.,Error: Invalid column name 'video_size_bytes'.
+2026-04-28 11:08:44 [[31merror[39m]: Error: Invalid column name 'video_path'.,Error: Invalid column name 'video_mime'.,Error: Invalid column name 'video_size_bytes'.
+2026-04-28 11:10:33 [[31merror[39m]: [SQL ERROR] Error: The column "reference_id" cannot be modified because it is either a computed column or is the result of a UNION operator.
+2026-04-28 11:10:33 [[31merror[39m]: Error: The column "reference_id" cannot be modified because it is either a computed column or is the result of a UNION operator.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:538:3)
+    at Readable.push (node:internal/streams/readable:393:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
+    at async InsertQueryBuilder.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1124:26)
+    at async InsertQueryBuilder.executeTakeFirstOrThrow (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1136:24)
+    at async Object.submitVideoKyc (C:\Users\Developer\app\speedonet-backend\services\videoKycService.js:73:15)
+2026-04-28 11:11:37 [[31merror[39m]: [SQL ERROR] Error: Cannot insert the value NULL into column 'preferred_date', table 'broadbanddb.dbo.video_kyc_requests'; column does not allow nulls. INSERT fails.
+2026-04-28 11:11:37 [[31merror[39m]: Error: Cannot insert the value NULL into column 'preferred_date', table 'broadbanddb.dbo.video_kyc_requests'; column does not allow nulls. INSERT fails.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:538:3)
+    at Readable.push (node:internal/streams/readable:393:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
+    at async InsertQueryBuilder.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1124:26)
+    at async InsertQueryBuilder.executeTakeFirstOrThrow (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1136:24)
+    at async Object.submitVideoKyc (C:\Users\Developer\app\speedonet-backend\services\videoKycService.js:73:15)
+2026-04-28 11:12:29 [[31merror[39m]: [SQL ERROR] Error: The INSERT statement conflicted with the CHECK constraint "CK_video_kyc_status". The conflict occurred in database "broadbanddb", table "dbo.video_kyc_requests", column 'status'.
+2026-04-28 11:12:29 [[31merror[39m]: Error: The INSERT statement conflicted with the CHECK constraint "CK_video_kyc_status". The conflict occurred in database "broadbanddb", table "dbo.video_kyc_requests", column 'status'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:538:3)
+    at Readable.push (node:internal/streams/readable:393:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async InsertQueryBuilder.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1108:24)
+    at async InsertQueryBuilder.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1124:26)
+    at async InsertQueryBuilder.executeTakeFirstOrThrow (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\insert-query-builder.js:1136:24)
+    at async Object.submitVideoKyc (C:\Users\Developer\app\speedonet-backend\services\videoKycService.js:73:15)
+2026-04-28 11:13:40 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'reviewed_at'.
+2026-04-28 11:13:40 [[31merror[39m]: Error: Invalid column name 'reviewed_at'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:538:3)
+    at Readable.push (node:internal/streams/readable:393:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
+    at async SelectQueryBuilderImpl.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:323:26)
+    at async Object.getVideoKycStatus (C:\Users\Developer\app\speedonet-backend\services\videoKycService.js:23:15)
+    at async getVideoKycStatus (C:\Users\Developer\app\speedonet-backend\controllers\videoKycController.js:18:17)
+2026-04-28 11:14:03 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'reviewed_at'.
+2026-04-28 11:14:03 [[31merror[39m]: Error: Invalid column name 'reviewed_at'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:538:3)
+    at Readable.push (node:internal/streams/readable:393:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
+    at async SelectQueryBuilderImpl.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:323:26)
+    at async Object.getVideoKycStatus (C:\Users\Developer\app\speedonet-backend\services\videoKycService.js:23:15)
+    at async getVideoKycStatus (C:\Users\Developer\app\speedonet-backend\controllers\videoKycController.js:18:17)
+2026-04-28 11:14:03 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'reviewed_at'.
+2026-04-28 11:14:03 [[31merror[39m]: Error: Invalid column name 'reviewed_at'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:538:3)
+    at Readable.push (node:internal/streams/readable:393:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
+    at async SelectQueryBuilderImpl.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:323:26)
+    at async Object.getVideoKycStatus (C:\Users\Developer\app\speedonet-backend\services\videoKycService.js:23:15)
+    at async getVideoKycStatus (C:\Users\Developer\app\speedonet-backend\controllers\videoKycController.js:18:17)
+2026-04-28 11:14:13 [[31merror[39m]: Error: You already have a pending Video KYC submission. Cancel it before submitting a new one.
+    at Object.submitVideoKyc (C:\Users\Developer\app\speedonet-backend\services\videoKycService.js:63:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async submitVideoKyc (C:\Users\Developer\app\speedonet-backend\controllers\videoKycController.js:41:13)
+2026-04-28 11:18:43 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'reviewed_at'.
+2026-04-28 11:18:43 [[31merror[39m]: Error: Invalid column name 'reviewed_at'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:538:3)
+    at Readable.push (node:internal/streams/readable:393:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async Promise.all (index 0)
+    at async Object.adminListRequests (C:\Users\Developer\app\speedonet-backend\services\videoKycService.js:139:28)
+    at async adminGetVideoKycRequests (C:\Users\Developer\app\speedonet-backend\controllers\videoKycController.js:79:33)
+2026-04-28 11:18:43 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'reviewed_at'.
+2026-04-28 11:18:43 [[31merror[39m]: Error: Invalid column name 'reviewed_at'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:538:3)
+    at Readable.push (node:internal/streams/readable:393:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async Promise.all (index 0)
+    at async Object.adminListRequests (C:\Users\Developer\app\speedonet-backend\services\videoKycService.js:139:28)
+    at async adminGetVideoKycRequests (C:\Users\Developer\app\speedonet-backend\controllers\videoKycController.js:79:33)
+2026-04-28 11:18:46 [[31merror[39m]: [SQL ERROR] Error: Invalid column name 'reviewed_at'.
+2026-04-28 11:18:46 [[31merror[39m]: Error: Invalid column name 'reviewed_at'.
+    at RequestTokenHandler.onErrorMessage (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\handler.js:286:21)
+    at Readable.<anonymous> (C:\Users\Developer\app\speedonet-backend\node_modules\tedious\lib\token\token-stream-parser.js:19:33)
+    at Readable.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushObjectMode (node:internal/streams/readable:538:3)
+    at Readable.push (node:internal/streams/readable:393:5)
+    at nextAsync (node:internal/streams/from:194:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at MssqlConnection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:138:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async connection.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:112:24)
+    at async C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:37:28
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:12:20)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async Promise.all (index 0)
+    at async Object.adminListRequests (C:\Users\Developer\app\speedonet-backend\services\videoKycService.js:139:28)
+    at async adminGetVideoKycRequests (C:\Users\Developer\app\speedonet-backend\controllers\videoKycController.js:79:33)
