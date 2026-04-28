@@ -12272,3 +12272,26 @@
 2026-04-28 15:08:24 [[34mdebug[39m]: [SQL] select "s"."id", "s"."user_id", "s"."expires_at", "u"."is_active" from "dbo"."user_sessions" as "s" inner join "dbo"."users" as "u" on "u"."id" = "s"."user_id" where "s"."token" = @1 and "s"."expires_at" > SYSUTCDATETIME()
 2026-04-28 15:08:24 [[34mdebug[39m]: [SQL] select top(1) "id", "reference_id", "status", "video_path", "video_mime", "video_size_bytes", "rejection_reason", "agent_notes", "reviewed_by", "reviewed_at", "created_at", "updated_at" from "dbo"."video_kyc_requests" where "user_id" = @1 order by "created_at" desc
 2026-04-28 15:08:24 [[32mhttp[39m]: [0mGET /api/v1/user/kyc/video [32m200[0m 13.976 ms - 457[0m
+2026-04-28 16:08:56 [[32minfo[39m]: [FCM] Firebase Admin SDK initialised ✓
+2026-04-28 16:08:56 [[32minfo[39m]: [VideoUpload] Root directory ready: C:\Users\Developer\app\speedonet-backend\uploads\video-kyc
+2026-04-28 16:08:56 [[34mdebug[39m]: [SQL] select top(1) "id" from "dbo"."users"
+2026-04-28 16:08:56 [[32minfo[39m]: Kysely — SQL Server connection pool ready ✓
+2026-04-28 16:08:56 [[32minfo[39m]: Database connection established ✓
+2026-04-28 16:08:56 [[31merror[39m]: [VideoKycAI] Failed to load AI deps — AI verification disabled: Cannot find module '@tensorflow/tfjs-node'
+Require stack:
+- C:\Users\Developer\app\speedonet-backend\node_modules\@vladmandic\face-api\dist\face-api.node.js
+- C:\Users\Developer\app\speedonet-backend\services\videoKycAiService.js
+- C:\Users\Developer\app\speedonet-backend\services\videoKycService.js
+- C:\Users\Developer\app\speedonet-backend\controllers\videoKycController.js
+- C:\Users\Developer\app\speedonet-backend\routes\user.js
+- C:\Users\Developer\app\speedonet-backend\routes\index.js
+- C:\Users\Developer\app\speedonet-backend\app.js
+- C:\Users\Developer\app\speedonet-backend\server.js
+2026-04-28 16:08:56 [[31merror[39m]: [VideoKycAI] Run: npm install @tensorflow/tfjs @vladmandic/face-api canvas fluent-ffmpeg
+2026-04-28 16:08:56 [[33mwarn[39m]: [AI] Model preload failed — will retry on first use: AI verification unavailable — required packages are not installed.
+2026-04-28 16:08:56 [[32minfo[39m]: [Socket.io] Tracking socket attached ✓
+2026-04-28 16:08:56 [[32minfo[39m]: Speedonet API running on port 3000 [development]
+2026-04-28 16:08:56 [[32minfo[39m]: Local:  http://localhost:3000/api/v1/health
+2026-04-28 16:08:56 [[32minfo[39m]: Public: http://103.88.81.7:3000/api/v1/health
+2026-04-28 16:08:56 [[32minfo[39m]: Socket: ws://103.88.81.7:3000/tracking/technician
+2026-04-28 16:08:56 [[32minfo[39m]: Socket: ws://103.88.81.7:3000/tracking/user

@@ -1925,3 +1925,14 @@
 2026-04-28 14:50:40 [[31merror[39m]: [VideoKycAI] All frames errored — HF API unreachable. Manual review.
 2026-04-28 15:00:39 [[31merror[39m]: [VideoKycAI] All frames errored — HF API unreachable. Manual review.
 2026-04-28 15:02:07 [[31merror[39m]: [VideoKycAI] All frames errored — HF API unreachable. Manual review.
+2026-04-28 16:08:56 [[31merror[39m]: [VideoKycAI] Failed to load AI deps — AI verification disabled: Cannot find module '@tensorflow/tfjs-node'
+Require stack:
+- C:\Users\Developer\app\speedonet-backend\node_modules\@vladmandic\face-api\dist\face-api.node.js
+- C:\Users\Developer\app\speedonet-backend\services\videoKycAiService.js
+- C:\Users\Developer\app\speedonet-backend\services\videoKycService.js
+- C:\Users\Developer\app\speedonet-backend\controllers\videoKycController.js
+- C:\Users\Developer\app\speedonet-backend\routes\user.js
+- C:\Users\Developer\app\speedonet-backend\routes\index.js
+- C:\Users\Developer\app\speedonet-backend\app.js
+- C:\Users\Developer\app\speedonet-backend\server.js
+2026-04-28 16:08:56 [[31merror[39m]: [VideoKycAI] Run: npm install @tensorflow/tfjs @vladmandic/face-api canvas fluent-ffmpeg
