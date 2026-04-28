@@ -1,24 +1,57 @@
 // services/videoKycAiService.js
-// Uses Hugging Face Inference API — no local model files, no compilation.
-// Free tier: ~30,000 requests/month with rate limiting.
-// Model: google/owlvit-base-patch32 (open-vocabulary detection, detects "human face")
+// Node 20 compatible - no tfjs-node required
+// Install:
+// npm install @tensorflow/tfjs @vladmandic/face-api canvas fluent-ffmpeg
 
-const path    = require('path');
-const fs      = require('fs');
-const os      = require('os');
-const Jimp    = require('jimp');
-const ffmpeg  = require('fluent-ffmpeg');
-const { HfInference } = require('@huggingface/inference');
-const logger  = require('../utils/logger');
+const path = require('path');
+const fs = require('fs');
+const os = require('os');
+const ffmpeg = require('fluent-ffmpeg');
 
-const hf = new HfInference(process.env.HF_TOKEN);
+const tf = require('@tensorflow/tfjs');
+global.tf = tf;
 
-const FRAMES_TO_SAMPLE       = 6;
+const faceapi = require('@vladmandic/face-api');
+const canvas = require('canvas');
+
+const logger = require('../utils/logger');
+
+const { Canvas, Image, ImageData, loadImage } = canvas;
+
+faceapi.env.monkeyPatch({
+  Canvas,
+  Image,
+  ImageData
+});
+
+const FRAMES_TO_SAMPLE = 6;
 const THRESHOLD_AUTO_APPROVE = 80;
-const THRESHOLD_MANUAL       = 50;
+const THRESHOLD_MANUAL = 50;
 
-// ── Frame extractor ───────────────────────────────────────────────────────────
+let MODELS_LOADED = false;
 
+// -----------------------------------------------------
+// Load Models
+// -----------------------------------------------------
+async function loadModels() {
+  if (MODELS_LOADED) return;
+
+  await tf.ready();
+  await tf.setBackend('cpu');
+
+  const modelPath = path.join(process.cwd(), 'models');
+
+  await faceapi.nets.tinyFaceDetector.loadFromDisk(modelPath);
+
+  MODELS_LOADED = true;
+
+  logger.info('[VideoKycAI] TensorFlow backend: ' + tf.getBackend());
+  logger.info('[VideoKycAI] TinyFaceDetector loaded');
+}
+
+// -----------------------------------------------------
+// Extract Frames
+// -----------------------------------------------------
 function extractFrames(videoPath, count) {
   return new Promise((resolve, reject) => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vkyc-'));
@@ -26,144 +59,242 @@ function extractFrames(videoPath, count) {
     ffmpeg.ffprobe(videoPath, (err, meta) => {
       if (err) return reject(err);
 
-      const duration  = meta.format.duration || 10;
-      const interval  = duration / (count + 1);
+      const duration = meta.format?.duration || 10;
+      const interval = duration / (count + 1);
+
       const timestamps = Array.from({ length: count }, (_, i) =>
         ((i + 1) * interval).toFixed(2)
       );
 
       const framePaths = [];
-      let done = 0;
+      let completed = 0;
 
-      for (let i = 0; i < timestamps.length; i++) {
-        const outPath = path.join(tmpDir, `frame_${i}.jpg`);
-        framePaths.push(outPath);
+      timestamps.forEach((ts, i) => {
+        const output = path.join(tmpDir, `frame_${i}.jpg`);
+        framePaths.push(output);
 
         ffmpeg(videoPath)
-          .seekInput(timestamps[i])
+          .seekInput(ts)
           .frames(1)
-          .output(outPath)
-          .on('end', () => { done++; if (done === timestamps.length) resolve({ framePaths, tmpDir }); })
-          .on('error', () => { done++; if (done === timestamps.length) resolve({ framePaths, tmpDir }); })
+          .output(output)
+          .on('end', () => {
+            completed++;
+            if (completed === timestamps.length) {
+              resolve({ framePaths, tmpDir });
+            }
+          })
+          .on('error', () => {
+            completed++;
+            if (completed === timestamps.length) {
+              resolve({ framePaths, tmpDir });
+            }
+          })
           .run();
-      }
+      });
     });
   });
 }
 
-// ── Analyse one frame via HF API ──────────────────────────────────────────────
-
-async function analyzeFrame(framePath) {
-  if (!fs.existsSync(framePath)) return { detected: false, confidence: 0 };
-
+// -----------------------------------------------------
+// Cleanup Temp Folder
+// -----------------------------------------------------
+function cleanupTmp(tmpDir) {
   try {
-    const imageData = fs.readFileSync(framePath);
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  } catch (_) {}
+}
 
-    // Use object detection — looks for "face" or "person" labels
-    const results = await hf.objectDetection({
-      model: 'hustvl/yolos-tiny',
-      data:  new Blob([imageData], { type: 'image/jpeg' }),
-    });
+// -----------------------------------------------------
+// Analyze Single Frame
+// -----------------------------------------------------
+async function analyzeFrame(framePath) {
+  try {
+    if (!fs.existsSync(framePath)) {
+      return {
+        detected: false,
+        confidence: 0,
+        faceRatio: 0
+      };
+    }
 
-    // Filter for face/person detections with decent confidence
-    const faceDetections = results.filter(r =>
-      ['face', 'person', 'human face'].some(label =>
-        r.label.toLowerCase().includes(label)
-      ) && r.score >= 0.5
+    const img = await loadImage(framePath);
+
+    const detection = await faceapi.detectSingleFace(
+      img,
+      new faceapi.TinyFaceDetectorOptions({
+        inputSize: 416,
+        scoreThreshold: 0.4
+      })
     );
 
-    if (faceDetections.length === 0) return { detected: false, confidence: 0 };
+    if (!detection) {
+      return {
+        detected: false,
+        confidence: 0,
+        faceRatio: 0
+      };
+    }
 
-    const best = faceDetections.reduce((a, b) => a.score > b.score ? a : b);
+    const box = detection.box;
 
-    // Estimate face ratio from bounding box
-    const image      = await Jimp.read(framePath);
-    const frameWidth = image.bitmap.width;
-    const boxWidth   = (best.box.xmax - best.box.xmin);
-    const faceRatio  = boxWidth / frameWidth;
+    const ratio = Math.min(box.width / img.width, 1);
 
-    return { detected: true, confidence: best.score, faceRatio };
-
+    return {
+      detected: true,
+      confidence: detection.score || 0.7,
+      faceRatio: ratio
+    };
   } catch (err) {
-    logger.warn(`[VideoKycAI] HF API error on frame: ${err.message}`);
-    return { detected: false, confidence: 0, faceRatio: 0 };
+    logger.warn(
+      `[VideoKycAI] Frame failed (${path.basename(framePath)}): ${err.message}`
+    );
+
+    return {
+      detected: false,
+      confidence: 0,
+      faceRatio: 0,
+      error: err.message
+    };
   }
 }
 
-function cleanupTmp(tmpDir) {
-  try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch (_) {}
+// -----------------------------------------------------
+// Score Logic
+// -----------------------------------------------------
+function scoreAndDecide(results) {
+  const valid = results.filter(Boolean);
+  const detected = valid.filter(r => r.detected);
+
+  const detRate =
+    valid.length > 0 ? detected.length / valid.length : 0;
+
+  const avgConf =
+    detected.length > 0
+      ? detected.reduce((sum, r) => sum + r.confidence, 0) /
+        detected.length
+      : 0;
+
+  const avgRatio =
+    detected.length > 0
+      ? detected.reduce((sum, r) => sum + r.faceRatio, 0) /
+        detected.length
+      : 0;
+
+  const faceTooSmall =
+    detected.length > 0 &&
+    avgRatio > 0 &&
+    avgRatio < 0.08;
+
+  const score = Math.round(
+    detRate * 60 +
+    avgConf * 30 +
+    Math.min(avgRatio / 0.25, 1) * 10
+  );
+
+  const detail = {
+    model: 'TinyFaceDetector',
+    frames_analysed: valid.length,
+    frames_with_face: detected.length,
+    detection_rate: `${(detRate * 100).toFixed(0)}%`,
+    avg_confidence: avgConf.toFixed(2),
+    avg_face_ratio: avgRatio.toFixed(2),
+    score
+  };
+
+  logger.info('[VideoKycAI] Score=' + score);
+
+  if (score >= THRESHOLD_AUTO_APPROVE && !faceTooSmall) {
+    return {
+      score,
+      decision: 'completed',
+      rejection_reason: null,
+      agent_notes: `AI verified (${score}/100).`,
+      detail
+    };
+  }
+
+  if (score < THRESHOLD_MANUAL) {
+    let reason = 'Face not clearly visible.';
+
+    if (detRate < 0.3) {
+      reason = 'Face missing in most frames.';
+    } else if (faceTooSmall) {
+      reason = 'Move closer to camera.';
+    } else if (avgConf < 0.5) {
+      reason = 'Poor lighting or blur.';
+    }
+
+    return {
+      score,
+      decision: 'rejected',
+      rejection_reason: reason,
+      agent_notes: `AI rejected (${score}/100). ${reason}`,
+      detail
+    };
+  }
+
+  return {
+    score,
+    decision: 'under_review',
+    rejection_reason: null,
+    agent_notes: `Borderline score (${score}/100). Manual review required.`,
+    detail
+  };
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
-
+// -----------------------------------------------------
+// Main Analyze Video
+// -----------------------------------------------------
 async function analyzeVideoKyc(videoPath) {
+  await loadModels();
+
   logger.info(`[VideoKycAI] Analysing: ${videoPath}`);
 
-  let framePaths = [], tmpDir = null;
+  let framePaths = [];
+  let tmpDir = null;
 
   try {
-    ({ framePaths, tmpDir } = await extractFrames(videoPath, FRAMES_TO_SAMPLE));
+    const extracted = await extractFrames(
+      videoPath,
+      FRAMES_TO_SAMPLE
+    );
+
+    framePaths = extracted.framePaths;
+    tmpDir = extracted.tmpDir;
   } catch (err) {
-    logger.error(`[VideoKycAI] Frame extraction failed: ${err.message}`);
+    logger.error(
+      `[VideoKycAI] Frame extraction failed: ${err.message}`
+    );
+
     return {
-      score: 0, decision: 'under_review', rejection_reason: null,
-      agent_notes: `AI could not extract frames — manual review required.`,
-      detail: { error: err.message },
+      score: 0,
+      decision: 'under_review',
+      rejection_reason: null,
+      agent_notes: 'Could not process video.',
+      detail: { error: err.message }
     };
   }
 
   const results = [];
+
   for (const fp of framePaths) {
-    const r = await analyzeFrame(fp);
-    results.push(r);
-    logger.info(`[VideoKycAI] ${path.basename(fp)}: detected=${r.detected} conf=${(r.confidence||0).toFixed(2)}`);
+    const result = await analyzeFrame(fp);
+    results.push(result);
+
+    logger.info(
+      `[VideoKycAI] ${path.basename(fp)}: ` +
+      `detected=${result.detected} ` +
+      `conf=${(result.confidence || 0).toFixed(2)} ` +
+      `ratio=${(result.faceRatio || 0).toFixed(2)}`
+    );
   }
 
   cleanupTmp(tmpDir);
 
-  return _scoreAndDecide(results);
+  return scoreAndDecide(results);
 }
 
-function _scoreAndDecide(results) {
-  const valid    = results.filter(Boolean);
-  const detected = valid.filter(r => r.detected);
-  const detRate  = valid.length > 0 ? detected.length / valid.length : 0;
-  const avgConf  = detected.length > 0
-    ? detected.reduce((s, r) => s + r.confidence, 0) / detected.length : 0;
-  const avgRatio = detected.length > 0
-    ? detected.reduce((s, r) => s + (r.faceRatio || 0), 0) / detected.length : 0;
-  const faceTooSmall = avgRatio > 0 && avgRatio < 0.10;
-
-  const score = Math.round((detRate * 60) + (avgConf * 30) + (Math.min(avgRatio / 0.25, 1) * 10));
-
-  const detail = {
-    frames_analysed: valid.length, frames_with_face: detected.length,
-    detection_rate: `${(detRate * 100).toFixed(0)}%`,
-    avg_confidence: avgConf.toFixed(2), score,
-  };
-
-  logger.info(`[VideoKycAI] Score=${score} | ${JSON.stringify(detail)}`);
-
-  if (score >= THRESHOLD_AUTO_APPROVE && !faceTooSmall) {
-    return { score, decision: 'completed', rejection_reason: null,
-      agent_notes: `AI verified (score ${score}/100). Face detected in ${detail.detection_rate} of frames.`, detail };
-  }
-
-  if (score < THRESHOLD_MANUAL) {
-    let reason = 'Face not clearly visible in the video.';
-    if (detRate < 0.3)       reason = 'Face was detected in very few frames. Please ensure your face is fully visible throughout.';
-    else if (faceTooSmall)   reason = 'Face appears too far from camera. Please hold your device closer.';
-    else if (avgConf < 0.5)  reason = 'Video quality too low. Please ensure good lighting.';
-    return { score, decision: 'rejected', rejection_reason: reason,
-      agent_notes: `AI rejected (score ${score}/100). ${reason}`, detail };
-  }
-
-  return { score, decision: 'under_review', rejection_reason: null,
-    agent_notes: `AI confidence insufficient (score ${score}/100) — flagged for manual review.`, detail };
-}
-
-async function loadModels() {
-  logger.info('[VideoKycAI] Using Hugging Face Inference API — no local models needed.');
-}
-
-module.exports = { analyzeVideoKyc, loadModels };
+module.exports = {
+  analyzeVideoKyc,
+  loadModels
+};
