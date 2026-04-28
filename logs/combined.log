@@ -7985,3 +7985,5 @@
 2026-04-28 09:19:30 [[34mdebug[39m]: [SQL] select "id", "title", "subtitle", "description", "image_data", "image_mime", "order", "is_active", "click_url", "click_count" from "dbo"."carousel_banners" where "is_active" = @1 order by "order" asc
 2026-04-28 09:19:30 [[32mhttp[39m]: [0mGET /api/v1/carousels [32m200[0m 375.340 ms - 15385897[0m
 2026-04-28 09:52:27 [[32mhttp[39m]: [0mGET / [33m404[0m 1.250 ms - 51[0m
+2026-04-28 10:29:55 [[32mhttp[39m]: [0mGET / [33m404[0m 0.499 ms - 51[0m
+2026-04-28 10:31:29 [[32mhttp[39m]: [0mGET / [33m404[0m 0.246 ms - 51[0m

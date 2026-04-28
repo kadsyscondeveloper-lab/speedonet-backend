@@ -221,9 +221,10 @@ router.get('/kyc', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-router.get('/kyc/video', videoKycCtrl.adminGetVideoKycRequests);
-router.patch('/kyc/video/:id', videoKycCtrl.adminUpdateVideoKyc);
-router.post('/kyc/video/:id/start-call', videoKycCtrl.adminStartVideoCall);
+router.get   ('/kyc/video',            videoKycCtrl.adminGetVideoKycRequests);
+router.get   ('/kyc/video/:id/stream', videoKycCtrl.adminStreamVideo);
+router.get   ('/kyc/video/:id',        videoKycCtrl.adminGetVideoKycRequest);
+router.patch ('/kyc/video/:id',        videoKycCtrl.adminUpdateVideoKyc);
 
 // =============================================================================
 // GET /admin/kyc/:kycId

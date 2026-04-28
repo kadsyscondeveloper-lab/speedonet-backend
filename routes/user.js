@@ -6,6 +6,7 @@ const { validate }           = require('../middleware/validators');
 const ctrl                   = require('../controllers/userController');
 const billCtrl = require('../controllers/billController');
 const videoKycCtrl = require('../controllers/videoKycController');
+const { uploadVideoKyc } = require('../middleware/videoUpload');
 
 // All user routes require authentication
 router.use(authenticate);
@@ -213,9 +214,8 @@ router.post('/kyc', kycRules, ctrl.submitKyc);
 
 // Video KYC
 router.get   ('/kyc/video', videoKycCtrl.getVideoKycStatus);
-router.post  ('/kyc/video', videoKycRules, videoKycCtrl.scheduleVideoKyc);
+router.post  ('/kyc/video', uploadVideoKyc, videoKycCtrl.submitVideoKyc);
 router.delete('/kyc/video', videoKycCtrl.cancelVideoKyc);
-router.get('/kyc/video/call-token', videoKycCtrl.getUserCallToken);
 
 // =============================================================================
 // NOTIFICATIONS

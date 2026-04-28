@@ -1648,3 +1648,67 @@
     at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
     at async connectDb (C:\Users\Developer\app\speedonet-backend\config\db.js:60:3)
     at async start (C:\Users\Developer\app\speedonet-backend\server.js:23:5)
+2026-04-25 12:58:26 [[31merror[39m]: Error: operation timed out for an unknown reason
+    at C:\Users\Developer\app\speedonet-backend\node_modules\tarn\dist\PendingOperation.js:17:27
+2026-04-25 12:59:24 [[31merror[39m]: Error: Failed to connect to 103.88.81.5:1433 in 15000ms
+    at C:\Users\Developer\app\speedonet-backend\node_modules\tarn\dist\PendingOperation.js:14:27
+    at runNextTicks (node:internal/process/task_queues:60:5)
+    at listOnTimeout (node:internal/timers:545:9)
+    at process.processTimers (node:internal/timers:519:7)
+    at async MssqlDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:40:16)
+    at async RuntimeDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:46:28)
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:10:28)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
+    at async SelectQueryBuilderImpl.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:323:26)
+2026-04-25 12:59:24 [[31merror[39m]: Error: Failed to connect to 103.88.81.5:1433 in 15000ms
+    at C:\Users\Developer\app\speedonet-backend\node_modules\tarn\dist\PendingOperation.js:14:27
+    at runNextTicks (node:internal/process/task_queues:60:5)
+    at listOnTimeout (node:internal/timers:545:9)
+    at process.processTimers (node:internal/timers:519:7)
+    at async MssqlDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:40:16)
+    at async RuntimeDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:46:28)
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:10:28)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
+    at async SelectQueryBuilderImpl.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:323:26)
+2026-04-25 12:59:24 [[31merror[39m]: Error: Failed to connect to 103.88.81.5:1433 in 15000ms
+    at C:\Users\Developer\app\speedonet-backend\node_modules\tarn\dist\PendingOperation.js:14:27
+    at runNextTicks (node:internal/process/task_queues:60:5)
+    at listOnTimeout (node:internal/timers:545:9)
+    at process.processTimers (node:internal/timers:519:7)
+    at async MssqlDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:40:16)
+    at async RuntimeDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:46:28)
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:10:28)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
+    at async SelectQueryBuilderImpl.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:323:26)
+2026-04-25 12:59:24 [[31merror[39m]: Error: Failed to connect to 103.88.81.5:1433 in 15000ms
+    at C:\Users\Developer\app\speedonet-backend\node_modules\tarn\dist\PendingOperation.js:14:27
+    at async MssqlDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:40:16)
+    at async RuntimeDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:46:28)
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:10:28)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
+    at async SelectQueryBuilderImpl.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:323:26)
+    at async authenticateAdmin (C:\Users\Developer\app\speedonet-backend\middleware\adminAuth.js:39:19)
+2026-04-25 12:59:40 [[31merror[39m]: Error: Failed to connect to 103.88.81.5:1433 - Could not connect (sequence)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\tarn\dist\PendingOperation.js:14:27
+    at async MssqlDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\dialect\mssql\mssql-driver.js:40:16)
+    at async RuntimeDriver.acquireConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\runtime-driver.js:46:28)
+    at async DefaultConnectionProvider.provideConnection (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\driver\default-connection-provider.js:10:28)
+    at async DefaultQueryExecutor.executeQuery (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-executor\query-executor-base.js:36:16)
+    at async SelectQueryBuilderImpl.execute (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:319:24)
+    at async SelectQueryBuilderImpl.executeTakeFirst (C:\Users\Developer\app\speedonet-backend\node_modules\kysely\dist\cjs\query-builder\select-query-builder.js:323:26)
+    at async authenticateAdmin (C:\Users\Developer\app\speedonet-backend\middleware\adminAuth.js:39:19)
+2026-04-27 17:05:29 [[31merror[39m]: PayloadTooLargeError: request entity too large
+    at readStream (C:\Users\Developer\app\speedonet-backend\node_modules\raw-body\index.js:163:17)
+    at getRawBody (C:\Users\Developer\app\speedonet-backend\node_modules\raw-body\index.js:116:12)
+    at read (C:\Users\Developer\app\speedonet-backend\node_modules\body-parser\lib\read.js:79:3)
+    at jsonParser (C:\Users\Developer\app\speedonet-backend\node_modules\body-parser\lib\types\json.js:138:5)
+    at Layer.handle [as handle_request] (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Developer\app\speedonet-backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Developer\app\speedonet-backend\node_modules\morgan\index.js:144:5)

@@ -28,6 +28,7 @@
     "jsonwebtoken": "^9.0.2",
     "kysely": "^0.28.11",
     "morgan": "^1.10.0",
+    "multer": "^2.1.1",
     "rate-limit-redis": "^4.3.1",
     "socket": "^1.1.78",
     "socket.io": "^4.8.3",
