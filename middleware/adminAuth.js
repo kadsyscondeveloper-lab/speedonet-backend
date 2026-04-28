@@ -13,15 +13,26 @@ const R               = require('../utils/response');
 /**
  * Verify an admin JWT and confirm the admin account is active.
  * Attaches req.admin = { id, email, role }
+ *
+ * Token is accepted from:
+ *   1. Authorization: Bearer <token>   — standard API calls
+ *   2. ?token=<token> query param      — fallback for <video> stream URLs
+ *      because browsers cannot send custom headers for media element requests
  */
 async function authenticateAdmin(req, res, next) {
   try {
+    let token = null;
+
     const authHeader = req.headers['authorization'];
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return R.unauthorized(res, 'No token provided');
+    if (authHeader?.startsWith('Bearer ')) {
+      token = authHeader.slice(7);
+    } else if (req.query.token) {
+      token = req.query.token;
     }
 
-    const token = authHeader.slice(7);
+    if (!token) {
+      return R.unauthorized(res, 'No token provided');
+    }
 
     let decoded;
     try {
