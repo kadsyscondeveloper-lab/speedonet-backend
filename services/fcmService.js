@@ -237,31 +237,17 @@ async function saveToken(userId, token) {
   }
 
   try {
-    const existing = await db
-      .selectFrom('dbo.fcm_tokens')
-      .select(['id', 'user_id'])
-      .where('token', '=', token)
-      .executeTakeFirst();
-
-    if (existing) {
-      if (Number(existing.user_id) === Number(userId)) {
-        logger.debug(`[FCM] Token already registered for user ${userId}`);
-        return;
-      }
-      // Shared device — reassign token to new user
-      await db
-        .updateTable('dbo.fcm_tokens')
-        .set({ user_id: BigInt(userId), updated_at: new Date() })
-        .where('id', '=', existing.id)
-        .execute();
-      logger.info(`[FCM] Token reassigned from user ${existing.user_id} to user ${userId}`);
-    } else {
-      await db
-        .insertInto('dbo.fcm_tokens')
-        .values({ user_id: BigInt(userId), token })
-        .execute();
-      logger.info(`[FCM] New token registered for user ${userId}`);
-    }
+    // Atomic upsert — no race condition between check and insert
+    await sql`
+      MERGE dbo.fcm_tokens AS target
+      USING (VALUES (${token})) AS source (token)
+      ON target.token = source.token
+      WHEN MATCHED THEN
+        UPDATE SET user_id = ${BigInt(userId)}, updated_at = SYSUTCDATETIME()
+      WHEN NOT MATCHED THEN
+        INSERT (user_id, token) VALUES (${BigInt(userId)}, ${token});
+    `.execute(db);
+    logger.info(`[FCM] Token upserted for user ${userId}`);
   } catch (err) {
     logger.error(`[FCM] saveToken failed for user ${userId}: ${err.message}`);
   }

@@ -9,6 +9,7 @@ router.use('/payments',       require('./payments'));
 router.use('/carousels',      require('./carousels'));
 router.use('/pay',            require('./payServices'));
 router.use('/fcm',            require('./fcm'));
+router.use('/rent',           require('./rent'));
 router.use('/admin/auth',     require('./adminAuth'));
 router.use('/admin',          require('./admin'));
 router.use('/locations',      require('./locations'));

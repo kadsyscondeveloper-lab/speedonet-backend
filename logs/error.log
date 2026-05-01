@@ -1936,3 +1936,17 @@ Require stack:
 - C:\Users\Developer\app\speedonet-backend\app.js
 - C:\Users\Developer\app\speedonet-backend\server.js
 2026-04-28 16:08:56 [[31merror[39m]: [VideoKycAI] Run: npm install @tensorflow/tfjs @vladmandic/face-api canvas fluent-ffmpeg
+2026-04-29 17:30:56 [[31merror[39m]: [FCM] Init failed — push notifications disabled: Cannot find module '../firebase-service-account.json'
+Require stack:
+- D:\App Soft\app\speedonet-backend\services\fcmService.js
+- D:\App Soft\app\speedonet-backend\utils\notifyUser.js
+- D:\App Soft\app\speedonet-backend\services\videoKycService.js
+- D:\App Soft\app\speedonet-backend\controllers\videoKycController.js
+- D:\App Soft\app\speedonet-backend\routes\user.js
+- D:\App Soft\app\speedonet-backend\routes\index.js
+- D:\App Soft\app\speedonet-backend\app.js
+- D:\App Soft\app\speedonet-backend\server.js
+2026-04-30 13:39:35 [[31merror[39m]: [SQL ERROR] Error: Violation of UNIQUE KEY constraint 'UQ__fcm_toke__CA90DA7A57CF4E2D'. Cannot insert duplicate key in object 'dbo.fcm_tokens'. The duplicate key value is (eBj6dPMaS6i5zz4-2y19ls:APA91bGdFZ77GSbyiCvnFc2Y7tr_FVUXjcb8MmNkpnuhWH4LRSEPbbV3GIyfiyk6nDnXgIaHBb7rquXIv2XqzFQj8Cpl2TdzrfpyhCgYkAck2d1zU8nAVZU).
+2026-04-30 13:39:35 [[31merror[39m]: [FCM] saveToken failed for user 1: Violation of UNIQUE KEY constraint 'UQ__fcm_toke__CA90DA7A57CF4E2D'. Cannot insert duplicate key in object 'dbo.fcm_tokens'. The duplicate key value is (eBj6dPMaS6i5zz4-2y19ls:APA91bGdFZ77GSbyiCvnFc2Y7tr_FVUXjcb8MmNkpnuhWH4LRSEPbbV3GIyfiyk6nDnXgIaHBb7rquXIv2XqzFQj8Cpl2TdzrfpyhCgYkAck2d1zU8nAVZU).
+2026-04-30 13:39:35 [[31merror[39m]: [SQL ERROR] Error: Violation of UNIQUE KEY constraint 'UQ__fcm_toke__CA90DA7A57CF4E2D'. Cannot insert duplicate key in object 'dbo.fcm_tokens'. The duplicate key value is (eBj6dPMaS6i5zz4-2y19ls:APA91bGdFZ77GSbyiCvnFc2Y7tr_FVUXjcb8MmNkpnuhWH4LRSEPbbV3GIyfiyk6nDnXgIaHBb7rquXIv2XqzFQj8Cpl2TdzrfpyhCgYkAck2d1zU8nAVZU).
+2026-04-30 13:39:35 [[31merror[39m]: [FCM] saveToken failed for user 1: Violation of UNIQUE KEY constraint 'UQ__fcm_toke__CA90DA7A57CF4E2D'. Cannot insert duplicate key in object 'dbo.fcm_tokens'. The duplicate key value is (eBj6dPMaS6i5zz4-2y19ls:APA91bGdFZ77GSbyiCvnFc2Y7tr_FVUXjcb8MmNkpnuhWH4LRSEPbbV3GIyfiyk6nDnXgIaHBb7rquXIv2XqzFQj8Cpl2TdzrfpyhCgYkAck2d1zU8nAVZU).
