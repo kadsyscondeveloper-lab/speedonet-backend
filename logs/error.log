@@ -1950,3 +1950,17 @@ Require stack:
 2026-04-30 13:39:35 [[31merror[39m]: [FCM] saveToken failed for user 1: Violation of UNIQUE KEY constraint 'UQ__fcm_toke__CA90DA7A57CF4E2D'. Cannot insert duplicate key in object 'dbo.fcm_tokens'. The duplicate key value is (eBj6dPMaS6i5zz4-2y19ls:APA91bGdFZ77GSbyiCvnFc2Y7tr_FVUXjcb8MmNkpnuhWH4LRSEPbbV3GIyfiyk6nDnXgIaHBb7rquXIv2XqzFQj8Cpl2TdzrfpyhCgYkAck2d1zU8nAVZU).
 2026-04-30 13:39:35 [[31merror[39m]: [SQL ERROR] Error: Violation of UNIQUE KEY constraint 'UQ__fcm_toke__CA90DA7A57CF4E2D'. Cannot insert duplicate key in object 'dbo.fcm_tokens'. The duplicate key value is (eBj6dPMaS6i5zz4-2y19ls:APA91bGdFZ77GSbyiCvnFc2Y7tr_FVUXjcb8MmNkpnuhWH4LRSEPbbV3GIyfiyk6nDnXgIaHBb7rquXIv2XqzFQj8Cpl2TdzrfpyhCgYkAck2d1zU8nAVZU).
 2026-04-30 13:39:35 [[31merror[39m]: [FCM] saveToken failed for user 1: Violation of UNIQUE KEY constraint 'UQ__fcm_toke__CA90DA7A57CF4E2D'. Cannot insert duplicate key in object 'dbo.fcm_tokens'. The duplicate key value is (eBj6dPMaS6i5zz4-2y19ls:APA91bGdFZ77GSbyiCvnFc2Y7tr_FVUXjcb8MmNkpnuhWH4LRSEPbbV3GIyfiyk6nDnXgIaHBb7rquXIv2XqzFQj8Cpl2TdzrfpyhCgYkAck2d1zU8nAVZU).
+2026-05-01 12:59:21 [[31merror[39m]: [FCM FAIL] user=1 device=20046
+2026-05-01 12:59:21 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-05-01 12:59:21 [[31merror[39m]: message=NotRegistered
+2026-05-01 12:59:21 [[31merror[39m]: [FCM FAIL] user=1 device=20047
+2026-05-01 12:59:21 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-05-01 12:59:21 [[31merror[39m]: message=NotRegistered
+2026-05-01 12:59:22 [[31merror[39m]: [FCM FAIL] user=1 device=20024
+2026-05-01 12:59:22 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-05-01 12:59:22 [[31merror[39m]: message=Requested entity was not found.
+2026-05-01 13:06:48 [[31merror[39m]: [FCM FAIL] user=2 device=20027
+2026-05-01 13:06:48 [[31merror[39m]: code=messaging/registration-token-not-registered
+2026-05-01 13:06:48 [[31merror[39m]: message=Requested entity was not found.
+2026-05-01 15:18:35 [[31merror[39m]: [SQL ERROR] Error: Violation of UNIQUE KEY constraint 'UQ__fcm_toke__CA90DA7A57CF4E2D'. Cannot insert duplicate key in object 'dbo.fcm_tokens'. The duplicate key value is (eBj6dPMaS6i5zz4-2y19ls:APA91bEiQjtcSZYPflrk5n2YVlyuRjBvn69pSPE672iU1pMywCZ63wvrGU3HsJ_31iR3Secgr63q4Ikwde54Mq4FYn2qPswbB0I9MCRGDUINxOWOr-CB6L4).
+2026-05-01 15:18:35 [[31merror[39m]: [FCM] saveToken failed for user 18: Violation of UNIQUE KEY constraint 'UQ__fcm_toke__CA90DA7A57CF4E2D'. Cannot insert duplicate key in object 'dbo.fcm_tokens'. The duplicate key value is (eBj6dPMaS6i5zz4-2y19ls:APA91bEiQjtcSZYPflrk5n2YVlyuRjBvn69pSPE672iU1pMywCZ63wvrGU3HsJ_31iR3Secgr63q4Ikwde54Mq4FYn2qPswbB0I9MCRGDUINxOWOr-CB6L4).

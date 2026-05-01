@@ -237,9 +237,8 @@ async function saveToken(userId, token) {
   }
 
   try {
-    // Atomic upsert — no race condition between check and insert
     await sql`
-      MERGE dbo.fcm_tokens AS target
+      MERGE dbo.fcm_tokens WITH (HOLDLOCK) AS target
       USING (VALUES (${token})) AS source (token)
       ON target.token = source.token
       WHEN MATCHED THEN

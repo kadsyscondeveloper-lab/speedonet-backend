@@ -1,63 +1,94 @@
 // services/rentService.js
 //
-// Daily rent accumulation for users with active broadband plans.
+// Daily rent for users with active broadband plans.
 //
-// How it works:
-//   • Each day, a user earns `daily_rent` (from plan column or price/validity_days).
-//   • Rent is calculated on-demand (no cron needed) from lastCreditedAt.
-//   • User can collect all pending rent once per day inside a configurable IST window.
-//   • On collection, the rent amount is credited directly to their wallet.
+// Rules:
+//   • Each day the user can collect a fixed `daily_rent` amount once.
+//   • The amount is fixed — it does NOT accumulate across days.
+//   • Miss today's window → that day's rent is gone forever.
+//   • Collection is only allowed inside the user's assigned 30-min IST slot.
+//   • Slot is derived deterministically from userId % 18 (10 AM – 7 PM IST).
 
-const { db, sql }  = require('../config/db');
-const notifyUser   = require('../utils/notifyUser');
-const logger       = require('../utils/logger');
+const { db, sql } = require('../config/db');
+const notifyUser  = require('../utils/notifyUser');
+const logger      = require('../utils/logger');
 
-// ── Collection window (IST, 24-hour) ─────────────────────────────────────────
-const WINDOW_START = parseInt(process.env.RENT_COLLECT_START_HOUR || '18', 10); // 6 PM
-const WINDOW_END   = parseInt(process.env.RENT_COLLECT_END_HOUR   || '23', 10); // 11 PM
+// ── Collection window config ──────────────────────────────────────────────────
+
+const SLOT_DURATION_MINS = 30;
+const WINDOW_START_HOUR  = 10;   // 10:00 AM IST
+const WINDOW_END_HOUR    = 19;   // 07:00 PM IST
+const TOTAL_SLOTS        = ((WINDOW_END_HOUR - WINDOW_START_HOUR) * 60) / SLOT_DURATION_MINS; // 18
 
 // ── IST helpers ───────────────────────────────────────────────────────────────
 
 function _istNow() {
-  // Convert UTC to IST (UTC+5:30)
-  const now    = new Date();
-  const ist    = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
-  return ist;
+  const now = new Date();
+  return new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
 }
 
 function _istDateStr(d) {
-  return d.toISOString().slice(0, 10); // YYYY-MM-DD in IST
+  return d.toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
-function _isInCollectionWindow() {
-  const ist = _istNow();
+// ── Slot helpers ──────────────────────────────────────────────────────────────
 
-  const hours   = ist.getUTCHours();
-  const minutes = ist.getUTCMinutes();
-
-  const currentMinutes = hours * 60 + minutes;
-
-  // 🔥 TEST WINDOW: 12:50 → 14:00
-  const start = 12 * 60 + 50;  // 12:50
-  const end   = 14 * 60;       // 2:00
-
-  return currentMinutes >= start && currentMinutes <= end;
+/**
+ * Deterministic slot index (0–17) from userId.
+ * Same user always gets the same slot on every call.
+ */
+function _slotForUser(userId) {
+  return Number(userId) % TOTAL_SLOTS;
 }
-function _windowLabel() {
-  return `12:50–14:00 IST`;
+
+/**
+ * IST start/end bounds for a slot index.
+ */
+function _slotBounds(slotIndex) {
+  const startMins = WINDOW_START_HOUR * 60 + slotIndex * SLOT_DURATION_MINS;
+  const endMins   = startMins + SLOT_DURATION_MINS;
+  return {
+    startH: Math.floor(startMins / 60),
+    startM: startMins % 60,
+    endH:   Math.floor(endMins / 60),
+    endM:   endMins % 60,
+  };
+}
+
+/**
+ * Human-readable label — e.g. "2:30 PM – 3:00 PM IST"
+ */
+function _windowLabel(slotIndex) {
+  const { startH, startM, endH, endM } = _slotBounds(slotIndex);
+  const fmt = (h, m) => {
+    const period = h < 12 ? 'AM' : 'PM';
+    const h12    = h % 12 || 12;
+    return `${h12}:${String(m).padStart(2, '0')} ${period}`;
+  };
+  return `${fmt(startH, startM)} – ${fmt(endH, endM)} IST`;
+}
+
+/**
+ * True if current IST time is inside the user's slot.
+ */
+function _isInCollectionWindow(slotIndex) {
+  const ist     = _istNow();
+  const nowMins = ist.getUTCHours() * 60 + ist.getUTCMinutes();
+  const { startH, startM, endH, endM } = _slotBounds(slotIndex);
+  return nowMins >= (startH * 60 + startM) && nowMins < (endH * 60 + endM);
 }
 
 // ── Main: get rent status for a user ─────────────────────────────────────────
 
 async function getRentStatus(userId) {
+  const slotIndex = _slotForUser(userId);
+
   // 1. Need an active subscription
   const sub = await db
     .selectFrom('dbo.user_subscriptions as s')
     .innerJoin('dbo.broadband_plans as p', 'p.id', 's.plan_id')
     .select([
       's.id as sub_id',
-      's.start_date',
-      's.expires_at',
       'p.name as plan_name',
       'p.price',
       'p.validity_days',
@@ -74,59 +105,43 @@ async function getRentStatus(userId) {
   if (!sub) {
     return {
       hasActivePlan:      false,
-      pendingRent:        0,
-      totalCollected:     0,
       dailyRent:          0,
+      totalCollected:     0,
       canCollect:         false,
       collectedToday:     false,
-      inCollectionWindow: false,
-      windowLabel:        _windowLabel(),
+      inCollectionWindow: _isInCollectionWindow(slotIndex),
+      slotIndex,
+      windowLabel:        _windowLabel(slotIndex),
       message:            'Purchase a plan to start earning daily rent.',
     };
   }
 
-  // 2. Calculate per-day rent (plan column takes precedence; fallback = price/validity)
+  // 2. Fixed daily rent — no accumulation, this is exactly what they can collect today
   const dailyRent = sub.daily_rent !== null && sub.daily_rent !== undefined
     ? parseFloat(sub.daily_rent)
     : parseFloat((parseFloat(sub.price) / sub.validity_days).toFixed(2));
 
-  // 3. Fetch wallet row
+  // 3. Fetch wallet row (only needed for totalCollected + collectedToday check)
   const wallet = await db
     .selectFrom('dbo.rent_wallets')
-    .select(['id', 'pending_rent', 'total_collected', 'last_credited_at', 'last_collected_at'])
+    .select(['total_collected', 'last_collected_at'])
     .where('user_id', '=', BigInt(userId))
     .executeTakeFirst();
 
-  // 4. Calculate accumulated rent since last credit
-  const ist          = _istNow();
-  const todayStr     = _istDateStr(ist);
-
-  // Base date for accumulation: last credit OR subscription start date
-  const baseDate     = wallet?.last_credited_at
-    ? new Date(wallet.last_credited_at)
-    : new Date(sub.start_date);
-
-  const baseDateStr  = _istDateStr(new Date(baseDate.getTime() + 5.5 * 60 * 60 * 1000));
-  const daysDiff     = Math.max(
-    0,
-    Math.floor((ist - new Date(baseDate.getTime() + 5.5 * 60 * 60 * 1000)) / (1000 * 60 * 60 * 24))
-  );
-
-  const storedPending   = parseFloat(wallet?.pending_rent || 0);
-  const accumulatedRent = parseFloat((storedPending + daysDiff * dailyRent).toFixed(2));
-
-  // 5. Check if already collected today (IST)
+  // 4. Check if already collected today (IST date comparison)
+  const todayStr = _istDateStr(_istNow());
   const lastCollectedIST = wallet?.last_collected_at
     ? _istDateStr(new Date(new Date(wallet.last_collected_at).getTime() + 5.5 * 60 * 60 * 1000))
     : null;
   const collectedToday = lastCollectedIST === todayStr;
 
-  const inWindow = _isInCollectionWindow();
-  const canCollect = accumulatedRent > 0 && inWindow && !collectedToday;
+  // 5. Window + eligibility
+  const inWindow   = _isInCollectionWindow(slotIndex);
+  const canCollect = inWindow && !collectedToday;
 
   let message = null;
   if (!inWindow) {
-    message = `Collect window: ${_windowLabel()}`;
+    message = `Your collection window: ${_windowLabel(slotIndex)}. Miss it and today's rent is gone.`;
   } else if (collectedToday) {
     message = 'Already collected today. Come back tomorrow!';
   }
@@ -134,21 +149,20 @@ async function getRentStatus(userId) {
   return {
     hasActivePlan:      true,
     planName:           sub.plan_name,
-    dailyRent,
-    pendingRent:        accumulatedRent,
+    dailyRent,                                              // fixed amount, same every day
     totalCollected:     parseFloat(wallet?.total_collected || 0),
     canCollect,
     collectedToday,
     inCollectionWindow: inWindow,
-    windowLabel:        _windowLabel(),
+    slotIndex,
+    windowLabel:        _windowLabel(slotIndex),
     message,
   };
 }
 
-// ── Main: collect pending rent ─────────────────────────────────────────────────
+// ── Main: collect today's rent ────────────────────────────────────────────────
 
 async function collectRent(userId) {
-  // Re-compute fresh status inside the transaction path
   const status = await getRentStatus(userId);
 
   if (!status.hasActivePlan) {
@@ -172,26 +186,19 @@ async function collectRent(userId) {
     );
   }
 
-  const amount = status.pendingRent;
-
-  if (amount <= 0) {
-    throw Object.assign(
-      new Error('No rent has accumulated yet. Check back after a day.'),
-      { statusCode: 400 }
-    );
-  }
-
-  const now = new Date();
+  const amount    = status.dailyRent; // fixed — no accumulation
+  const slotIndex = _slotForUser(userId);
+  const now       = new Date();
 
   return db.transaction().execute(async (trx) => {
-    // Lock wallet row
+    // Fetch wallet for race guard + upsert
     const wallet = await trx
       .selectFrom('dbo.rent_wallets')
       .select(['id', 'last_collected_at'])
       .where('user_id', '=', BigInt(userId))
       .executeTakeFirst();
 
-    // Double-check not already collected (race guard)
+    // Race condition guard — double check inside transaction
     if (wallet?.last_collected_at) {
       const alreadyIST = _istDateStr(
         new Date(new Date(wallet.last_collected_at).getTime() + 5.5 * 60 * 60 * 1000)
@@ -204,7 +211,7 @@ async function collectRent(userId) {
       }
     }
 
-    // Read current wallet balance with row lock
+    // Read balance with row lock
     const userRow = await sql`
       SELECT wallet_balance FROM dbo.users WITH (UPDLOCK, ROWLOCK)
       WHERE id = ${BigInt(userId)}
@@ -214,7 +221,7 @@ async function collectRent(userId) {
       (parseFloat(userRow.wallet_balance) + amount).toFixed(2)
     );
 
-    // 1. Credit wallet
+    // 1. Credit user wallet
     await trx
       .updateTable('dbo.users')
       .set({
@@ -229,8 +236,6 @@ async function collectRent(userId) {
       await trx
         .updateTable('dbo.rent_wallets')
         .set({
-          pending_rent:      '0',
-          last_credited_at:  now,
           last_collected_at: now,
           total_collected:   sql`total_collected + ${amount}`,
           updated_at:        sql`SYSUTCDATETIME()`,
@@ -238,14 +243,15 @@ async function collectRent(userId) {
         .where('id', '=', wallet.id)
         .execute();
     } else {
+      // First ever collect — create wallet row
       await trx
         .insertInto('dbo.rent_wallets')
         .values({
           user_id:           BigInt(userId),
-          pending_rent:      '0',
+          pending_rent:      '0',   // unused but column exists — kept at 0
           total_collected:   String(amount),
-          last_credited_at:  now,
           last_collected_at: now,
+          rent_slot:         slotIndex,
         })
         .execute();
     }
@@ -260,7 +266,7 @@ async function collectRent(userId) {
         balance_after:  String(balanceAfter),
         description:    `Daily rent collection — ${status.planName}`,
         reference_type: 'rent',
-        reference_id:   String(userId), // user reference for auditing
+        reference_id:   String(userId),
       })
       .execute();
 
@@ -272,12 +278,16 @@ async function collectRent(userId) {
       data:  { amount: String(amount), balance_after: String(balanceAfter) },
     });
 
-    logger.info(`[Rent] Collected ₹${amount} for user ${userId} | balance_after=${balanceAfter}`);
+    logger.info(
+      `[Rent] Collected ₹${amount} for user ${userId} | slot=${slotIndex} | balance_after=${balanceAfter}`
+    );
 
     return {
       amount,
       balanceAfter,
-      planName:   status.planName,
+      planName:    status.planName,
+      slotIndex,
+      windowLabel: _windowLabel(slotIndex),
     };
   });
 }
